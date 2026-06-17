@@ -1,0 +1,436 @@
+---
+title: GIL01 vs GBJ002 contrast
+---
+
+```{r}
+#| include: false
+
+library("DESeq2")
+library("clusterProfiler")
+library("org.Bthuringiensis.eg.db")
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("plotly")
+library("DT")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+```{r}
+#| include: false
+
+counts <- readRDS(file = "lysogeny_counts.rds")
+metadata <- readRDS(file = "lysogeny_metadata.rds")
+all_genes <- readRDS(file = "lysogeny_all_genes.rds")
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Group)
+
+dds <- DESeq(dds)
+
+dds <- dds[!grepl("^GIL", rownames(dds)), ]
+```
+
+In order to perform the GIL01 vs GBJ002 contrast, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: contrast
+#| code-fold: true
+
+contrast <- results(dds, contrast = c("Group", "GIL01", "GBJ002"), lfcThreshold = log2(1.5))
+contrast_df <- as.data.frame(contrast)
+
+contrast_df <- contrast_df %>%
+  { x <- .; x$Gene_ID <- rownames(x); x } %>%
+  left_join(
+    annotation %>%
+      filter(Gene_ID %in% rownames(contrast_df)) %>%
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG_category, Association, Type, Subtype, Source),
+    by = "Gene_ID"
+  ) %>%
+  rename(
+    Mean_normalized_counts = baseMean,
+    LFC = log2FoldChange,
+    Adjusted_p_value = padj
+  ) %>%
+  dplyr::select(
+    Gene_ID,
+    Gene_symbol,
+    Description,
+    COG_category,
+    Association,
+    Type,
+    Subtype,
+    Source,
+    Mean_normalized_counts,
+    LFC,
+    Adjusted_p_value
+  )
+```
+
+As can be seen in the `summary()` results, only 35 upregulated and 38 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: general_results
+#| code-fold: true
+
+summary(contrast, alpha = 0.05)
+
+datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 2, rightColumns = 2),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+  formatRound(columns = c("Mean_normalized_counts", "LFC"), digits = 2) %>%
+  formatSignif(columns = "Adjusted_p_value", digits = 3)
+```
+
+# MA plot
+
+A MA plot visualizes the relationship between the mean expression and the LFC for each gene. It helps to identify genes that are differentially expressed across conditions, highlighting those with large fold changes relative to their expression level.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: ma_plot
+#| code-fold: true
+#| message: false
+
+plotMA(contrast, alpha = 0.05, xlab = "Mean of normalized counts", ylab = "LFC")
+```
+
+# DE genes
+
+DE genes are defined as those with an adjusted p-value below 0.05. Among them, upregulated genes are extracted as those with a LFC > 0.58, while downregulated genes are defined as those with an LFC < -0.58.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: de_genes
+#| code-fold: true
+
+up_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange > log2(1.5) & !is.na(padj)))
+down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5) & !is.na(padj)))
+```
+
+# Volcano plot
+
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Although relatively few DE genes are observed, several of the downregulated genes are located in the prophage region (GBJ002_00964 to GBJ002_01009) previously identified on the GBJ002 chromosome. Additionally, some downregulared genes are algo present on pBtic235, similar to what is observed in the study by [Pavlin *et al*. (2022)](https://doi.org/10.1038/s42003-022-04238-3).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: volcano_plot
+#| code-fold: true
+
+volcano_plot(contrast_df, limits = c(-5, 5))
+```
+
+# Enrichment analysis
+
+In this section, we present the results of enrichment analyses based on the COG (Clusters of Orthologous Groups), KEGG (Kyoto Encyclopedia of Genes and Genomes), GO (Gene Ontology) and EC (Enzyme Commission) categories for both upregulated and downregulated genes.
+
+## COG
+
+According to COG categories, we found positive enrichment in defense mechanisms (**V**) and nucleotide transport and metabolism (**F**) due to 5 genes in each category. Particularly interesting is the enrichment in genes of defense systems, specifically the following: GBJ002_03367 (YoaR-like putative peptidoglycan binding domain-containing protein), GBJ002_03570 (ABC transporter permease), GBJ002_03572 (efflux RND transporter periplasmic adaptor subunit), GBJ002_04203 (phage shock protein A) and GBJ002_04384 (multidrug export protein MepA).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: cog
+#| code-fold: true
+
+cog_up <- cog_enrichment(up_genes, all_genes)
+cog_down <- cog_enrichment(down_genes, all_genes)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: cog_results
+#| code-fold: true
+
+datatable(cog_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "COG", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(cog_down, rownames = FALSE, caption = "Negative enrichment", colnames = c(
+  "COG", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+```
+
+## KEGG
+
+According to KEGG categories, we found positive and negative enrichments. Among the positive, we find metabolic and membrane transport pathways. Among the negative, we find other metabolic and replication and repair pathways. Interestingly, nucleotide and pyrimidine metabolism pathways are present in both categories, reflecting that these pathways are altered both up and down depending on the gene.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: kegg
+#| message: false
+#| code-fold: true
+
+kegg_up <- kegg_enrichment(up_genes, all_genes)
+kegg_down <- kegg_enrichment(down_genes, all_genes)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: kegg_results
+#| code-fold: true
+
+datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
+  extensions = "Scroller", options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
+  extensions = "Scroller", options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+```
+
+## GO
+
+The Gene Ontology (GO) is organized into three categories: **Biological Process** (BP), which describes the biological objectives to which gene products contribute; **Molecular Function** (MF), which refers to the elemental activities of gene products at the molecular level; and **Cellular Component** (CC), which specifies the locations within the cell where gene products are active.
+
+-   According to **BP**, we observed negative entichment of DNA replication due to genes GBJ002_00997 (replicative DNA helicase) and GBJ002_05275 (class 1b ribonucleoside-diphosphate reductase subunit alpha), which are in the prophage and pBtic235 sequences, respectively.
+
+-   Regarding **MF**, we found positive enrichments of transporter and pentosyltransferase activities.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: go
+#| code-fold: true
+#| message: false
+
+go_bp_up <- go_enrichment(up_genes, all_genes, "BP")
+go_bp_down <- go_enrichment(down_genes, all_genes, "BP")
+
+go_mf_up <- go_enrichment(up_genes, all_genes, "MF")
+go_mf_down <- go_enrichment(down_genes, all_genes, "MF")
+
+go_cc_up <- go_enrichment(up_genes, all_genes, "CC")
+go_cc_down <- go_enrichment(down_genes, all_genes, "CC")
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: go_results
+#| code-fold: true
+
+datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+```
+
+## EC
+
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although no statistically significant results were obtained in any case.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: ec
+#| code-fold: true
+
+ec_1_up <- ec_enrichment(up_genes, all_genes, 1)
+ec_1_down <- ec_enrichment(down_genes, all_genes, 1)
+
+ec_2_up <- ec_enrichment(up_genes, all_genes, 2)
+ec_2_down <- ec_enrichment(down_genes, all_genes, 2)
+
+ec_3_up <- ec_enrichment(up_genes, all_genes, 3)
+ec_3_down <- ec_enrichment(down_genes, all_genes, 3)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: ec_results
+#| code-fold: true
+
+datatable(ec_1_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "EC number", "Class", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(ec_1_down, rownames = FALSE, caption = "Negative enrichment", colnames = c(
+  "EC number", "Class", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(ec_2_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "EC number", "Class", "Subclass", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(ec_2_down, rownames = FALSE, caption = "Negative enrichment", colnames = c(
+  "EC number", "Class", "Subclass", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(ec_3_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "EC number", "Class", "Subclass", "Sub-subclass", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(ec_3_down, rownames = FALSE, caption = "Negative enrichment", colnames = c(
+  "EC number", "Class", "Subclass", "Sub-subclass", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+```
+
+# Enrichment summary
+
+This table contains a summary of the enrichments for each category. The subcategory was used for KEGG and the description for GO. Although you can scroll, I recommend exporting using the Excel button and viewing the table in full screen.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: enrichment_summary
+#| code-fold: true
+
+es_up <- enrichment_summary(up_genes, categories = list(cog_up, kegg_up, go_bp_up, go_mf_up, go_cc_up, ec_1_up, ec_2_up, ec_3_up))
+es_down <- enrichment_summary(down_genes, categories = list(cog_down, kegg_down, go_bp_down, go_mf_down, go_cc_down, ec_1_down, ec_2_down, ec_3_down))
+es_de <- rbind(es_up, es_down)
+rownames(es_de) <- c("UP", "DOWN")
+
+datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+          extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            autoWidth = TRUE,
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 2),
+            scrollX = TRUE,
+            scroller = TRUE,
+            deferRender = TRUE))
+```
+
+# Save results
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: save_results
+#| code-fold: true
+
+create_summary(contrast_name = "GIL01 vs GBJ002", rds_name = "gil01_gbj002_lysogeny")
+```

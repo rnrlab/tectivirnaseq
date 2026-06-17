@@ -1,0 +1,431 @@
+---
+title: Main menu
+---
+
+```{r}
+#| include: false
+
+library("DT")
+library("edgeR")
+library("DESeq2")
+library("ggplot2")
+library("plotly")
+library("heatmaply")
+library("pheatmap")
+library("dplyr")
+library("tidyr")
+library("stringr")
+library("purrr")
+library("scales")
+library("RColorBrewer")
+library("vegan")
+library("clusterProfiler")
+library("org.Bthuringiensis.eg.db")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+On this page, we will show the general RNAseq analysis using DESeq2 of *Bacillus thuringiensis* GBJ002 strain vs lysogens of GIL01 and GIL16 tectiviruses. The different sections show the code used to obtain the results shown.
+
+# Load reads processing data
+
+Once the raw reads were obtained, trimming was performed using `fastp`. In this processing step, low-quality sequences and adapters were removed. Next, genomic sequences of Phi-X174, used as a control in Illumina sequences, and human sequences, which may have been present due to sample handling, were removed using `Bowtie2`. Then, potential contaminating microorganisms were checked using `MetaPhlAn`. The species _Cutibacterium acnes_, _Paracoccus yeei_ and _Kocuria carniphila_ were found in some reads and were subsequently removed using `Bowtie2` with the reference genomes of these species. Finally, using `Bowtie2` again and the SILVA database as a reference, rRNA sequences were removed. After all processing steps, in almost all samples, the filtered reads represented more than 90% of the original reads. There were only two exceptions: GIL01_t30_I, because it had a small contamination by _K_. _carniphila_, and GIL16_t10_I, which had a higher proportion of rRNA reads. To simplify visualization, the reads removed in the decontamination steps are represented merged in the Contamination category.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: rp_data
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 12
+
+rp_data <- read.csv("rp_data.tsv", header = TRUE, sep = "\t", check.names = FALSE)
+
+rp_data <- rp_data %>%
+  mutate(Contamination = rowSums(across(3:7))) %>%
+  dplyr::select(1, 2, Contamination, 8:ncol(rp_data))
+
+steps <- colnames(rp_data)[2:5]
+
+rp_data_long <- rp_data %>%
+  mutate(parts = str_split(Sample, "_")) %>%
+  mutate(
+    Organism = map_chr(parts, 1),
+    Group = map_chr(parts, ~ if (length(.) == 3) .[2] else "Lysogeny"),
+    Replicate = map_chr(parts, ~ if (length(.) == 3) .[3] else .[2])
+  ) %>%
+  dplyr::select(-parts) %>%
+  relocate(Organism, Group, Replicate, .after = Sample) %>%
+  pivot_longer(
+    cols = all_of(steps),
+    names_to = "Processing_step",
+    values_to = "Reads_step"
+  ) %>%
+  mutate(
+    Processing_step = factor(Processing_step, levels = steps),
+    Percentage = Reads_step / Total,
+    PercentagePct = Percentage * 100,
+    hover_text = paste0(
+      "Sample: ", Sample,
+      "<br>Processing step: ", Processing_step,
+      "<br>Reads (%): ", sprintf("%.2f", PercentagePct),
+      "<br>Reads: ", comma(Reads_step),
+      "<br>Total reads: ", comma(Total)
+    )
+  )
+
+p <- ggplot(
+  rp_data_long,
+  aes(
+    x = Group,
+    y = PercentagePct,
+    color = Processing_step
+  )
+) +
+  geom_point(
+    aes(text = hover_text),
+    size = 3,
+    position = position_dodge(width = 0.3)
+  ) +
+  facet_wrap(~ Organism, nrow = 3) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Reads (%)",
+    x = NULL,
+    color = "Processing step"
+  ) +
+ scale_color_manual(values = c(
+    "Trimming" = "red",
+    "Contamination" = "salmon1",
+    "rRNA" = "thistle",
+    "Filtered" = "steelblue1"
+ )) +
+  theme(
+    legend.position = "right",
+    legend.box = "vertical",
+    strip.text = element_text(face = "bold")
+  )
+
+ggplotly(p, tooltip = "text")
+```
+
+# Load alignment data
+
+Prior to obtaining the raw gene counts, sequencing reads were first mapped against genomes using `Bowtie2` in order to assess mapping quality and identify potential outlier samples. Mapping statistics were subsequently extracted using `Samtools`. The interactive plot shown below summarizes the percentage of mapped reads for each sample group. By hovering over each data point, detailed information is displayed, including the sample identifier, the proportion of mapped reads (both as a percentage and as absolute counts), and the total number of reads per sample.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_alignment_data
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 12
+
+mapped_reads <- read.csv("mapped_reads.tsv", header = TRUE, sep = "\t")
+
+df_I <- mapped_reads %>%
+  filter(grepl("_I_", Sample)) %>%
+  separate(Sample, into = c("Sample", "Reads"), sep = "_I_", extra = "merge") %>%
+  mutate(Sample = paste0(Sample, "_I"))
+
+df_II <- mapped_reads %>%
+  filter(grepl("_II_", Sample)) %>%
+  separate(Sample, into = c("Sample", "Reads"), sep = "_II_", extra = "merge") %>%
+  mutate(Sample = paste0(Sample, "_II"))
+
+df_III <- mapped_reads %>%
+  filter(grepl("_III_", Sample)) %>%
+  separate(Sample, into = c("Sample", "Reads"), sep = "_III_", extra = "merge") %>%
+  mutate(Sample = paste0(Sample, "_III"))
+
+mapped_reads_new <- bind_rows(df_I, df_II, df_III)
+
+mapped_reads_new <- mapped_reads_new %>%
+  arrange(Sample, Reads)
+
+unaligned_cols <- grep("_unaligned$", colnames(mapped_reads_new), value = TRUE)
+
+mapped_reads_new <- mapped_reads_new %>%
+  mutate(Unaligned = Unaligned + rowSums(across(all_of(unaligned_cols)))) %>%
+  dplyr::select(-all_of(unaligned_cols))
+
+mapped_reads_summary <- mapped_reads_new %>%
+  dplyr::select(-Reads) %>%
+  group_by(Sample) %>%
+  summarise(across(everything(), sum, na.rm = TRUE)) %>%
+  ungroup() %>%
+  dplyr::select(Sample, chromosome, pBtic235, GIL01, GIL16, Unaligned) %>%
+  mutate(Reads = rowSums(across(where(is.numeric))))
+
+alignment_data <- mapped_reads_summary %>%
+  dplyr::select(-Reads) %>%
+  mutate(across(where(is.numeric), ~ .x / rowSums(across(where(is.numeric))))) %>%
+  mutate(
+    parts = str_split(Sample, "_")
+  ) %>%
+  mutate(
+    Organism = map_chr(parts, 1),
+    Group = map_chr(parts, ~ if(length(.) == 3) .[2] else "Lysogeny"),
+    Replicate = map_chr(parts, ~ if(length(.) == 3) .[3] else .[2])
+  ) %>%
+  dplyr::select(-parts) %>%
+  relocate(Organism, Group, Replicate, .after = Sample) %>%
+  pivot_longer(
+    cols = c(chromosome, pBtic235, GIL01, GIL16, Unaligned),
+    names_to = "Region",
+    values_to = "Percentage"
+  ) %>%
+  mutate(Region = factor(Region, levels = c("chromosome", "pBtic235", "GIL01", "GIL16", "Unaligned"))) %>%
+  filter(Percentage != 0) %>%
+  left_join(mapped_reads_summary, by = "Sample") %>%
+  mutate(
+    PercentagePct = Percentage * 100,
+    RegionReads = case_when(
+      Region == "chromosome" ~ chromosome,
+      Region == "pBtic235"   ~ pBtic235,
+      Region == "GIL01"      ~ GIL01,
+      Region == "GIL16"      ~ GIL16,
+      Region == "Unaligned"  ~ Unaligned,
+      TRUE ~ NA_real_
+    ),
+    hover_text = paste0(
+      "Sample: ", Sample,
+      "<br>Mapped reads (%): ", sprintf("%.2f", PercentagePct),
+      "<br>Mapped reads: ", comma(RegionReads),
+      "<br>Total reads: ", comma(Reads)
+    )
+  )
+
+p <- ggplot(
+  alignment_data,
+  aes(
+    x = Group,
+    y = PercentagePct,
+    color = Region
+  )
+) +
+  geom_point(
+    aes(text = hover_text),
+    size = 3,
+    position = position_dodge(width = 0.3)
+  ) +
+  facet_wrap(~ Organism, nrow = 3) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Mapped reads (%)",
+    x = NULL,
+    color = "Region"
+  ) +
+  scale_color_manual(values = c(
+    "chromosome" = "brown1",
+    "pBtic235"   = "tan1",
+    "GIL01"      = "blue1",
+    "GIL16"      = "green1",
+    "Unaligned"  = "grey50"
+  )) +
+  theme(
+    legend.position = "right",
+    legend.box = "vertical",
+    strip.text = element_text(face = "bold")
+  )
+
+ggplotly(p, tooltip = "text")
+```
+
+# Load counts
+
+Raw counts were obtained by preprocessing `featureCounts` results. Specifically, they were obtained by summing counts of paired reads plus half the sum of the counts of unpaired reads:
+
+$$
+Counts = \sum \text{paired reads counts} + \frac{\sum \text{unpaired reads counts}}{2}
+$$
+
+Once the counts were obtained, we upload them along with annotated rRNA genes. rRNA genes are one of the most common sources of noise in RNAseq analyses. Although rRNA gene reads removal was efficient using `Bowtie2`, we chose to discard these gene counts before normalization. In the following heatmap, we can see the samples that had a higher percentage of rRNA counts. As we can see, none of the samples after removal by `Bowtie2` had more than 0.1% rRNA counts, although we removed the rRNA genes so that there would be no artifacts in the subsequent results.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_counts
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 7
+
+counts <- read.csv("counts.tsv", sep = "\t", header = TRUE, row.names = 1, check.names = FALSE)
+rrna_genes <- rownames(read.csv("rrna.tsv", sep = "\t", header = FALSE, row.names = 1))
+rrna_counts <- counts[rownames(counts) %in% rrna_genes, ]
+total_rrna_counts <- colSums(rrna_counts)
+total_counts <- colSums(counts)
+rrna_data <- unique(alignment_data[, 1:4])
+
+rrna_df <- rrna_data %>%
+  mutate(
+    ratio = (total_rrna_counts[Sample]/total_counts[Sample]) * 100,
+    rrna_counts = total_rrna_counts[Sample],
+    total_counts = total_counts[Sample],
+    hover_text = paste0(
+      "Replicate: ", Replicate,
+      "<br>rRNA counts (%): ", sprintf("%.4f", ratio),
+      "<br>rRNA counts: ", scales::comma(rrna_counts),
+      "<br>Total counts: ", scales::comma(total_counts)
+    )
+  )
+
+p <- ggplot(
+  rrna_df,
+  aes(
+    x = Group,
+    y = ratio,
+    color = Replicate
+  )
+) +
+  geom_point(
+    aes(text = hover_text),
+    size = 3,
+    position = position_dodge(width = 0.3)
+  ) +
+  facet_wrap(~ Organism, nrow = 3, scales = "free_y") +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "rRNA counts (%)",
+    x = NULL,
+    color = "Replicate"
+  ) +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(face = "bold")
+  )
+
+ggplotly(p, tooltip = "text")
+```
+
+# Genomes annotation
+
+This section presents the annotation of bacterial and phage genomes performed using Bakta and Pharokka, respectively. This annotation was supplemented by the identification of prophage regions (reviewed using CheckV), biosynthetic gene clusters (antiSMASH and BAGEL4), defense systems (PADLOC and DefenseFinder), AMR genes (ResFinder, AMRFinderPlus and RGI), virulence factors (AMRFinderPlus and VFDB) and the coding probability of de novo transcripts (Popcorn).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: annotation
+#| code-fold: true
+
+saf <- read.csv("GBJ002-GIL01-GIL16.saf", sep = "\t", header = TRUE)
+bakta <- read.csv("annotation.tsv", sep = "\t", header = TRUE)
+cog_annotation <- read.csv("cog_annotation.tsv", sep = "\t", header = TRUE)
+additional_annotation <- read.csv("additional_annotation.tsv", sep = "\t", header = TRUE)
+phages_annotation <- read.csv("phages_annotation.tsv", sep = "\t", header = TRUE)
+
+annotation <- saf %>%
+  rename(Gene_ID = GeneID, Element = Chr) %>%
+  left_join(
+    bakta %>% dplyr::select(`Locus.Tag`, Gene, Product),
+    by = c("Gene_ID" = "Locus.Tag")
+  ) %>%
+  left_join(
+    cog_annotation %>% dplyr::select(ID, COG),
+    by = c("Gene_ID" = "ID")
+  ) %>%
+  mutate(
+    Gene_symbol = Gene,
+    Description = Product,
+    COG_category = COG,
+    Association = NA_character_,
+    Type = NA_character_,
+    Subtype = NA_character_,
+    Source = NA_character_
+  ) %>%
+  dplyr::select(-Gene, -Product, -COG)
+
+annotation_both <- additional_annotation %>% filter(Strand == "Both")
+
+for (i in seq_len(nrow(annotation_both))) {
+  row <- annotation_both[i, ]
+  idx <- which(
+    annotation$Element == row$Element &
+    annotation$End >= row$Start &
+    annotation$Start <= row$End
+  )
+  if (length(idx) > 0) {
+    for (j in idx) {
+      g_start <- annotation$Start[j]
+      g_end <- annotation$End[j]
+      if (g_start >= row$Start & g_end <= row$End) {
+        tag_association <- row$Association
+      } else {
+        tag_association <- paste0(row$Association, "*")
+      }
+      annotation$Association[j] <- concat_or_replace(annotation$Association[j], tag_association)
+      annotation$Type[j] <- concat_or_replace(annotation$Type[j], row$Type)
+      annotation$Subtype[j] <- concat_or_replace(annotation$Subtype[j], row$Subtype)
+      annotation$Source[j] <- concat_or_replace(annotation$Source[j], row$Source)
+    }
+  }
+}
+
+annotation_strand <- additional_annotation %>% filter(Strand %in% c("+", "-"))
+
+for (i in seq_len(nrow(annotation_strand))) {
+  row <- annotation_strand[i, ]
+  idx <- which(
+    annotation$Element == row$Element &
+    annotation$Start == row$Start &
+    annotation$End == row$End &
+    annotation$Strand == row$Strand
+  )
+  if (length(idx) > 0) {
+    annotation$Association[idx] <- concat_or_replace(annotation$Association[idx], row$Association)
+    annotation$Type[idx] <- concat_or_replace(annotation$Type[idx], row$Type)
+    annotation$Subtype[idx] <- concat_or_replace(annotation$Subtype[idx], row$Subtype)
+    annotation$Source[idx] <- concat_or_replace(annotation$Source[idx], row$Source)
+  }
+}
+
+idx <- match(annotation$Gene_ID, phages_annotation$ID)
+
+annotation$Description <- dplyr::coalesce(
+  phages_annotation$Description[idx],
+  annotation$Description
+)
+
+annotation$Gene_symbol <- dplyr::coalesce(
+  phages_annotation$Gene_ID[idx],
+  annotation$Gene_symbol
+)
+
+annotation$Element <- factor(annotation$Element, levels = c("chromosome", "pBtic235", "GIL01", "GIL16"))
+annotation$Strand <- factor(annotation$Strand, levels = c("+", "-"))
+
+datatable(annotation, colnames = c("Gene ID", "Element", "Start", "End", "Strand",
+                                   "Gene symbol", "Description", "COG category", "Association", "Type",
+                                   "Subtype", "Source"), rownames = FALSE,
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 1),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE))
+```
+
+# Save results
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: save_results
+#| code-fold: true
+
+saveRDS(annotation, file = "GBJ002-GIL01-GIL16.rds")
+```

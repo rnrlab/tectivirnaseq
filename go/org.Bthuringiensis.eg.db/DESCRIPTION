@@ -1,0 +1,13 @@
+Package: org.Bthuringiensis.eg.db
+Title: Genome wide annotation for Bacillus thuringiensis
+Description: Genome wide annotation for Bacillus thuringiensis, primarily based on mapping using Entrez Gene identifiers.
+Version: 1.0
+Author: Eduardo Lozano
+Maintainer: Eduardo Lozano <eduardo.lozano@uam.es>
+Depends: R (>= 2.7.0), methods, AnnotationDbi (>= 1.70.0)
+Suggests: DBI, annotate, RUnit
+License: Artistic-2.0
+organism: Bacillus thuringiensis
+species: Bacillus thuringiensis
+biocViews: OrgDb, annotation
+

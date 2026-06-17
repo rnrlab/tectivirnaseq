@@ -1,0 +1,664 @@
+---
+title: Lysogeny analysis
+---
+
+```{r}
+#| include: false
+
+library("DT")
+library("edgeR")
+library("DESeq2")
+library("ggplot2")
+library("plotly")
+library("heatmaply")
+library("pheatmap")
+library("dplyr")
+library("tidyr")
+library("stringr")
+library("purrr")
+library("scales")
+library("RColorBrewer")
+library("vegan")
+library("clusterProfiler")
+library("org.Bthuringiensis.eg.db")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+# Load counts
+
+Raw counts were obtained by preprocessing `featureCounts` results. Specifically, they were obtained by summing counts of paired reads plus half the sum of the counts of unpaired reads:
+
+$$
+Counts = \sum \text{paired reads counts} + \frac{\sum \text{unpaired reads counts}}{2}
+$$
+
+Once the counts are obtained, we upload them along with the metadata.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_counts
+#| code-fold: true
+#| warning: false
+
+counts <- read.csv("lysogeny_counts.tsv", sep = "\t", header = TRUE, row.names = 1, check.names = FALSE)
+
+metadata <- read.csv("metadata_lysogeny.tsv", sep = "\t", header = TRUE)
+metadata$Group <- factor(metadata$Group, levels = c("GBJ002", "GIL01", "GIL16"))
+
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+```
+
+# Remove rRNA genes reads
+
+rRNA genes are one of the most common sources of noise in RNAseq analyses. Although rRNA gene reads removal was efficient using Bowtie2, we chose to discard these gene counts before normalization.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: rrna
+#| code-fold: true
+
+rrna_genes <- rownames(read.csv("rrna.tsv", sep = "\t", header = FALSE, row.names = 1))
+rrna_counts <- counts[rownames(counts) %in% rrna_genes, ]
+counts <- counts[!(rownames(counts) %in% rrna_genes), ]
+```
+
+# Delete low expression genes
+
+Another source of noise are low-expression genes. Although DESeq2 has an internal filter, we decided to use a conservative criterion beforehand: deleting genes that didn't have at least 10 counts in any of the conditions.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: delete_genes
+#| code-fold: true
+#| message: false
+#| warning: false
+
+group_means <- sapply(levels(metadata$Group), function(g) {
+  rowMeans(counts[, metadata$Group == g, drop = FALSE])
+})
+
+keep <- rowSums(group_means >= 10) >= 1
+
+full_counts <- counts
+counts <- counts[keep, ]
+```
+
+# Create dds object and delete phages genes
+
+With the following code, we created the dds object. Since DESeq2 works with integers, decimals were rounded to the nearest unit. Furthermore, since phages genes are not comparable across these conditions, they were removed after normalization, thus contributing to library sizes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dds
+#| code-fold: true
+#| message: false
+#| warning: false
+
+counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
+
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Group)
+
+dds <- DESeq(dds)
+
+dds <- dds[!grepl("^GIL", rownames(dds)), ]
+
+all_genes <- rownames(dds)
+```
+
+# Dimensionality reduction
+
+DESeq2 uses Variance Stabilizing Transformation (VST) to transform RNAseq counts so that the variance is approximately constant across different expression levels. This facilitates analyses like clustering or dimensionality reduction methods, such as PCA and MDS.
+
+Both PCA and MDS show highly consistent results. The first dimension explains more than 70% of the variability (or separation between samples) and clearly distinguishes the three groups. Differences observed along the second dimension are minor and likely reflect variability between replicates rather than biologically meaningful separation.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dimensionality_reduction
+#| message: false
+#| warning: false
+#| code-fold: true
+#| fig-width: 9
+#| fig-height: 9
+
+vsdata <- vst(dds, blind = TRUE)
+pca_df <- plotPCA(vsdata, intgroup = "Group", ntop = nrow(dds), returnData = TRUE)
+pca_df$Sample <- rownames(pca_df)
+
+percentVar <- round(100 * attr(pca_df, "percentVar"), 2)
+
+pca_df$hover <- paste0(
+  "Sample: ", pca_df$Sample, "<br>",
+  "PC1: ", round(pca_df$PC1, 2), "<br>",
+  "PC2: ", round(pca_df$PC2, 2)
+)
+
+p <- ggplot(pca_df, aes(x = PC1, y = PC2, color = Group, text = hover)) +
+  geom_point(size = 3) +
+  labs(
+    x = paste0("PC1 (", percentVar[1], "%)"),
+    y = paste0("PC2 (", percentVar[2], "%)"),    
+    color = "Group") +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
+
+dge <- DGEList(counts = counts(dds))
+dge <- calcNormFactors(dge)
+mds <- plotMDS(dge, top = nrow(dds), plot = FALSE)
+
+mds_df <- data.frame(
+  MDS1 = mds$x,
+  MDS2 = mds$y,
+  Sample = colnames(dge),
+  Group = colData(dds)$Group
+)
+
+percentVar <- round(100 * mds$var.explained, 2)
+
+mds_df$hover <- paste0(
+  "Sample: ", mds_df$Sample, "<br>",
+  "MDS1: ", round(mds_df$MDS1, 2), "<br>",
+  "MDS2: ", round(mds_df$MDS2, 2)
+)
+
+p <- ggplot(mds_df, aes(x = MDS1, y = MDS2, color = Group, text = hover)) +
+  geom_point(size = 3) +
+  labs(
+    x = paste0("MDS1 (", percentVar[1], "%)"),
+    y = paste0("MDS2 (", percentVar[2], "%)"),
+    color = "Group"
+  ) +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
+```
+
+Below this plot, we show two heatmaps with the 20 genes that contribute most to PC1 and PC2 in the PCA.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: genes_pca
+#| code-fold: true
+
+vs_mat <- assay(vsdata)
+topVarGenes <- head(order(rowVars(vs_mat), decreasing = TRUE), nrow(dds))
+pca <- prcomp(t(vs_mat[topVarGenes, ]))
+sample_pca <- as.data.frame(pca$x)
+sample_pca$Group <- colData(vsdata)$Group
+
+gene_loadings <- as.data.frame(pca$rotation)
+top_genes_PC1 <- head(gene_loadings[order(abs(gene_loadings$PC1), decreasing=TRUE), ], 20)
+top_genes_PC2 <- head(gene_loadings[order(abs(gene_loadings$PC2), decreasing=TRUE), ], 20)
+
+labels_PC1 <- mark_pBtic235_genes(rownames(top_genes_PC1), annotation)
+labels_PC2 <- mark_pBtic235_genes(rownames(top_genes_PC2), annotation)
+```
+
+## PC1
+
+In the case of PC1, we can see two main branches: the left branch, with all samples of GIL16, and the right branch, with GBJ002 and GIL01 samples. Regarding the genes, we see three clearly defined regions. The upper region contains GBJ002_04202 (flagellar basal body rod protein) and GBJ002_04203 (phage shock protein A) genes, which are very poorly expressed in the GBJ002 samples, at an intermediate level in GIL01 and at a high level in GIL16. The intermediate region contains pBtic235 genes, which are highly expressed in GBJ002, less in GIL01 and poorly expressed in GIL16. Finally, we find prophage region genes and two pBtic235 genes, which exhibit a similar pattern to the previous one, although in this case they are more repressed in samples containing phages. Overall, this heatmap suggests that GIL01 in lisogeny causes milder transcriptional changes than GIL16.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pheatmap_pc1
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 7
+
+pheatmap(vs_mat[rownames(top_genes_PC1), ], labels_row = labels_PC1, legend = FALSE)
+```
+
+## PC2
+
+In the case of PC2, we can see two main branches: the left branch, with all samples of GBJ002, and the right branch, with GIL01 and GIL16 samples. Regarding the genes, we see three main regions. The upper region contains low expressed chromosomal genes in the three conditions. The intermediate region contains chromosomal genes, including some from the prophage region, that are repressed in samples containing phages. Finally, we found a region containing genes that are highly expressed in the presence of GIL01 and less expressed under other conditions. The following genes are particularly interesting because they are located close to each other: GBJ002_02402 (chitin disaccharide deacetylase), GBJ002_02403 (6-phospho-beta-glucosidase), GBJ002_02404 (lichenan-specific phosphotransferase enzyme IIA component), GBJ002_02405 (PTS cellobiose transporter subunit IIC) and GBJ002_02406 (lichenan-specific phosphotransferase enzyme IIB component). The other two genes are located downstream of the previous ones and the difference is not as noticeable, although they are worth highlighting: GBJ002_03363 (bacillolysin) and GBJ002_04981 (cation efflux protein cytoplasmic domain-containing protein).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pheatmap_pc2
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 7
+
+pheatmap(vs_mat[rownames(top_genes_PC2), ], labels_row = labels_PC2, legend = FALSE)
+```
+
+# Heatmap
+
+The heatmap uses information from all genes in the model built using VST transformation to see how the samples cluster. Again, it is observed that samples from the same condition cluster together, with the GIL16 condition being the most dissimilar.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: heatmap
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 7
+
+sampleDists <- dist(t(assay(vsdata)))
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsdata$Sample)
+
+heatmaply(
+  sampleDistMatrix,
+  colors = viridis(n = 256, alpha = 1, begin = 1, end = 0, option = "viridis"),
+  Rowv = as.dendrogram(hclust(sampleDists)),
+  Colv = as.dendrogram(hclust(sampleDists)),
+  label_names = c("Row", "Column", "Value")
+)
+```
+
+# Boxplot and dispersion plot
+
+The boxplot of VST-transformed expression values illustrates the distribution of normalized expression levels across samples. All samples show very similar medians, interquartile ranges and overall dispersion, with no evidence of systematic shifts between experimental groups. This indicates that the variance-stabilizing transformation has effectively reduced heteroscedasticity and that the normalization procedure has removed global differences in expression distributions, supporting the suitability of the data for downstream analyses such as clustering or differential expression.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: boxplot
+#| code-fold: true
+#| message: false
+#| fig-width: 10
+#| fig-height: 7
+
+boxplot(assay(vsdata), las = 2)
+```
+
+The dispersion versus mean of normalized counts plot illustrates the mean–variance relationship assumed by the negative binomial model. Gene-wise dispersion estimates (black points) show higher variability at low expression levels and progressively lower dispersion as mean expression increases. The fitted dispersion trend (red line) captures this overall pattern well and the final dispersion estimates after shrinkage (blue points) are stabilized around this curve. The close agreement between observed and fitted dispersions, together with the lack of anomalous structure, suggests that the dispersion estimation is robust and that the model assumptions are appropriate for these data.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dispersion
+#| code-fold: true
+#| message: false
+#| fig-width: 10
+#| fig-height: 7
+
+plotDispEsts(dds)
+```
+
+# Phages genes expression
+
+In this section, since the phages genes expression cannot be directly compared, we examined their expression using boxplots. The data are presented in **CPM** (counts per million), which indicates how many counts per million come from a given gene. Although this method does not normalize for gene length, we chose to use it because the results showed lower variance and the scale was very similar to that of **TPM** (transcripts per million).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: cpm
+#| code-fold: true
+
+cpm_df <- as.data.frame(cpm(full_counts[keep, ]))
+```
+
+## GIL01
+
+In GIL01, we found that the most highly expressed gene is GIL01_18, which corresponds to the major capsid protein gene. It is also worth highlighting a de novo transcript identified by StringTie on the negative strand (GIL01-DNT_01), which shows expression levels similar to genome terminal protein (GIL01_04) and DNA polymerase (GIL01_05) genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil01
+#| code-fold: true
+
+gil01_long_cpm <- cpm_df %>%
+  tibble::rownames_to_column("Gene_ID") %>%
+  dplyr::filter(grepl("^GIL01", Gene_ID)) %>%
+  tidyr::pivot_longer(
+    cols = starts_with("GIL01_"),
+    names_to = "Sample",
+    values_to = "CPM"
+  ) %>%
+  dplyr::mutate(CPM_log2 = log2(CPM + 1))
+
+gil01_annotation <- annotation %>%
+  dplyr::filter(grepl("^GIL01", Gene_ID)) %>%
+  dplyr::mutate(
+    Gene_number = as.numeric(sub(".*_(\\d+)$", "\\1", Gene_ID)),
+    Color = dplyr::case_when(
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 1 & Gene_number <= 8  ~ "red",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 9 & Gene_number <= 30 ~ "darkred",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 33 & Gene_number <= 36 ~ "grey",
+      Strand == "-" ~ "blue",
+      TRUE ~ "black"
+    )
+  )
+
+gil01_long_cpm <- gil01_long_cpm %>%
+  dplyr::left_join(
+    gil01_annotation %>%
+      dplyr::select(Gene_ID, Color, Gene_symbol, Description, Subtype),
+    by = "Gene_ID"
+  ) %>%
+  dplyr::mutate(
+    Gene_symbol = ifelse(is.na(Gene_symbol), "", Gene_symbol),
+    Description = ifelse(is.na(Description), "", Description),
+    Subtype = ifelse(is.na(Subtype), "-", Subtype),
+    Gene_ID = factor(
+      Gene_ID,
+      levels = gil01_annotation$Gene_ID[
+        gil01_annotation$Gene_ID %in% Gene_ID
+      ]
+    )
+  )
+
+p <- ggplot(gil01_long_cpm, aes(
+  x = Gene_ID,
+  y = CPM_log2,
+  text = paste(
+    "Gene ID:", Gene_ID,
+    ifelse(
+      Gene_symbol != "",
+      paste0("<br>Gene symbol: ", Gene_symbol),
+      ""
+    ),
+    ifelse(
+      Description != "",
+      paste0("<br>Description: ", Description),
+      ""
+    ),
+    ifelse(
+      Description == "Hypothetical protein",
+      paste0("<br>Phynteny annotation: ", Subtype),
+      ""
+    ),
+    "<br>Sample:", Sample,
+    "<br>Gene expression:", round(CPM_log2, 2)
+  )
+)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(
+    width = 0.25,
+    size = 1.5,
+    alpha = 0.7,
+    aes(color = Color)
+  ) +
+  theme_minimal() +
+  xlab(NULL) +
+  ylab("Gene expression") +
+  scale_y_continuous(limits = c(0, 12)) +
+  scale_color_identity() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+ggplotly(p, tooltip = "text")
+```
+
+## GIL16
+
+In the case of GIL16, the results are similar. Again, the major capsid protein gene (GIL16_18) is the most highly expressed. Although there is greater variation between samples in this case, GIL16-DNT_01 exhibits expression levels similar to genome terminal protein (GIL16_04) and DNA polymerase (GIL16_05) genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil16
+#| code-fold: true
+
+gil16_long_cpm <- cpm_df %>%
+  tibble::rownames_to_column("Gene_ID") %>%
+  dplyr::filter(grepl("^GIL16", Gene_ID)) %>%
+  tidyr::pivot_longer(
+    cols = starts_with("GIL16_"),
+    names_to = "Sample",
+    values_to = "CPM"
+  ) %>%
+  dplyr::mutate(CPM_log2 = log2(CPM + 1))
+
+gil16_annotation <- annotation %>%
+  dplyr::filter(grepl("^GIL16", Gene_ID)) %>%
+  dplyr::mutate(
+    Gene_number = as.numeric(sub(".*_(\\d+)$", "\\1", Gene_ID)),
+    Color = dplyr::case_when(
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 1 & Gene_number <= 8  ~ "red",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 9 & Gene_number <= 30 ~ "darkred",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 33 & Gene_number <= 36 ~ "grey",
+      Strand == "-" ~ "blue",
+      TRUE ~ "black"
+    )
+  )
+
+gil16_long_cpm <- gil16_long_cpm %>%
+  dplyr::left_join(
+    gil16_annotation %>%
+      dplyr::select(Gene_ID, Color, Gene_symbol, Description, Subtype),
+    by = "Gene_ID"
+  ) %>%
+  dplyr::mutate(
+    Gene_symbol = ifelse(is.na(Gene_symbol), "", Gene_symbol),
+    Description = ifelse(is.na(Description), "", Description),
+    Subtype = ifelse(is.na(Subtype), "-", Subtype),
+    Gene_ID = factor(
+      Gene_ID,
+      levels = gil16_annotation$Gene_ID[
+        gil16_annotation$Gene_ID %in% Gene_ID
+      ]
+    )
+  )
+
+p <- ggplot(gil16_long_cpm, aes(
+  x = Gene_ID,
+  y = CPM_log2,
+  text = paste(
+    "Gene ID:", Gene_ID,
+    ifelse(
+      Gene_symbol != "",
+      paste0("<br>Gene symbol: ", Gene_symbol),
+      ""
+    ),
+    ifelse(
+      Description != "",
+      paste0("<br>Description: ", Description),
+      ""
+    ),
+    ifelse(
+      Description == "Hypothetical protein",
+      paste0("<br>Phynteny annotation: ", Subtype),
+      ""
+    ),
+    "<br>Sample:", Sample,
+    "<br>Gene expression:", round(CPM_log2, 2)
+  )
+)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(
+    width = 0.25,
+    size = 1.5,
+    alpha = 0.7,
+    aes(color = Color)
+  ) +
+  theme_minimal() +
+  xlab(NULL) +
+  ylab("Gene expression") +
+  scale_y_continuous(limits = c(0, 12)) +
+  scale_color_identity() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+ggplotly(p, tooltip = "text")
+```
+
+# Check batch effect
+
+In this section, we evaluated the presence and magnitude of a potential batch effect associated with experimental replication.
+
+```{r}
+#| include: false
+
+set.seed(0)
+```
+
+## Explained variance per gene and factor
+
+First, we compared the proportion of gene expression variance explained by Group and by Replicate as a proxy for batch effects. To ensure comparability across all lysogeny samples, this analysis was restricted to the gene set shared across conditions, corresponding to genes from GBJ002 (including both chromosomal genes and those located on pBtic235).
+
+At the gene level, Group accounted for a substantially larger fraction of expression variability than Replicate. Specifically, the median proportion of variance explained by the Group was 74.68%, whereas Replicate accounted for a median of 5.08% across genes. Thus, biological effects explained approximately fifteen times more variance than batch effects at the gene level.
+
+These results indicate that thre is no batch effect associated with Replicate and that the primary source of variability in the data is driven by Group, supporting the suitability of the dataset for downstream differential expression analyses, not being necessary to include Replicate as a covariate.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: batch_effect
+#| code-fold: true
+#| warning: false
+#| message: false
+
+metadata <- metadata %>%
+  mutate(Replicate = factor(sub(".*_", "", Sample)))
+
+dds <- DESeqDataSetFromMatrix(
+  countData = counts,
+  colData   = metadata,
+  design    = ~ Replicate + Group
+)
+
+dds <- DESeq(dds)
+dds <- dds[!grepl("^GIL", rownames(dds)), ]
+
+expr_mat <- assay(vst(dds, blind = FALSE))
+
+var_explained <- apply(expr_mat, 1, function(gene_expr) {
+  model <- aov(gene_expr ~ Group + Replicate, data = metadata)
+  ss <- summary(model)[[1]][["Sum Sq"]]
+  total <- sum(ss)
+  c(
+    Group     = ss[1] / total,
+    Replicate = ss[2] / total
+  )
+})
+
+var_explained <- t(var_explained) %>% as.data.frame()
+
+var_long <- var_explained %>%
+  mutate(Gene = rownames(var_explained)) %>%
+  pivot_longer(
+    cols = c("Group", "Replicate"),
+    names_to = "Factor",
+    values_to = "VarianceExplained"
+  ) %>%
+  mutate(
+      VariancePct = VarianceExplained * 100,
+      hover_text = paste0(
+        "Gene: ", Gene,
+        "<br>Factor: ", Factor,
+        "<br>Explained variance (%): ", round(VariancePct, 2)
+      )
+    )
+
+p <- ggplot(
+  var_long,
+  aes(x = Factor, y = VariancePct, fill = Factor, text = hover_text)
+) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.25, alpha = 0.3, size = 0.5) +
+  theme_minimal() +
+  ylab("Explained variance (%)") +
+  theme(legend.position = "none")
+
+ggplotly(p, tooltip = "text")
+```
+
+## Permutational Multivariate Analysis of Variance (PERMANOVA)
+
+To assess batch effects at the transcriptome-wide level, we used permutational multivariate analysis of variance (PERMANOVA) as implemented in the `adonis2` function. This method evaluates whether predefined factors explain significant differences in multivariate expression profiles by partitioning the total variance of a distance matrix (here, based on variance-stabilized expression values) among explanatory variables. Statistical significance is assessed via permutations, making the test robust to deviations from normality and suitable for high-dimensional RNA‑seq data. Unlike gene‑wise models, PERMANOVA evaluates effects on the global expression structure, providing an estimate of the proportion of total variance (R²) attributable to each factor.
+
+### Global batch test
+
+We first performed a global PERMANOVA including Group as the main biological factor and Replicate as a potential batch effect. In this model, biological structure clearly dominated the organization of the transcriptomic space. Group explained the vast majority of the variance (R² = 84.35%, p = 0.002), indicating strong transcriptional differences between the groups. In contrast, Replicate accounted for only a small fraction of the total variation (R² = 4.86%) and did not show statistical significance (p = 0.584). This indicates that, while replicate-to-replicate variability exists, it does not systematically structure the expression profiles nor introduce detectable batch effects at the global level.
+
+Overall, the PERMANOVA demonstrates that transcriptomic variation is overwhelmingly driven by Group, and that the variability associated with Replicate is minor, non‑significant and does not dominate the expression landscape.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: adonis_result
+#| code-fold: true
+
+adonis_result <- adonis2(
+  t(expr_mat) ~ Group + Replicate,
+  data = metadata,
+  permutations = 9999,
+  by = "terms"
+)
+
+datatable(adonis_result, colnames = c("Term", "DF", "SS", "R²", "F statistic", "Permutated p value")) %>%
+  formatRound(columns = c("SumOfSqs", "F", "Pr(>F)"), digits = 3) %>%
+  formatPercentage(columns = "R2", digits = 2)
+```
+
+### Batch effect within biological strata
+
+To further evaluate whether the effect of Replicate persists once biological structure is fully controlled, we performed a PERMANOVA in which permutations were restricted within Group. Under this design, samples were only compared to others from the same group, ensuring that any residual structure attributable to Replicate could be detected independently of differences between groups. This analysis specifically tests whether Replicate induces systematic within‑group shifts in expression profiles.
+
+Under this restricted model, Replicate explained only a very small fraction of the total transcriptomic variance (R² = 4.86%) and did not reach statistical significance (p = 0.611). The modest effect size, combined with a clearly non‑significant p‑value, indicates that Replicate does not introduce consistent transcriptomic differences among biologically matched samples.
+
+Importantly, the proportion of variance attributed to Replicate in the within‑group model was nearly identical to that observed in the global PERMANOVA. However, in both analyses Replicate remained non‑significant. This indicates that the small amount of variance associated with Replicate does not reflect a consistent or systematic batch effect, but rather random variation that does not meaningfully structure the transcriptomic space.
+
+Together, these results indicate that Replicate does not introduce a reproducible batch effect in the dataset. Its contribution to overall variation is minimal, unstable and statistically indistinguishable from random noise once biological differences between groups are controlled.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: adonis_batch_within
+#| code-fold: true
+#| message: false
+
+adonis_batch_within <- adonis2(
+  t(expr_mat) ~ Replicate,
+  data = metadata,
+  permutations = 9999,
+  strata = metadata$Group
+)
+
+datatable(adonis_batch_within, colnames = c("Term", "DF", "SS", "R²", "F statistic", "Permutated p value")) %>%
+  formatRound(columns = c("SumOfSqs", "F", "Pr(>F)"), digits = 3) %>%
+  formatPercentage(columns = "R2", digits = 2)
+```
+
+# Save results
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: save_results
+#| code-fold: true
+
+saveRDS(counts, file = "lysogeny_counts.rds")
+saveRDS(metadata, file = "lysogeny_metadata.rds")
+saveRDS(all_genes, file = "lysogeny_all_genes.rds")
+```

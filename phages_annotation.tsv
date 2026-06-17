@@ -1,0 +1,66 @@
+﻿ID	Gene_ID	Description
+GIL01_33		Hypothetical protein
+GIL01_01	gp1	Cycle regulator protein
+GIL01_02	gp2	Single strand DNA binding protein
+GIL01_03	gp3	Hypothetical protein
+GIL01_04	gp4	Genome terminal protein
+GIL01_05	gp5	DNA polymerase
+GIL01_06	gp6	LexA-like repressor
+GIL01_07	gp7	Cycle regulator protein
+GIL01_08	gp8	Hypothetical protein
+GIL01_09	gp9	Hypothetical protein
+GIL01_34		Hypothetical protein
+GIL01_11	gp11	Assembly protein
+GIL01_13	gp13	Hypothetical protein
+GIL01_14	gp14	DNA packaging/ATPase protein
+GIL01_15	gp15	Special vertex protein
+GIL01_16	gp16	DNA packaging protein
+GIL01_17	gp17	Minor capsid protein
+GIL01_18	gp18	Major capsid protein
+GIL01_19	gp19	DNA packaging protein
+GIL01_20	gp20	Spike stabilizer protein
+GIL01_35		Hypothetical protein
+GIL01_21	gp21	Hypothetical protein
+GIL01_22	gp22	"Special vertex/DNA delivery protein"
+GIL01_23	gp23	Hypothetical protein
+GIL01_24	gp24	Pentameric base spike protein
+GIL01_25	gp25	Membrane structural component protein
+GIL01_26	gp26	N-acetylmuramidase
+GIL01_27	gp27	Hypothetical protein
+GIL01_28	gp28	Trimeric spike protein
+GIL01_29	gp29	Spike protein
+GIL01_30	gp30	N-acetylmuramoyl-L-alanine amidase
+GIL01_36		Hypothetical protein
+GIL16_33		Hypothetical protein
+GIL16_34		Hypothetical protein
+GIL16_01	gp1	Cycle regulator protein
+GIL16_02	gp2	Single strand DNA binding protein
+GIL16_03	gp3	Hypothetical protein
+GIL16_04	gp4	Genome terminal protein
+GIL16_05	gp5	DNA polymerase
+GIL16_06	gp6	LexA-like repressor
+GIL16_07	gp7	Cycle regulator protein
+GIL16_08	gp8	Hypothetical protein
+GIL16_35		Hypothetical protein
+GIL16_10	gp10	Assembly protein
+GIL16_12	gp12	Hypothetical protein
+GIL16_13	gp13	DNA packaging/ATPase protein
+GIL16_14	gp14	Special vertex protein
+GIL16_15	gp15	Hypothetical protein
+GIL16_16	gp16	DNA packaging protein
+GIL16_17	gp17	Minor capsid protein
+GIL16_18	gp18	Major capsid protein
+GIL16_19	gp19	DNA packaging protein
+GIL16_20	gp20	Spike stabilizer protein
+GIL16_21	gp21	Hypothetical protein
+GIL16_22	gp22	Hypothetical protein
+GIL16_23	gp23	"Special vertex/DNA delivery protein"
+GIL16_24	gp24	Hypothetical protein
+GIL16_25	gp25	Pentameric base spike protein
+GIL16_26	gp26	Membrane structural component protein
+GIL16_27	gp27	N-acetylmuramidase
+GIL16_28	gp28	Hypothetical protein
+GIL16_29	gp29	Trimeric spike protein
+GIL16_30	gp30	Spike protein
+GIL16_31	gp31	Hypothetical protein
+GIL16_36		Hypothetical protein

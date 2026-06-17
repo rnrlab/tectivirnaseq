@@ -1,0 +1,479 @@
+---
+title: Networks comparisons
+---
+
+```{r}
+#| include: false
+
+library("DT")
+library("dplyr")
+library("tidyr")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+# Load data and networks attributes
+
+This section presents the full-network and per-node attributes of all previously generated networks. First, the full-network attributes will be compared, allowing for a non-statistical analysis of changes in the overall network attributes. Second, the distributions of the per-node attributes will be statistically compared using non-parametric tests.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_data
+#| code-fold: true
+
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+
+load_networks_objects_rds()
+
+rownames(df_pos_gbj002) <- "GBJ002"
+rownames(df_neg_gbj002) <- "GBJ002"
+rownames(df_pos_gil01) <- "GIL01"
+rownames(df_neg_gil01) <- "GIL01"
+rownames(df_pos_gil16) <- "GIL16"
+rownames(df_neg_gil16) <- "GIL16"
+```
+
+# Full-network attributes
+
+## Positive networks
+
+The table below shows the full-network attributes of the positive networks. The order differs among the three networks due to the incorporation of tectiviruses genes, although it is similar in all cases. In contrast, the size decreases by 67% and 76% in the GIL01 and GIL16 networks, respectively. This decreasing trend is also observed in parameters such as mean degree, density and global efficiency, reflecting a specialization in coexpression in increasing order: GBJ002 \< GIL01 \< GIL16. Other parameters, however, exhibit this reversed pattern. For example, assortativity is positive in all cases, reflecting a connection between similar nodes. The fact that it increases in the tectiviruses networks reflects a stronger tendency for nodes to connect with other nodes that share similar characteristics, i.e., greater specialization in gene coexpression. Other parameters, such as diameter or average path length, corroborate the above, as they reflect a greater distance between genes that are not closely related.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: datatable_pos
+#| code-fold: true
+
+datatable(t(rbind(df_pos_gbj002, df_pos_gil01, df_pos_gil16)), rownames = c(
+    "Order", "Size", "Mean degree (<k>)", "Assortativity", "Density",
+    "Diameter", "Average path length (L)", "Clustering coefficient (C)",
+    "Global transitivity", "Global efficiency"),
+  colnames = c("Full-network attributes" = 1))
+```
+
+## Negative networks
+
+The most drastic changes are observed in the negative networks. For example, the size decreases by 80% and 91% in the GIL01 and GIL16 networks, respectively. A similar trend can be seen in the mean degree, density and overall efficiency. In this case, assortativity decreases a 40% in the GIL01 network compared to GBJ002, but becomes negative (disassortative) with GIL16. Negative assortativity in a network means that nodes with low degrees tend to connect to nodes with high degrees, and vice versa, often resulting in a star-like or hub-and-spoke structure. This is especially important for finding gene expression regulators.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: datatable_neg
+#| code-fold: true
+
+datatable(t(rbind(df_neg_gbj002, df_neg_gil01, df_neg_gil16)), rownames = c(
+    "Order", "Size", "Mean degree (<k>)", "Assortativity", "Density",
+    "Diameter", "Average path length (L)", "Clustering coefficient (C)",
+    "Global transitivity", "Global efficiency"),
+  colnames = c("Full-network attributes" = 1))
+```
+
+# Per-node attributes
+
+This section presents the results of the Friedman tests, Kendall’s W and the adjusted p-values of pairwise Wilcoxon signed‑rank tests. Furthermore, it contains the comparison of per‑node attributes across networks by examining the differences for the genes they share.
+
+The **Friedman test** is a non‑parametric statistical test used to compare three or more related conditions (in this case, the same genes evaluated across different networks). It assesses whether there are overall differences among the networks for each metric. If the p-value is below 0.05, the test indicates that at least one network differs significantly from the others.
+
+Alongside the Friedman test, **Kendall’s W** is calculated to measure the degree of agreement among networks in how they rank each metric. Its value ranges from 0 (no agreement) to 1 (perfect agreement). Some interpretation guidelines are:
+
+-   W ≈ 0.1 → weak agreement.
+
+-   W ≈ 0.3 → moderate agreement.
+
+-   W ≈ 0.5 → strong agreement.
+
+Thus, Kendall’s W complements the Friedman test by quantifying how consistent the differences (or similarities) between networks are. In the tables, this is visually conveyed through bluish, orangish or reddish shading, indicating [weak]{style="background-color:lightblue"}, [moderate]{style="background-color:lightsalmon"} and [strong]{style="background-color:salmon"} agreement, respectively.
+
+When the Friedman test is significant, pairwise comparisons between networks are performed using the **paired Wilcoxon signed‑rank test**, which identifies which specific pairs of networks differ. The resulting p-values are adjusted using the Holm method, which controls the family‑wise error rate in the presence of multiple comparisons. In the tables, each cell displays the Holm‑adjusted p‑value for a given pair of networks. Cells highlighted in yellow indicate statistically significant differences (adjusted p-value \< 0.05).
+
+Regarding the comparison of per-node attributes, five tables are presented, obtained as objects with the following names: `diffs_long`, which contains one row per gene–attribute–network pair combination, providing the raw and absolute differences between networks and the rankings of positive, negative or absolute value differences; `diffs_wide`, which contains one row per gene-network pair and columns representing the difference for every attribute; `summary_by_pair_attribute`, which summarizes the magnitude of differences for each attribute and network pair, including descriptive statistics of the absolute difference, such as mean, median, standard deviation, MAD, 95th percentile and maximum; and `rank_summary`, which shows the most variable genes, which shows the most variable genes according to the attributes selected via `ranking_attributes` for each pair of networks and for each pair of network pairs.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pna
+#| code-fold: true
+
+network_stats_pos <- network_stats_tests(data = list(data_pos_gbj002, data_pos_gil01, data_pos_gil16), names = c("GBJ002", "GIL01", "GIL16"))
+network_stats_neg <- network_stats_tests(data = list(data_neg_gbj002, data_neg_gil01, data_neg_gil16), names = c("GBJ002", "GIL01", "GIL16"))
+
+distributions_pos <- networks_results_to_table(network_stats_pos)
+distributions_neg <- networks_results_to_table(network_stats_neg)
+
+na_diff_pos <- networks_attributes_differences(data = list(data_pos_gbj002, data_pos_gil01, data_pos_gil16),
+                                               names = c("GBJ002", "GIL01", "GIL16"), gene_order = annotation$Gene_ID,
+                                               ranking_attributes = c("Degree", "Betweenness", "Eigenvector_centrality"))
+na_diff_neg <- networks_attributes_differences(data = list(data_neg_gbj002, data_neg_gil01, data_neg_gil16),
+                                               names = c("GBJ002", "GIL01", "GIL16"), gene_order = annotation$Gene_ID,
+                                               ranking_attributes = c("Degree", "Betweenness"))
+```
+
+## Positive networks
+
+### Distributions
+
+In the distributions of the per-node attributes for the positive networks, we observe that all Friedman tests are significant except for PageRank. Kendall’s W indicates weak agreement for degree, strength, coreness, triangles, harmonic centrality and eigenvector centrality, and almost no agreement for betweenness, clustering coefficient and average path length. For betweenness, the Friedman test is significant, but the pairwise Wilcoxon test between GBJ002 and GIL01 isn't. This may be because the deviations between these networks are extremely small. In other words, the Friedman p‑value becomes tiny not due to a meaningful effect, but because the sample size is very large (almost 5000 genes), making even negligible differences statistically detectable. Kendall’s W confirms this interpretation: the agreement between networks for betweenness is essentially zero (as we also see for the clustering coefficient or average path length), indicating that the effect is negligible despite the formal statistical significance. In practical terms, this suggests that network‑derived biological conclusions based on centrality measures with low concordance should be interpreted with caution, while those based on more stable metrics may reflect shared underlying biological organization across networks.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: distributions_pos
+#| code-fold: true
+
+datatable(distributions_pos,
+          colnames = c(NULL, "Friedman p value", "Kendall's W", "GBJ002 vs GIL01", "GBJ002 vs GIL16", "GIL01 vs GIL16"),
+          rownames = c("Degree", "Strength", "Betweenness", "Coreness", "Clustering coefficient (C)",
+                       "Triangles", "Harmonic centrality", "Eigenvector centrality", "PageRank",
+                       "Average path length (L)")) %>%
+          formatSignif(columns = c("Friedman_p_value", "GBJ002_vs_GIL01",
+                                   "GBJ002_vs_GIL16", "GIL01_vs_GIL16"), digits = 3) %>%
+          formatRound(columns = "Kendalls_W", digits = 3) %>%
+          formatStyle(columns = c("Friedman_p_value", "GBJ002_vs_GIL01",
+                                  "GBJ002_vs_GIL16", "GIL01_vs_GIL16"),
+                      backgroundColor = styleInterval(0.05, c("lightyellow", NA))) %>%
+          formatStyle(columns = "Kendalls_W",
+                      backgroundColor = styleInterval(c(0.1, 0.3, 0.5), c("white", "lightblue", "lightsalmon", "salmon")))
+```
+
+### Differences by gene, attribute and networks pair
+
+In the interactive table below, we can see, for each gene and its associated attributes in the positive networks, the difference between the attribute value in the first network compared to the second. Although it allows for a detailed view of the changes, it is recommended to view the relative changes in the table below, as this provides a clearer picture of the changes across all attributes. In contrast, this table is highly recommended for viewing the most variable genes as their attributes values increase or decrease from one network to another, so it is suggested to return to this table after viewing the `rank_summary` one, as it contains more details.
+
+In this table, the normalized z-score difference corresponds to the difference for each gene and attribute between networks. The use of this metric is motivated by two main reasons. First, direct differences between raw attribute values do not account for the fact that a given value may be relatively high in one network but low in another. Second, transforming values into positional rankings would remove information about the magnitude of differences between genes within the same network.
+
+For these reasons, the differences for each gene, attribute and pair of networks were computed as follows:
+
+1.  **Z-score calculation within each network**
+
+For each gene $i$ and attribute $m$, the z-score is computed independently in each network:
+
+$$
+z_{1,i}^{(m)} = \frac{x_{1,i}^{(m)} - \mu_{1}^{(m)}}{\sigma_{1}^{(m)}}, \quad
+z_{2,i}^{(m)} = \frac{x_{2,i}^{(m)} - \mu_{2}^{(m)}}{\sigma_{2}^{(m)}}
+$$
+
+where:
+
+-   $x_{k,i}^{(m)}$ is the value of attribute $m$ for gene $i$ in network $k$.
+
+-   $\mu_{k}^{(m)}$ and $\sigma_{k}^{(m)}$ are the mean and standard deviation of attribute $m$ in network $k$.
+
+2.  **Normalization within each network**
+
+For each attribute $m$, z-scores are normalized independently in each network by dividing by the maximum absolute z-score observed across all genes:
+
+$$
+\tilde{z}_{1,i}^{(m)} = \frac{z_{1,i}^{(m)}}{\max_j \left| z_{1,j}^{(m)} \right|}, \quad
+\tilde{z}_{2,i}^{(m)} = \frac{z_{2,i}^{(m)}}{\max_j \left| z_{2,j}^{(m)} \right|}
+$$
+
+This rescales the values so that, for each network and attribute:
+
+$$
+\tilde{z}_{k,i}^{(m)} \in [-1, 1]
+$$
+
+3.  **Difference between normalized z-scores**
+
+The final normalized difference for gene $i$, attribute $m$ and a given pair of networks is then computed as:
+
+$$
+\Delta z_{i}^{(m)} = \tilde{z}_{2,i}^{(m)} - \tilde{z}_{1,i}^{(m)}
+$$
+
+With this formulation:
+
+-   Genes with **positive values** ($\Delta z > 0$) have gained relative importance for a given attribute in network 2 compared to network 1.
+
+-   Genes with **negative values** ($\Delta z < 0$) have decreased in relative importance.
+
+-   The magnitude $|\Delta z|$ reflects the strength of the change in relative position within each network.
+
+This approach preserves both **directionality** and **magnitude of change**, while ensuring comparability across networks with potentially different distributions.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: diffs_long_pos
+#| code-fold: true
+#| warning: false
+
+datatable(na_diff_pos$diffs_long, rownames = FALSE, colnames = c(
+  "Gene ID", "Pair", "Attribute", "Value on net 2", "Value on net 1", "Difference", "Normalized z-score difference"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatSignif(columns = c("net_2", "net_1", "diff", "z_norm_diff"), digits = 3)
+```
+
+### Differences by gene and networks pair according to attribute
+
+In the interactive table below, we can see, for each gene, the difference between the values ​​of the respective attributes in the first positive network compared to those in the second. In some cases, missing values ​​appear because one or more values ​​associated with the attribute were missing from one or more of the networks.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: diffs_wide_pos
+#| code-fold: true
+#| warning: false
+
+datatable(na_diff_pos$diffs_wide, rownames = FALSE, colnames = c(
+  "Gene ID", "Pair", "Degree", "Strength", "Betweenness", "Coreness", "Clustering coefficient (C)",
+                       "Triangles", "Harmonic centrality", "Eigenvector centrality", "PageRank",
+                       "Average path length (L)"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatSignif(columns = c("Degree_diff", "Strength_diff", "Betweenness_diff", "Clustering_coefficient_diff", "Harmonic_centrality_diff", "Eigenvector_centrality_diff", "PageRank_diff", "Average_path_length_diff"), digits = 3)
+```
+
+### Magnitude of differences summary
+
+Across the three pairwise positive networks comparisons, the results reveal clear and consistent structural differences. It is important to note that not all descriptive statistics are computed over the same genes, which means that comparisons between attributes must account for this variability.
+
+Overall, the network pairs involving GBJ002 (GIL01–GBJ002 and GIL16–GBJ002) exhibit the largest absolute differences across most topological attributes. This trend is especially pronounced for measures linked to connectivity and node importance, such as strength, coreness and clustering coefficient. In these GBJ002-related comparisons, both the central tendency (mean and median absolute differences) and the measures of dispersion (SD, MAD, 95th percentile and maximum) are consistently higher. These results indicate substantial structural rewiring in the GBJ002 network relative to GIL01 and GIL16, affecting a wide range of genes.
+
+In contrast, the GIL16–GIL01 comparison systematically shows the smallest absolute differences across nearly all topological metrics. These two networks are markedly more similar to each other, with lower mean and median differences and reduced variability. This pattern strongly suggests that the overall architecture of GIL01 and GIL16 networks is much more alike than either is to GBJ002's.
+
+The most pronounced divergences arise in metrics describing local connectivity, particularly triangles and clustering coefficient. For the comparisons involving GBJ002 network, the absolute differences in triangles reach extremely high maximum values, highlighting substantial changes in the formation of tightly interconnected neighborhoods. Similarly, clustering coefficient shows wide upper-tail dispersion, reflecting large shifts in local node cohesion within the network.
+
+Path‑related attributes, including harmonic centrality and average path length, show moderate but consistent differences. Again, GBJ002 network diverges more strongly from the other two, while the GIL16–GIL01 comparison remains the most similar, reinforcing the broader pattern across metrics. Meanwhile, eigenvector centrality and PageRank tend to show smaller average differences, although the maximum values can still be high for a subset of topologically influential nodes. This suggests that, although global influence rankings remain mostly preserved, some key nodes behave differently across networks.
+
+Taken together, the results indicate that GBJ002 represents the most structurally distinct network, showing substantial changes across connectivity, centrality and clustering properties. By contrast, GIL01 and GIL16 are the most similar networks pair, with consistently smaller absolute differences across metrics. Although the number of genes varies across attributes, the overall trends remain robust: the topological organization of GBJ002 departs most strongly from the other networks, particularly in aspects related to local structure and node-level importance.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: summary_by_pair_attribute_pos
+#| code-fold: true
+#| warning: false
+
+datatable(na_diff_pos$summary_by_pair_attribute, rownames = FALSE, colnames = c(
+  "Pair", "Attribute", "Genes", "Mean absolute difference", "Median absolute difference", "SD absolute difference", "MAD absolute difference", "95th percentile absolute difference", "Maximum absolute difference"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatSignif(columns = c("mean_abs", "median_abs", "sd_abs", "mad_abs", "p95_abs", "max_abs"), digits = 6)
+```
+
+### Most variable genes
+
+In the interactive table below, different sums are shown to reflect how the attributes specified in the `ranking_attributes` argument vary across networks. The **Pair networks sum** column represents the sum of normalized differences for each gene across the selected attributes for a given pair of networks. This value captures both the magnitude and direction of change between those two networks. The **Sum regarding columns** extend this concept by aggregating the pairwise sums across multiple network comparisons. Specifically, for a given network, only those pairs in which that network participates are considered. As a result, these columns highlight genes whose attributes consistently differ when comparing one network against the others. For example, the **Sum regarding GBJ002** column includes only those network pairs that involve GBJ002. Therefore, it emphasizes genes whose attributes show strong deviations between networks containing GBJ002 and those that do not. This makes it particularly useful for identifying genes that exhibit pronounced differences in the presence versus absence of a tectivirus, which is the specific contrast captured by this column.
+
+Taking the above into account, the most variable genes regarding GBJ002 are:
+
+-   The first three whose sums are **highest** are de novo transcript 59 (GBJ002-DNT_059), NADH-quinone oxidoreductase subunit M (GBJ002_02486) and hypothetical protein (GBJ002_05065).
+
+-   The first three whose sums are **lowest** are glycosyltransferase 2-like domain-containing protein (GBJ002_02433), flagellar motor switch protein FliN-like C-terminal domain-containing protein (GBJ002_04432) and RND efflux pump membrane fusion protein barrel-sandwich domain-containing protein (GBJ002_01782).
+
+If we focus on the differences between GIL01 and GIL16 networks, the most variable genes are:
+
+-   The first three whose sums are **highest** are UPF0145 protein BCE_5284 (GBJ002_02376), proton/sodium-glutamate symport protein (GBJ002_02412) and major facilitator superfamily profile domain-containing protein (GBJ002_02656).
+
+-   The first three whose sums are **lowest** are winged helix DNA-binding domain protein (GBJ002_00399), alkyl hydroperoxide reductase subunit F (GBJ002_03138) and replicative DNA helicase (GBJ002_02711).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: sum_summary_pos
+#| code-fold: true
+
+datatable(na_diff_pos$sum_summary, rownames = FALSE,
+          colnames = c("Gene ID", "Pair", "Pair networks sum", "Sum regarding GBJ002", "Sum regarding GIL01", "Sum regarding GIL16"),
+          filter = "top", extensions = c("Buttons", "Scroller"), options = list(
+            autoWidth = TRUE,
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+          formatRound(columns = c("sum_pair", "sum_regarding_gbj002", "sum_regarding_gil01", "sum_regarding_gil16"), digits = 3)
+```
+
+## Negative networks
+
+### Distributions
+
+In the distributions of the per‑node attributes for the negative networks, all Friedman tests are significant. Kendall’s W shows moderate agreement for degree, strength, coreness and harmonic centrality and weak agreement for betweenness and eigenvector centrality. For PageRank and average path length, the Friedman tests are significant, but Kendall’s W indicates that concordance across networks is essentially absent, meaning that the statistical signal arises from the large sample size rather than from meaningful differences. These results suggest that degree, coreness and harmonic centrality capture structural features of the negative networks that are consistently recovered across methods, indicating that they may reflect stable and biologically meaningful patterns of negative gene coexpression.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: distributions_neg
+#| code-fold: true
+
+datatable(distributions_neg,
+          colnames = c(NULL, "Friedman p value", "Kendall's W", "GBJ002 vs GIL01", "GBJ002 vs GIL16", "GIL01 vs GIL16"),
+          rownames = c("Degree", "Strength", "Betweenness", "Coreness", "Harmonic centrality",
+                       "Eigenvector centrality", "PageRank", "Average path length (L)")) %>%
+          formatSignif(columns = c("Friedman_p_value", "GBJ002_vs_GIL01",
+                                   "GBJ002_vs_GIL16", "GIL01_vs_GIL16"), digits = 3) %>%
+          formatRound(columns = "Kendalls_W", digits = 3) %>%
+          formatStyle(columns = c("Friedman_p_value", "GBJ002_vs_GIL01",
+                                  "GBJ002_vs_GIL16", "GIL01_vs_GIL16"),
+                      backgroundColor = styleInterval(0.05, c("lightyellow", NA))) %>%
+          formatStyle(columns = "Kendalls_W",
+                      backgroundColor = styleInterval(c(0.1, 0.3, 0.5), c("white", "lightblue", "lightsalmon", "salmon")))
+```
+
+### Differences by gene, attribute and networks pair
+
+In the interactive table below, we can see, for each gene and its associated attributes in the positive networks, the difference between the attribute value in the first network compared to the second. Although it allows for a detailed view of the changes, it is recommended to view the relative changes in the table below, as this provides a clearer picture of the changes across all attributes. In contrast, this table is highly recommended for viewing the most variable genes as their attributes values increase or decrease from one network to another, so it is suggested to return to this table after viewing the `rank_summary` one, as it contains more details.
+
+In this table, the normalized z-score difference corresponds to the difference for each gene and attribute between networks. The use of this metric is explained in the same section for positive networks.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: diffs_long_neg
+#| code-fold: true
+#| warning: false
+
+datatable(na_diff_neg$diffs_long, rownames = FALSE, colnames = c(
+  "Gene ID", "Pair", "Attribute", "Value on net 2", "Value on net 1", "Difference", "Normalized z-score difference"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatSignif(columns = c("net_2", "net_1", "diff", "z_norm_diff"), digits = 3)
+```
+
+### Differences by gene and networks pair according to attribute
+
+In the interactive table below, we can see, for each gene, the difference between the values ​​of the respective attributes in the first positive network compared to those in the second. In some cases, missing values ​​appear because one or more values ​​associated with the attribute were missing from one or more of the networks.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: diffs_wide_neg
+#| code-fold: true
+#| warning: false
+
+datatable(na_diff_neg$diffs_wide, rownames = FALSE, colnames = c(
+  "Gene ID", "Pair", "Degree", "Strength", "Betweenness", "Coreness", "Harmonic centrality",
+  "Eigenvector centrality", "PageRank", "Average path length (L)"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatSignif(columns = c("Degree_diff", "Strength_diff", "Betweenness_diff", "Harmonic_centrality_diff", "Eigenvector_centrality_diff", "PageRank_diff", "Average_path_length_diff"), digits = 3)
+```
+
+### Magnitude of differences summary
+
+Across the three pairwise negative networks comparisons, the results reveal clear and consistent structural differences. It is important to note that not all descriptive statistics are computed over the same genes, which means that comparisons between attributes must account for this variability.
+
+Overall, the network pairs involving GBJ002 (GIL01–GBJ002 and GIL16–GBJ002) exhibit the largest absolute differences across most topological attributes. This trend is especially pronounced for measures linked to connectivity and node importance, such as degree, strength and coreness. In these GBJ002‑related comparisons, both the central tendency (mean and median absolute differences) and the measures of dispersion (SD, MAD, 95th percentile and maximum) are consistently higher. These results indicate substantial structural rewiring in the GBJ002 network relative to GIL01's and GIL16's, affecting a wide range of genes.
+
+In contrast, the GIL16–GIL01 comparison systematically shows the smallest absolute differences across nearly all topological metrics. These two networks are markedly more similar to each other, with lower mean and median differences and reduced variability. This pattern strongly suggests that the overall architecture of GIL01 and GIL16 networks is much more alike than either is to GBJ002's.
+
+The most pronounced divergences arise in metrics describing local and node‑level connectivity, particularly degree, strength and coreness, where the GBJ002 comparisons reach notably higher upper‑tail values. These elevated differences reflect substantial shifts in local structural cohesion and node roles within the GBJ002 network.
+
+Path‑related attributes, including harmonic centrality and average path length, show moderate but consistent differences. Again, the GBJ002 network diverges more strongly from the other two, while the GIL16–GIL01 comparison remains the most similar, reinforcing the broader pattern across metrics. Meanwhile, eigenvector centrality and PageRank tend to show smaller average differences, although the maximum values can still be high for a subset of topologically influential nodes. This suggests that, although global influence rankings remain mostly preserved, some key nodes behave differently across networks.
+
+Taken together, the results indicate that GBJ002 represents the most structurally distinct network, showing substantial changes across connectivity, centrality and path‑related properties. By contrast, GIL01 and GIL16 are the most similar networks pair, with consistently smaller absolute differences across metrics. Although the number of genes varies across attributes, the overall trends remain robust: the topological organization of GBJ002 departs most strongly from the other networks, particularly in aspects related to local structure and node‑level importance.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: summary_by_pair_attribute_neg
+#| code-fold: true
+#| warning: false
+
+datatable(na_diff_neg$summary_by_pair_attribute, rownames = FALSE, colnames = c(
+  "Pair", "Attribute", "Genes", "Mean absolute difference", "Median absolute difference", "SD absolute difference", "MAD absolute difference", "95th percentile absolute difference", "Maximum absolute difference"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatSignif(columns = c("mean_abs", "median_abs", "sd_abs", "mad_abs", "p95_abs", "max_abs"), digits = 3)
+```
+
+### Most variable genes
+
+In the interactive table below, different sums are shown to reflect how the attributes specified in the `ranking_attributes` argument vary across networks. The **Pair networks sum** column represents the sum of normalized differences for each gene across the selected attributes for a given pair of networks. This value captures both the magnitude and direction of change between those two networks. The **Sum regarding columns** extend this concept by aggregating the pairwise sums across multiple network comparisons. Specifically, for a given network, only those pairs in which that network participates are considered. As a result, these columns highlight genes whose attributes consistently differ when comparing one network against the others. For example, the **Sum regarding GBJ002** column includes only those network pairs that involve GBJ002. Therefore, it emphasizes genes whose attributes show strong deviations between networks containing GBJ002 and those that do not. This makes it particularly useful for identifying genes that exhibit pronounced differences in the presence versus absence of a tectivirus, which is the specific contrast captured by this column.
+
+Taking the above into account, the most variable genes regarding GBJ002 are:
+
+-   The first three whose sums are **highest** are thioredoxin (GBJ002_02552), DUF445 domain-containing protein (GBJ002_04503) and ATP-dependent RNA helicase DbpA (GBJ002_02667).
+
+-   The first three whose sums are **lowest** are BaiN-like insert domain-containing protein (GBJ002_01919), class II fumarate hydratase (GBJ002_04486) and phosphate butyryltransferase (GBJ002_01384).
+
+If we focus on the differences between GIL01 and GIL16 networks, the most variable genes are:
+
+-   The first three whose sums are **highest** are N-acetyltransferase domain-containing protein (GBJ002_00265), phosphoglycolate phosphatase (GBJ002_00174) and resolvase domain protein (GBJ002_02684).
+
+-   The first three whose sums are **lowest** are CobW C-terminal domain-containing protein (GBJ002_04721), GNAT family N-acetyltransferase (GBJ002_04783) and HTH merR-type domain-containing protein (GBJ002_04383).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: sum_summary_neg
+#| code-fold: true
+
+datatable(na_diff_neg$sum_summary, rownames = FALSE,
+          colnames = c("Gene ID", "Pair", "Pair networks sum", "Sum regarding GBJ002", "Sum regarding GIL01", "Sum regarding GIL16"),
+          filter = "top", extensions = c("Buttons", "Scroller"), options = list(
+            autoWidth = TRUE,
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+          formatRound(columns = c("sum_pair", "sum_regarding_gbj002", "sum_regarding_gil01", "sum_regarding_gil16"), digits = 3)
+```

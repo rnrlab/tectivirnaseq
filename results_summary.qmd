@@ -1,0 +1,1418 @@
+---
+title: Results summary
+---
+
+```{r}
+#| include: false
+
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("plotly")
+library("DT")
+library("stringr")
+library("patchwork")
+library("ggVennDiagram")
+library("htmltools")
+library("UpSetR")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+This page compiles the results of all the performed contrasts: in lysogeny, intra-lysogen time-course and inter-lysogen time-course.
+
+# Load data
+
+In this code chunk, we load the RDS objects and the annotation file.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_summaries
+#| code-fold: true
+
+load_summaries()
+
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+```
+
+# Lysogeny summaries
+
+This section presents the results of the lysogeny contrasts. The two bar charts show the total number of DE genes and the number of enrichments in each contrast. In addition, the enrichments in the COG and KEGG categories are represented in two bubble plots to facilitate comparison between contrasts. Finally, the interactive table compiles all the results from the **Enrichment summary** tables for each contrast.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: lysogeny_summaries
+#| code-fold: true
+
+lysogeny_contrasts <- combine_summaries(type = "contrast", group = "lysogen", filter = "Lysogeny")
+lysogeny_enrichments <- combine_summaries(type = "enrichment", group = "lysogen", filter = "Lysogeny")
+```
+
+## Barplots
+
+This plot shows the number of DE genes, both upregulated and downregulated, in each contrast. As we can see, the GIL01 vs GBJ002 contrast has the fewest DE genes, while the GIL16 vs GBJ002 contrast has the most.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: lysogeny_cs
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
+
+lysogeny_contrasts_size <- lysogeny_contrasts %>%
+  select(Contrast, DE, Size) %>%
+  mutate(
+    Contrast = factor(Contrast, levels = levels(lysogeny_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(lysogeny_contrasts$DE))
+  )
+
+ggplot(lysogeny_contrasts_size, aes(x = Contrast, y = Size, fill = DE)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.75, alpha = 0.7) +
+  geom_text(
+    aes(label = Size),
+    position = position_dodge(width = 0.8),
+    vjust = -0.4,
+    size = 4
+  ) +
+  scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
+  ylim(0, 600) +
+  theme_minimal(base_size = 14) +
+  labs(x = "Contrast", y = "DE genes", fill = "DE")
+```
+
+This plot shows the number of enrichments found in each category. Most enrichments are found in the MF and CC categories of GO, while the fewest are found in the EC numbers. Again, the GIL01 vs GBJ002 contrast has the fewest enrichments, while the GIL16 vs GBJ002 contrast has the most.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: lysogeny_ce
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
+
+lysogeny_contrasts_enrichments <- lysogeny_contrasts %>%
+  pivot_longer(
+    cols = !c(Group, Contrast, DE),
+    names_to = "Category",
+    values_to = "Count"
+  ) %>%
+  filter(Category != "Size") %>%
+  mutate(
+    Contrast = factor(Contrast, levels = levels(lysogeny_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(lysogeny_contrasts$DE)),
+    Category = factor(Category, levels = colnames(lysogeny_contrasts)[4:ncol(lysogeny_contrasts)])
+  )
+
+ggplot(lysogeny_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.75, alpha = 0.7) +
+  geom_text(
+    aes(label = ifelse(Count == 0, NA, Count)),
+    position = position_dodge(width = 0.8),
+    vjust = -0.4, size = 4
+  ) +
+  scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
+  scale_x_discrete(labels = c("COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)")) +
+  facet_wrap(~ Contrast, nrow = 3) +
+  scale_y_continuous(limits = c(0, 40), expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal(base_size = 14) +
+  theme(strip.text = element_text(face = "bold")) +
+  labs(x = "Enrichment category", y = "Enrichments", fill = "DE")
+```
+
+## Venn diagrams
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: venn_lysogeny
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
+
+venn_contrasts(group = "Lysogeny", de_genes = "UP", label_alpha = 0)
+venn_contrasts(group = "Lysogeny", de_genes = "DOWN", label_alpha = 0.25)
+```
+
+## Bubble plots
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: lysogeny_cog
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 6
+
+lysogeny_cog <- read.csv("lysogeny_cog.tsv", sep = "\t", header = TRUE)
+cog_names <- read.csv("cog_name.tsv", sep = "\t", header = TRUE)
+
+lysogeny_cog <- lysogeny_cog %>%
+  rename(Number = DE) %>%
+  mutate(
+    Group = Contrast,
+    DE = Direction,
+    COG_letter = str_extract(COG, "\\(([A-Z])\\)") %>% str_remove_all("[\\(\\)]"),
+    minus_log10_p = -log10(p)
+  )
+
+category_order <- cog_names %>%
+  filter(COG %in% lysogeny_cog$COG_letter) %>%
+  pull(COG)
+
+ordered_categories <- lysogeny_cog %>%
+  mutate(COG_letter = factor(COG_letter, levels = category_order)) %>%
+  arrange(desc(COG_letter)) %>%
+  distinct(COG) %>%
+  pull(COG)
+
+lysogeny_cog$COG <- factor(lysogeny_cog$COG, levels = ordered_categories)
+
+group_order <- lysogeny_cog$Group[!duplicated(lysogeny_cog$Group)]
+lysogeny_cog$Group <- factor(lysogeny_cog$Group, levels = group_order)
+
+lysogeny_cog <- lysogeny_cog %>%
+  mutate(
+    y_pos = as.numeric(COG) + ifelse(DE == "UP", 0.1, -0.1)
+  )
+
+line_data <- lysogeny_cog %>%
+  distinct(COG, DE)
+
+ggplot() +
+  geom_hline(
+    data = subset(line_data, DE == "UP"),
+    aes(yintercept = as.numeric(COG) + 0.1),
+    colour = "red",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_hline(
+    data = subset(line_data, DE == "DOWN"),
+    aes(yintercept = as.numeric(COG) - 0.1),
+    colour = "blue",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "UP"),
+    aes(x = 0.35, y = as.numeric(COG) + 0.1, label = "UP"),
+    colour = "red",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "DOWN"),
+    aes(x = 0.35, y = as.numeric(COG) - 0.1, label = "DOWN"),
+    colour = "blue",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_point(
+    data = lysogeny_cog,
+    aes(
+      x = Ratio,
+      y = y_pos,
+      size = Number,
+      fill = minus_log10_p,
+      shape = Group
+    )
+  ) +
+  scale_x_continuous(
+    limits = c(0, 0.35),
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  scale_y_continuous(
+    breaks = seq_along(levels(lysogeny_cog$COG)),
+    labels = levels(lysogeny_cog$COG)
+  ) +
+  scale_fill_viridis_c(limits = c(0, 20)) +
+  scale_size_continuous(
+    limits = c(1, 100),
+    breaks = c(0, 25, 50, 75, 100)
+  ) +
+  scale_shape_manual(
+    values = c(
+      "GIL01 vs GBJ002" = 21,
+      "GIL16 vs GBJ002" = 22,
+      "GIL16 vs GIL01" = 23
+    )
+  ) +
+  labs(
+    x = "Gene ratio",
+    y = "COG category",
+    size = "DE genes",
+    fill = expression(paste("Adjusted p value (", -log[10], ")")),
+    shape = "Contrast"
+  ) +
+  guides(
+    fill  = guide_colorbar(order = 1),
+    size  = guide_legend(order = 2),
+    shape = guide_legend(order = 3)
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: lysogeny_kegg
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 6
+
+lysogeny_kegg <- read.csv("lysogeny_kegg.tsv", sep = "\t", header = TRUE)
+btn_pathways <- read.csv("btn_pathways.tsv", sep = "\t", header = TRUE)
+
+lysogeny_kegg <- lysogeny_kegg %>%
+  rename(Number = DE) %>%
+  mutate(
+    Group = Contrast,
+    DE = Direction,
+    minus_log10_p = -log10(p)
+  )
+
+category_order <- btn_pathways %>%
+  pull(KEGG.pathway.maps)
+
+ordered_categories <- lysogeny_kegg %>%
+  mutate(KEGG = factor(KEGG, levels = category_order)) %>%
+  arrange(desc(KEGG)) %>%
+  distinct(KEGG) %>%
+  pull(KEGG)
+
+lysogeny_kegg$KEGG <- factor(lysogeny_kegg$KEGG, levels = ordered_categories)
+
+group_order <- lysogeny_kegg$Group[!duplicated(lysogeny_kegg$Group)]
+lysogeny_kegg$Group <- factor(lysogeny_kegg$Group, levels = group_order)
+
+lysogeny_kegg <- lysogeny_kegg %>%
+  mutate(
+    y_pos = as.numeric(KEGG) + ifelse(DE == "UP", 0.1, -0.1)
+  )
+
+line_data <- lysogeny_kegg %>%
+  distinct(KEGG, DE)
+
+ggplot() +
+  geom_hline(
+    data = subset(line_data, DE == "UP"),
+    aes(yintercept = as.numeric(KEGG) + 0.1),
+    colour = "red",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_hline(
+    data = subset(line_data, DE == "DOWN"),
+    aes(yintercept = as.numeric(KEGG) - 0.1),
+    colour = "blue",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "UP"),
+    aes(x = 0.75, y = as.numeric(KEGG) + 0.1, label = "UP"),
+    colour = "red",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "DOWN"),
+    aes(x = 0.75, y = as.numeric(KEGG) - 0.1, label = "DOWN"),
+    colour = "blue",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_point(
+    data = lysogeny_kegg,
+    aes(
+      x = Ratio,
+      y = y_pos,
+      size = Number,
+      fill = minus_log10_p,
+      shape = Group
+    )
+  ) +
+  scale_x_continuous(
+    limits = c(0, 0.75),
+    breaks = c(0, 0.25, 0.5, 0.75),
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  scale_y_continuous(
+    breaks = seq_along(levels(lysogeny_kegg$KEGG)),
+    labels = levels(lysogeny_kegg$KEGG)
+  ) +
+  scale_fill_viridis_c(limits = c(0, 15)) +
+  scale_size_continuous(
+    limits = c(1, 100),
+    breaks = c(0, 10, 20, 30, 40)
+  ) +
+  scale_shape_manual(
+    values = c(
+      "GIL01 vs GBJ002" = 21,
+      "GIL16 vs GBJ002" = 22,
+      "GIL16 vs GIL01" = 23
+    )
+  ) +
+  labs(
+    x = "Gene ratio",
+    y = "KEGG subcategories",
+    size = "DE genes",
+    fill = expression(paste("Adjusted p value (", -log[10], ")")),
+    shape = "Contrast"
+  ) +
+  guides(
+    fill  = guide_colorbar(order = 1),
+    size  = guide_legend(order = 2),
+    shape = guide_legend(order = 3)
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+## DE genes
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: lysogeny_de_genes
+#| code-fold: true
+
+lysogeny_de_genes <- create_de_genes_table(group = "lysogen", filter = "Lysogeny")
+
+colnames(lysogeny_de_genes) <- c("Gene ID", "Gene symbol", "Description", "GIL01 vs GBJ002", "GIL16 vs GBJ002", "GIL16 vs GIL01")
+
+max_abs <- ceiling(max(abs(lysogeny_de_genes[, 4:ncol(lysogeny_de_genes)]), na.rm = TRUE))
+brks <- seq(-max_abs, max_abs, length.out = 50)
+clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
+
+sketch <- withTags(table(
+  class = "display",
+  thead(
+    tr(
+      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Gene annotation"),
+      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Lysogeny contrasts")
+    ),
+    tr(
+      lapply(colnames(lysogeny_de_genes),
+             function(x) th(style = "text-align: center;", x))
+    )
+  )
+))
+
+datatable(lysogeny_de_genes, container = sketch, rownames = FALSE,
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 1),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+  formatRound(columns = c(4:6), digits = 2) %>%
+  formatStyle(columns = c(4:6), backgroundColor = styleInterval(brks, clrs)) %>%
+  formatStyle(columns = c(1, 2, 4:ncol(lysogeny_de_genes)), `text-align` = "center")
+```
+
+## Enrichments summary
+
+This table contains a summary of the enrichments for each category and contrast. The subcategory was used for KEGG and the description for GO. Although you can scroll, I recommend exporting using the Excel button and viewing the table in full screen.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: lysogeny_es
+#| code-fold: true
+
+datatable(lysogeny_enrichments, rownames = FALSE, colnames = c("Group", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            autoWidth = TRUE,
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 3),
+            scrollX = TRUE,
+            scroller = TRUE,
+            deferRender = TRUE))
+```
+
+# Intra-lysogen time-course summaries
+
+This section presents the results of the intra-lysogen time-course contrasts. The two bar charts show the total number of DE genes and the number of enrichments in each contrast per lysogen. In addition, the enrichments in the COG and KEGG categories are represented in two bubble plots to facilitate comparison between contrasts. Finally, the interactive table compiles all the results from the **Enrichment summary** tables for each contrast.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: intra_lysogen_time_course_summaries
+#| code-fold: true
+
+intra_lysogen_time_course_contrasts <- combine_summaries(type = "contrast", group = "time")
+intra_lysogen_time_course_enrichments <- combine_summaries(type = "enrichment", group = "time")
+```
+
+## Barplots
+
+This plot shows the number of DE genes, both upregulated and downregulated, in each contrast per lysogen. As we can see, there doesn't appear to be a difference in the number of DE genes according to the lysogen. This is because three independent models (i.e. three DESeq2 objects) were constructed for each set of contrasts, reflecting that the contrasts with fewer DE genes are those from early time points (0 and 10 minutes), while those performed with late time points (60 or 60-mock) show a large number of DE genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: intra_lysogen_time_course_cs
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 8
+
+intra_lysogen_time_course_contrasts_size <- intra_lysogen_time_course_contrasts %>%
+  select(Group, Contrast, DE, Size) %>%
+  mutate(
+    Group = factor(Group, levels = levels(intra_lysogen_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(intra_lysogen_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(intra_lysogen_time_course_contrasts$DE))
+  )
+
+ggplot(intra_lysogen_time_course_contrasts_size, aes(x = Contrast, y = Size, fill = DE)) +
+  geom_col(position = position_dodge(width = 0.8),
+           width = 0.75, alpha = 0.7) +
+  geom_text(
+    aes(label = Size),
+    position = position_dodge(width = 0.8),
+    vjust = -0.4,
+    size = 4
+  ) +
+  scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
+  facet_wrap(~ Group, ncol = 1) +
+  ylim(0, 800) +
+  theme_minimal(base_size = 14) +
+  theme(strip.text = element_text(face = "bold")) +
+  labs(x = "Contrast", y = "DE genes", fill = "DE")
+```
+
+This plot shows the number of enrichments found in each category. Most enrichments are found in the BP GO category, unlike what happened in lysogeny, which were mainly found in MF and CC. In this plot, the contrasts between GBJ002 times show less enrichments than with GIL01 or GIL16, which would reflect the differences found in gene expression throughout MMC induction (even without induction) when any of these tectiviruses are present.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: intra_lysogen_time_course_ce
+#| code-fold: true
+#| warning: false
+#| fig-width: 16
+#| fig-height: 10
+
+intra_lysogen_time_course_contrasts_enrichments <- intra_lysogen_time_course_contrasts %>%
+  pivot_longer(
+    cols = !c(Group, Contrast, DE, Size),
+    names_to = "Category",
+    values_to = "Count"
+  ) %>%
+  filter(Category != "Size") %>%
+  mutate(
+    Group = factor(Group, levels = levels(intra_lysogen_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(intra_lysogen_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(intra_lysogen_time_course_contrasts$DE)),
+    Category = factor(Category, levels = colnames(intra_lysogen_time_course_contrasts)[4:ncol(intra_lysogen_time_course_contrasts)][colnames(intra_lysogen_time_course_contrasts)[4:ncol(intra_lysogen_time_course_contrasts)] != "Size"])
+  )
+
+ggplot(intra_lysogen_time_course_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.75, alpha = 0.7) +
+  geom_text(
+    aes(label = ifelse(Count == 0, NA, Count)),
+    position = position_dodge(width = 0.8),
+    vjust = -0.4, size = 4
+  ) +
+  scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
+  scale_x_discrete(labels = c("COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)")) +
+  facet_grid(Group ~ Contrast) +
+  scale_y_continuous(limits = c(0, 70), expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal(base_size = 14) +
+  theme(
+    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  ) +
+  labs(x = "Enrichment category", y = "Enrichments", fill = "DE")
+```
+
+## Upset plots
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: upset_intra
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
+
+upset_contrasts(group = "GBJ002", de_genes = "UP", order = c(
+  "Times 10 vs 0",
+  "Times 30 vs 0",
+  "Times 60 vs 0",
+  "Times 60 vs 60-mock",
+  "Times 60-mock vs 0"
+))
+
+upset_contrasts(group = "GBJ002", de_genes = "DOWN", order = c(
+  "Times 10 vs 0",
+  "Times 30 vs 0",
+  "Times 60 vs 0",
+  "Times 60 vs 60-mock",
+  "Times 60-mock vs 0"
+))
+
+upset_contrasts(group = "GIL01", de_genes = "UP", order = c(
+  "Times 10 vs 0",
+  "Times 30 vs 0",
+  "Times 60 vs 0",
+  "Times 60 vs 60-mock",
+  "Times 60-mock vs 0"
+))
+
+upset_contrasts(group = "GIL01", de_genes = "DOWN", order = c(
+  "Times 10 vs 0",
+  "Times 30 vs 0",
+  "Times 60 vs 0",
+  "Times 60 vs 60-mock",
+  "Times 60-mock vs 0"
+))
+
+upset_contrasts(group = "GIL16", de_genes = "UP", order = c(
+  "Times 10 vs 0",
+  "Times 30 vs 0",
+  "Times 60 vs 0",
+  "Times 60 vs 60-mock",
+  "Times 60-mock vs 0"
+))
+
+upset_contrasts(group = "GIL16", de_genes = "DOWN", order = c(
+  "Times 10 vs 0",
+  "Times 30 vs 0",
+  "Times 60 vs 0",
+  "Times 60 vs 60-mock",
+  "Times 60-mock vs 0"
+))
+```
+
+## Bubble plots
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: intra_cog
+#| code-fold: true
+#| fig-width: 14
+#| fig-height: 6
+
+intra_cog <- read.csv("intra_cog.tsv", sep = "\t", header = TRUE)
+
+intra_cog <- intra_cog %>%
+  rename(Number = DE) %>%
+  mutate(
+    Group = Contrast,
+    DE = Direction,
+    COG_letter = str_extract(COG, "\\(([A-Z])\\)") %>% str_remove_all("[\\(\\)]"),
+    minus_log10_p = -log10(p)
+  )
+
+category_order <- cog_names %>%
+  filter(COG %in% intra_cog$COG_letter) %>%
+  pull(COG)
+
+ordered_categories <- intra_cog %>%
+  mutate(COG_letter = factor(COG_letter, levels = category_order)) %>%
+  arrange(desc(COG_letter)) %>%
+  distinct(COG) %>%
+  pull(COG)
+
+intra_cog$COG <- factor(intra_cog$COG, levels = ordered_categories)
+
+group_order <- intra_cog$Group[!duplicated(intra_cog$Group)]
+intra_cog$Group <- factor(intra_cog$Group, levels = group_order)
+
+intra_cog <- intra_cog %>%
+  mutate(
+    y_pos = as.numeric(COG) +
+      ifelse(
+        DE == "UP",
+        runif(n(), 0.15, 0.35),
+        runif(n(), -0.35, -0.15)
+      )
+  )
+
+line_data <- intra_cog %>%
+  distinct(COG, DE, Lysogen)
+
+ggplot() +
+  geom_hline(
+    data = subset(line_data, DE == "UP"),
+    aes(yintercept = as.numeric(COG) + 0.25),
+    colour = "red",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_hline(
+    data = subset(line_data, DE == "DOWN"),
+    aes(yintercept = as.numeric(COG) - 0.25),
+    colour = "blue",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "UP"),
+    aes(x = 1, y = as.numeric(COG) + 0.25, label = "UP"),
+    colour = "red",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "DOWN"),
+    aes(x = 1, y = as.numeric(COG) - 0.25, label = "DOWN"),
+    colour = "blue",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_point(
+    data = intra_cog,
+    aes(
+      x = Ratio,
+      y = y_pos,
+      size = Number,
+      fill = minus_log10_p,
+      shape = Group
+    )
+  ) +
+  facet_wrap(~ Lysogen) +
+  scale_x_continuous(
+    limits = c(0, 1),
+    breaks = c(0, 0.25, 0.5, 0.75, 1),
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  scale_y_continuous(
+    breaks = seq_along(levels(intra_cog$COG)),
+    labels = levels(intra_cog$COG)
+  ) +
+  scale_fill_viridis_c(limits = c(0, 10)) +
+  scale_size_continuous(
+    limits = c(1, 70),
+    breaks = c(0, 10, 25, 50, 70)
+  ) +
+  scale_shape_manual(
+    values = c(
+      "Time 10 vs 0"       = 21,
+      "Time 30 vs 0"       = 22,
+      "Time 60 vs 0"       = 23,
+      "Time 60 vs 60-mock" = 24,
+      "Time 60-mock vs 0"  = 25
+    )
+  ) +
+  labs(
+    x = "Gene ratio",
+    y = "COG category",
+    size = "DE genes",
+    fill = expression(paste("Adjusted p value (", -log[10], ")")),
+    shape = "Contrast"
+  ) +
+  guides(
+    fill  = guide_colorbar(order = 1),
+    size  = guide_legend(order = 2),
+    shape = guide_legend(order = 3)
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: intra_kegg
+#| code-fold: true
+#| fig-width: 14
+#| fig-height: 6
+
+intra_kegg <- read.csv("intra_kegg.tsv", sep = "\t", header = TRUE)
+
+intra_kegg <- intra_kegg %>%
+  rename(Number = DE) %>%
+  mutate(
+    Group = Contrast,
+    DE = Direction,
+    minus_log10_p = -log10(p)
+  )
+
+category_order <- btn_pathways %>%
+  pull(KEGG.pathway.maps)
+
+ordered_categories <- intra_kegg %>%
+  mutate(KEGG = factor(KEGG, levels = category_order)) %>%
+  arrange(desc(KEGG)) %>%
+  distinct(KEGG) %>%
+  pull(KEGG)
+
+intra_kegg$KEGG <- factor(intra_kegg$KEGG, levels = ordered_categories)
+
+group_order <- intra_kegg$Group[!duplicated(intra_kegg$Group)]
+intra_kegg$Group <- factor(intra_kegg$Group, levels = group_order)
+
+intra_kegg <- intra_kegg %>%
+  mutate(
+    y_pos = as.numeric(KEGG) +
+      ifelse(
+        DE == "UP",
+        runif(n(), 0.15, 0.35),
+        runif(n(), -0.35, -0.15)
+      )
+  )
+
+line_data <- intra_kegg %>%
+  distinct(KEGG, DE, Lysogen)
+
+ggplot() +
+  geom_hline(
+    data = subset(line_data, DE == "UP"),
+    aes(yintercept = as.numeric(KEGG) + 0.25),
+    colour = "red",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_hline(
+    data = subset(line_data, DE == "DOWN"),
+    aes(yintercept = as.numeric(KEGG) - 0.25),
+    colour = "blue",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "UP"),
+    aes(x = 1, y = as.numeric(KEGG) + 0.25, label = "UP"),
+    colour = "red",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "DOWN"),
+    aes(x = 1, y = as.numeric(KEGG) - 0.25, label = "DOWN"),
+    colour = "blue",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_point(
+    data = intra_kegg,
+    aes(
+      x = Ratio,
+      y = y_pos,
+      size = Number,
+      fill = minus_log10_p,
+      shape = Group
+    )
+  ) +
+  facet_wrap(~ Lysogen) +
+  scale_x_continuous(
+    limits = c(0, 1),
+    breaks = c(0, 0.25, 0.5, 0.75, 1),
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  scale_y_continuous(
+    breaks = seq_along(levels(intra_kegg$KEGG)),
+    labels = levels(intra_kegg$KEGG)
+  ) +
+  scale_fill_viridis_c(limits = c(0, 10)) +
+  scale_size_continuous(
+    limits = c(1, 70),
+    breaks = c(0, 10, 25, 50, 70)
+  ) +
+  scale_shape_manual(
+    values = c(
+      "Time 10 vs 0"       = 21,
+      "Time 30 vs 0"       = 22,
+      "Time 60 vs 0"       = 23,
+      "Time 60 vs 60-mock" = 24,
+      "Time 60-mock vs 0"  = 25
+    )
+  ) +
+  labs(
+    x = "Gene ratio",
+    y = "KEGG subcategories",
+    size = "DE genes",
+    fill = expression(paste("Adjusted p value (", -log[10], ")")),
+    shape = "Contrast"
+  ) +
+  guides(
+    fill  = guide_colorbar(order = 1),
+    size  = guide_legend(order = 2),
+    shape = guide_legend(order = 3)
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+## DE genes
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: intra_de_genes
+#| code-fold: true
+
+intra_de_genes <- create_de_genes_table(group = "time")
+
+colnames(intra_de_genes)[1:2] <- c("Gene ID", "Gene symbol")
+
+max_abs <- ceiling(max(abs(intra_de_genes[, 4:ncol(intra_de_genes)]), na.rm = TRUE))
+brks <- seq(-max_abs, max_abs, length.out = 50)
+clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
+
+lfc_cols <- colnames(intra_de_genes)[4:ncol(intra_de_genes)]
+groups <- sub(" - .*", "", lfc_cols)
+group_levels <- c("GBJ002", "GIL01", "GIL16")
+group_counts <- sapply(group_levels, function(g) sum(groups == g))
+second_row <- c(colnames(intra_de_genes)[1:3], sub(".* - ", "", lfc_cols))
+
+sketch <- withTags(table(
+  class = "display",
+  thead(
+    tr(
+      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Gene annotation"),
+      lapply(seq_along(group_levels), function(i)
+        th(colspan = group_counts[i], style = "text-align: center; font-weight: bold;", group_levels[i])
+      )
+    ),
+    tr(
+      lapply(second_row, function(x) th(style = "text-align: center;", x))
+    )
+  )
+))
+
+datatable(intra_de_genes, container = sketch, rownames = FALSE,
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 1),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+  formatRound(columns = 4:ncol(intra_de_genes), digits = 2) %>%
+  formatStyle(columns = 4:ncol(intra_de_genes), backgroundColor = styleInterval(brks, clrs)) %>%
+  formatStyle(columns = c(1, 2, 4:ncol(intra_de_genes)), `text-align` = "center")
+```
+
+## Enrichments summary
+
+This table contains a summary of the enrichments for each category, contrast and lysogen. The subcategory was used for KEGG and the description for GO. Although you can scroll, I recommend exporting using the Excel button and viewing the table in full screen.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: intra_lysogen_time_course_es
+#| code-fold: true
+
+datatable(intra_lysogen_time_course_enrichments, rownames = FALSE, colnames = c("Lysogen", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            autoWidth = TRUE,
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 3),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE))
+```
+
+# Inter-lysogen time-course summaries
+
+This section presents the results of the inter-lysogen time-course contrasts. The two bar charts show the total number of DE genes and the number of enrichments in each contrast per lysogen. In addition, the enrichments in the COG and KEGG categories are represented in two bubble plots to facilitate comparison between contrasts. Finally, the interactive table compiles all the results from the **Enrichment summary** tables for each contrast.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_lysogen_time_course_summaries
+#| code-fold: true
+
+inter_lysogen_time_course_contrasts <- combine_summaries(type = "contrast", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
+inter_lysogen_time_course_enrichments <- combine_summaries(type = "enrichment", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
+```
+
+## Barplots
+
+This plot shows the number of DE genes, both upregulated and downregulated, in each time per lysogens contrasts. As we can see, the highest number of DE genes are obtained at late time points, and especially in the contrasts of GBJ002 vs GIL01 and GIL16. This is because a combined model was used for all contrasts (i.e. a single DESeq2 object), reflecting that, considering both time and lysogen, the greatest transcriptional changes are found at late time points.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_lysogen_time_course_cs
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 8
+
+inter_lysogen_time_course_contrasts_size <- inter_lysogen_time_course_contrasts %>%
+  select(Group, Contrast, DE, Size) %>%
+  mutate(
+    Group = factor(Group, levels = levels(inter_lysogen_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(inter_lysogen_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(inter_lysogen_time_course_contrasts$DE))
+  )
+
+ggplot(inter_lysogen_time_course_contrasts_size, aes(x = Group, y = Size, fill = DE)) +
+  geom_col(position = position_dodge(width = 0.8),
+           width = 0.75, alpha = 0.7) +
+  geom_text(
+    aes(label = Size),
+    position = position_dodge(width = 0.8),
+    vjust = -0.4,
+    size = 4
+  ) +
+  scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
+  facet_wrap(~ Contrast, ncol = 1) +
+  ylim(0, 700) +
+  theme_minimal(base_size = 14) +
+  theme(strip.text = element_text(face = "bold")) +
+  labs(x = "Time", y = "DE genes", fill = "DE")
+```
+
+This plot shows the number of enrichments found in each category. Most enrichments, as in the previous plot, are found at late times in the contrasts of GBJ002 vs GIL01 and GIL16. In contrast, the differences between both lysogens with tectivirus, although they exist, are minimal and are only found at the 30 and 60-mock times.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_lysogen_time_course_ce
+#| code-fold: true
+#| warning: false
+#| fig-width: 16
+#| fig-height: 10
+
+inter_lysogen_time_course_contrasts_enrichments <- inter_lysogen_time_course_contrasts %>%
+  pivot_longer(
+    cols = !c(Group, Contrast, DE, Size),
+    names_to = "Category",
+    values_to = "Count"
+  ) %>%
+  filter(Category != "Size") %>%
+  mutate(
+    Group = factor(Group, levels = levels(inter_lysogen_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(inter_lysogen_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(inter_lysogen_time_course_contrasts$DE)),
+    Category = factor(Category, levels = colnames(inter_lysogen_time_course_contrasts)[4:ncol(inter_lysogen_time_course_contrasts)][colnames(inter_lysogen_time_course_contrasts)[4:ncol(inter_lysogen_time_course_contrasts)] != "Size"])
+  )
+
+ggplot(inter_lysogen_time_course_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.75, alpha = 0.7) +
+  geom_text(
+    aes(label = ifelse(Count == 0, NA, Count)),
+    position = position_dodge(width = 0.8),
+    vjust = -0.4, size = 4
+  ) +
+  scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
+  scale_x_discrete(labels = c("COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)")) +
+  facet_grid(Contrast ~ Group) +
+  scale_y_continuous(limits = c(0, 60), expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal(base_size = 14) +
+  theme(
+    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  ) +
+  labs(x = "Enrichment category", y = "Enrichments", fill = "DE")
+```
+
+## Upset plots
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: upset_inter
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
+
+upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "UP", order = c(
+  "Time 30 - GIL01 vs GBJ002",
+  "Time 30 - GIL16 vs GBJ002",
+  "Time 30 - GIL16 vs GIL01",
+  "Time 60 - GIL01 vs GBJ002",
+  "Time 60 - GIL16 vs GBJ002",
+  "Time 60 - GIL16 vs GIL01",
+  "Time 60-mock - GIL01 vs GBJ002",
+  "Time 60-mock - GIL16 vs GBJ002",
+  "Time 60-mock - GIL16 vs GIL01"
+))
+
+upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "DOWN", order = c(
+  "Time 30 - GIL01 vs GBJ002",
+  "Time 30 - GIL16 vs GBJ002",
+  "Time 30 - GIL16 vs GIL01",
+  "Time 60 - GIL01 vs GBJ002",
+  "Time 60 - GIL16 vs GBJ002",
+  "Time 60 - GIL16 vs GIL01",
+  "Time 60-mock - GIL01 vs GBJ002",
+  "Time 60-mock - GIL16 vs GBJ002",
+  "Time 60-mock - GIL16 vs GIL01"
+))
+```
+
+## Bubble plots
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_cog
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 6
+
+inter_cog <- read.csv("inter_cog.tsv", sep = "\t", header = TRUE)
+
+inter_cog <- inter_cog %>%
+  rename(Number = DE) %>%
+  mutate(
+    DE = Direction,
+    Group = paste0(gsub(" ", "_", Contrast), "_", Time),
+    COG_letter = str_extract(COG, "\\(([A-Z])\\)") %>% str_remove_all("[\\(\\)]"),
+    minus_log10_p = -log10(p)
+  )
+
+category_order <- cog_names %>%
+  filter(COG %in% inter_cog$COG_letter) %>%
+  pull(COG)
+
+ordered_categories <- inter_cog %>%
+  mutate(COG_letter = factor(COG_letter, levels = category_order)) %>%
+  arrange(desc(COG_letter)) %>%
+  distinct(COG) %>%
+  pull(COG)
+
+inter_cog$COG <- factor(inter_cog$COG, levels = ordered_categories)
+
+group_order <- inter_cog$Group[!duplicated(inter_cog$Group)]
+inter_cog$Group <- factor(inter_cog$Group, levels = group_order)
+
+inter_cog <- inter_cog %>%
+  mutate(
+    y_pos = as.numeric(COG) + ifelse(DE == "UP", 0.1, -0.1)
+  )
+
+line_data <- inter_cog %>%
+  distinct(COG, DE, y_pos)
+
+ggplot() +
+  geom_hline(
+    data = subset(line_data, DE == "UP"),
+    aes(yintercept = y_pos),
+    colour = "red",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_hline(
+    data = subset(line_data, DE == "DOWN"),
+    aes(yintercept = y_pos),
+    colour = "blue",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "UP"),
+    aes(x = 0.2, y = y_pos, label = "UP"),
+    colour = "red",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "DOWN"),
+    aes(x = 0.2, y = y_pos, label = "DOWN"),
+    colour = "blue",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_point(
+    data = inter_cog,
+    aes(
+      x = Ratio,
+      y = y_pos,
+      size = Number,
+      fill = minus_log10_p,
+      colour = minus_log10_p,
+      shape = Group
+    )
+  ) +
+  scale_x_continuous(limits = c(0, 0.2), expand = expansion(mult = c(0, 0.15))) +
+  scale_y_continuous(
+    breaks = seq_along(levels(inter_cog$COG)),
+    labels = levels(inter_cog$COG)
+  ) +
+  scale_fill_viridis_c(limits = c(0, 20)) +
+  scale_colour_viridis_c(limits = c(0, 20), guide = "none") +
+  scale_size_continuous(limits = c(1, 50), breaks = c(0, 10, 20, 30, 40, 50)) +
+  scale_shape_manual(values = c(21, 12, 22, 23, 24, 25)) +
+  labs(
+    x = "Gene ratio",
+    y = "COG category",
+    size = "DE genes",
+    fill = expression(paste("Adjusted p value (", -log[10], ")")),
+    shape = "Contrast"
+  ) +
+  guides(
+    fill  = guide_colorbar(order = 1),
+    size  = guide_legend(order = 2),
+    shape = guide_legend(order = 3)
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_kegg
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 6
+
+inter_kegg <- read.csv("inter_kegg.tsv", sep = "\t", header = TRUE)
+
+inter_kegg <- inter_kegg %>%
+  rename(Number = DE) %>%
+  mutate(
+    DE = Direction,
+    Group = paste0(gsub(" ", "_", Contrast), "_", Time),
+    minus_log10_p = -log10(p)
+  )
+
+category_order <- btn_pathways %>%
+  pull(KEGG.pathway.maps)
+
+ordered_categories <- inter_kegg %>%
+  mutate(KEGG = factor(KEGG, levels = category_order)) %>%
+  arrange(desc(KEGG)) %>%
+  distinct(KEGG) %>%
+  pull(KEGG)
+
+inter_kegg$KEGG <- factor(inter_kegg$KEGG, levels = ordered_categories)
+
+group_order <- inter_kegg$Group[!duplicated(inter_kegg$Group)]
+inter_kegg$Group <- factor(inter_kegg$Group, levels = group_order)
+
+inter_kegg <- inter_kegg %>%
+  mutate(
+    y_pos = as.numeric(KEGG) + ifelse(DE == "UP", 0.1, -0.1)
+  )
+
+line_data <- inter_kegg %>%
+  distinct(KEGG, DE, y_pos)
+
+ggplot() +
+  geom_hline(
+    data = subset(line_data, DE == "UP"),
+    aes(yintercept = y_pos),
+    colour = "red",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_hline(
+    data = subset(line_data, DE == "DOWN"),
+    aes(yintercept = y_pos),
+    colour = "blue",
+    linetype = "dashed",
+    linewidth = 0.75,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "UP"),
+    aes(x = 0.6, y = y_pos, label = "UP"),
+    colour = "red",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_text(
+    data = subset(line_data, DE == "DOWN"),
+    aes(x = 0.6, y = y_pos, label = "DOWN"),
+    colour = "blue",
+    vjust = -0.25,
+    fontface = "bold",
+    size = 3,
+    alpha = 0.5
+  ) +
+  geom_point(
+    data = inter_kegg,
+    aes(
+      x = Ratio,
+      y = y_pos,
+      size = Number,
+      fill = minus_log10_p,
+      colour = minus_log10_p,
+      shape = Group
+    )
+  ) +
+  scale_x_continuous(limits = c(0, 0.6), expand = expansion(mult = c(0, 0.15))) +
+  scale_y_continuous(
+    breaks = seq_along(levels(inter_kegg$KEGG)),
+    labels = levels(inter_kegg$KEGG)
+  ) +
+  scale_fill_viridis_c(limits = c(0, 31)) +
+  scale_colour_viridis_c(limits = c(0, 31), guide = "none") +
+  scale_size_continuous(limits = c(1, 50), breaks = c(0, 5, 10, 20, 30)) +
+  scale_shape_manual(values = c(12, 21, 22, 23, 8, 24, 25)) +
+  labs(
+    x = "Gene ratio",
+    y = "KEGG subcategories",
+    size = "DE genes",
+    fill = expression(paste("Adjusted p value (", -log[10], ")")),
+    shape = "Contrast"
+  ) +
+  guides(
+    fill  = guide_colorbar(order = 1),
+    size  = guide_legend(order = 2),
+    shape = guide_legend(order = 3)
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+## DE genes
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_de_genes
+#| code-fold: true
+
+inter_de_genes <- create_de_genes_table(group = "lysogen", filter = c("t0", "t30", "t60", "t60-mock"))
+
+colnames(inter_de_genes)[1:2] <- c("Gene ID", "Gene symbol")
+
+max_abs <- ceiling(max(abs(inter_de_genes[, 4:ncol(inter_de_genes)]), na.rm = TRUE))
+brks <- seq(-max_abs, max_abs, length.out = 50)
+clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
+
+lfc_cols <- colnames(inter_de_genes)[4:ncol(inter_de_genes)]
+groups <- sub(" - .*", "", lfc_cols)
+group_levels <- c("t0", "t30", "t60", "t60-mock")
+group_labels <- c("Time 0", "Time 30", "Time 60", "Time 60-mock")
+group_counts <- sapply(group_levels, function(g) sum(groups == g))
+second_row <- c(colnames(inter_de_genes)[1:3], sub(".* - ", "", lfc_cols))
+
+sketch <- withTags(table(
+  class = "display",
+  thead(
+    tr(
+      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Gene annotation"),
+      lapply(seq_along(group_levels), function(i)
+        th(colspan = group_counts[i], style = "text-align: center; font-weight: bold;", group_labels[i])
+      )
+    ),
+    tr(
+      lapply(second_row, function(x) th(style = "text-align: center;", x))
+    )
+  )
+))
+
+datatable(inter_de_genes, container = sketch, rownames = FALSE,
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 1),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+  formatRound(columns = 4:ncol(inter_de_genes), digits = 2) %>%
+  formatStyle(columns = 4:ncol(inter_de_genes), backgroundColor = styleInterval(brks, clrs)) %>%
+  formatStyle(columns = c(1, 2, 4:ncol(inter_de_genes)), `text-align` = "center")
+```
+
+## Enrichments summary
+
+This table contains a summary of the enrichments for each category, contrast and time. The subcategory was used for KEGG and the description for GO. Although you can scroll, I recommend exporting using the Excel button and viewing the table in full screen.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_lysogen_time_course_es
+#| code-fold: true
+
+datatable(inter_lysogen_time_course_enrichments, rownames = FALSE, colnames = c("Time", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            autoWidth = TRUE,
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 3),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE))
+```

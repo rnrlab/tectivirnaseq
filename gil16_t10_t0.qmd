@@ -1,0 +1,359 @@
+---
+title: Times 10 vs 0 contrast
+---
+
+```{r}
+#| include: false
+
+library("DESeq2")
+library("clusterProfiler")
+library("org.Bthuringiensis.eg.db")
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("plotly")
+library("DT")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+```{r}
+#| include: false
+
+counts <- readRDS(file = "lytic_cycle_induction_gil16_counts.rds")
+metadata <- readRDS(file = "lytic_cycle_induction_gil16_metadata.rds")
+all_genes <- readRDS(file = "lytic_cycle_induction_gil16_all_genes.rds")
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time)
+
+dds <- DESeq(dds)
+```
+
+In order to perform the times 10 vs 0 contrast, we established a log₂ fold-change (LFC) threshold of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: contrast
+#| code-fold: true
+
+contrast <- results(dds, contrast = c("Time", 10, 0), lfcThreshold = log2(1.5))
+contrast_df <- as.data.frame(contrast)
+
+contrast_df <- contrast_df %>%
+  { x <- .; x$Gene_ID <- rownames(x); x } %>%
+  left_join(
+    annotation %>%
+      filter(Gene_ID %in% rownames(contrast_df)) %>%
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG_category, Association, Type, Subtype, Source),
+    by = "Gene_ID"
+  ) %>%
+  rename(
+    Mean_normalized_counts = baseMean,
+    LFC = log2FoldChange,
+    Adjusted_p_value = padj
+  ) %>%
+  dplyr::select(
+    Gene_ID,
+    Gene_symbol,
+    Description,
+    COG_category,
+    Association,
+    Type,
+    Subtype,
+    Source,
+    Mean_normalized_counts,
+    LFC,
+    Adjusted_p_value
+  )
+```
+
+As can be seen in the `summary()` results, only 17 upregulated genes were obtained. In addition, 779 genes were discarded due to low counts, probably because they are expressed in latter times or in the absence of GIL16. Below is an interactive table where all DE genes can be viewed individually.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: general_results
+#| code-fold: true
+
+summary(contrast, alpha = 0.05)
+
+datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 2, rightColumns = 2),
+            scrollX = TRUE,
+            scrollY = 400,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+  formatRound(columns = c("Mean_normalized_counts", "LFC"), digits = 2) %>%
+  formatSignif(columns = "Adjusted_p_value", digits = 3)
+```
+
+# MA plot
+
+A MA plot visualizes the relationship between the mean expression and the LFC for each gene. It helps to identify genes that are differentially expressed across conditions, highlighting those with large fold changes relative to their expression level.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: ma_plot
+#| code-fold: true
+#| message: false
+
+plotMA(contrast, alpha = 0.05, xlab = "Mean of normalized counts", ylab = "LFC")
+```
+
+# DE genes
+
+DE genes are defined as those with an adjusted p-value below 0.05. Among them, upregulated genes are extracted as those with a LFC > 0.58, while downregulated genes are defined as those with an LFC < -0.58.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: de_genes
+#| code-fold: true
+
+up_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange > log2(1.5) & !is.na(padj)))
+```
+
+# Volcano plot
+
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Although relatively few DE genes are observed, the top two genes with higer LFC are the same that in the analog GIL01 contrast: GBJ002_04258 (DUF3961 domain-containing protein) and GBJ002_04259 (N-acetylmuramoyl-L-alanine amidase) genes. Besides, there are 5 upregulated pBtic235 genes: GBJ002_05237 (hypothetical protein), GBJ002_05238 (hypothetical protein), GBJ002_05239 (nucleoside 2-deoxyribosyltransferase), GBJ002_05241 (metallophosphoesterase) and GBJ002_05242 (hypothetical protein). None of the GIL16 genes were DE, although GIL16-DNT_01 is less expressed at 10 minutes, while almost the rest of the genes have LFC > 1 or even 2 in the case of GIL16_02 (SSB).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: volcano_plot
+#| code-fold: true
+
+volcano_plot(contrast_df, limits = c(-4, 4))
+```
+
+# Enrichment analysis
+
+In this section, we present the results of enrichment analyses based on the COG (Clusters of Orthologous Groups), KEGG (Kyoto Encyclopedia of Genes and Genomes), GO (Gene Ontology) and EC (Enzyme Commission) categories for upregulated genes, as there are no downregulated genes.
+
+## COG
+
+According to COG categories, we found no enrichment.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: cog
+#| code-fold: true
+
+cog_up <- cog_enrichment(up_genes, all_genes)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: cog_results
+#| code-fold: true
+
+datatable(cog_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "COG", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+```
+
+## KEGG
+
+According to KEGG categories, positive enrichment was found related to nucleotide excision repair pathway due to GBJ002_02363 (excinuclease ABC subunit UvrA) and GBJ002_02364 (excinuclease ABC subunit B) genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: kegg
+#| message: false
+#| code-fold: true
+
+kegg_up <- kegg_enrichment(up_genes, all_genes)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: kegg_results
+#| code-fold: true
+
+datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
+  extensions = "Scroller", options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+```
+
+## GO
+
+The Gene Ontology (GO) is organized into three categories: **Biological Process** (BP), which describes the biological objectives to which gene products contribute; **Molecular Function** (MF), which refers to the elemental activities of gene products at the molecular level; and **Cellular Component** (CC), which specifies the locations within the cell where gene products are active.
+
+-   According to **BP**, we observed enrichments in functions related to DNA damage and stress response.
+
+-   Regarding **MF**, we found enrichments in processes related to hydrolases and nucleic acid metabolism.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: go
+#| code-fold: true
+#| message: false
+
+go_bp_up <- go_enrichment(up_genes, all_genes, "BP")
+
+go_mf_up <- go_enrichment(up_genes, all_genes, "MF")
+
+go_cc_up <- go_enrichment(up_genes, all_genes, "CC")
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: go_results
+#| code-fold: true
+
+datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+
+datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
+```
+
+## EC
+
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although statistical significance was only achieved in the third (**3.1.25**) due to upregulated GBJ002_02363 (excinuclease ABC subunit UvrA) and GBJ002_02364 (excinuclease ABC subunit B) genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: ec
+#| code-fold: true
+
+ec_1_up <- ec_enrichment(up_genes, all_genes, 1)
+
+ec_2_up <- ec_enrichment(up_genes, all_genes, 2)
+
+ec_3_up <- ec_enrichment(up_genes, all_genes, 3)
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: ec_results
+#| code-fold: true
+
+datatable(ec_1_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "EC number", "Class", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(ec_2_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "EC number", "Class", "Subclass", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+
+datatable(ec_3_up, rownames = FALSE, caption = "Positive enrichment", colnames = c(
+  "EC number", "Class", "Subclass", "Sub-subclass", "DE", "No DE", "Genes", "Odds ratio", "p value", "Adjusted p-value"), extensions = "Scroller",
+  options = list(
+    scrollX = TRUE,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "odds.ratio", digits = 2) %>%
+  formatSignif(columns = c("p.value", "padj"), digits = 3)
+```
+
+# Enrichment summary
+
+This table contains a summary of the enrichments for each category. The subcategory was used for KEGG and the description for GO. Although you can scroll, I recommend exporting using the Excel button and viewing the table in full screen.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: enrichment_summary
+#| code-fold: true
+
+es_up <- enrichment_summary(up_genes, categories = list(cog_up, kegg_up, go_bp_up, go_mf_up, go_cc_up, ec_1_up, ec_2_up, ec_3_up))
+es_down <- as.data.frame(matrix(NA, nrow = 1, ncol = 9))
+colnames(es_down) <- colnames(es_up)
+es_down[1, "Size"] <- 0
+es_de <- rbind(es_up, es_down)
+rownames(es_de) <- c("UP", "DOWN")
+
+datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+          extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            autoWidth = TRUE,
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 2),
+            scrollX = TRUE,
+            scroller = TRUE,
+            deferRender = TRUE))
+```
+
+# Save results
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: save_results
+#| code-fold: true
+
+create_summary(contrast_name = "Times 10 vs 0", rds_name = "gil16_t10_t0")
+```

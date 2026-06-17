@@ -1,0 +1,484 @@
+---
+title: Hierarchical clusterings comparisons
+---
+
+```{r}
+#| include: false
+
+library("DT")
+library("ggplot2")
+library("heatmaply")
+library("ggalluvial")
+library("dplyr")
+library("tidyr")
+library("forcats")
+library("propr")
+library("rstatix")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+```{r}
+#| include: false
+
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+```
+
+# Load clusters data
+
+In this section we load the clusters data obtained for each of the three hierarchical clusterings obtained in the previous pages.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_clusters
+#| code-fold: true
+
+gbj002_clusters <- readRDS(file = "gbj002_clusters.rds")
+gil01_clusters <- readRDS(file = "gil01_clusters.rds")
+gil16_clusters <- readRDS(file = "gil16_clusters.rds")
+
+gbj002_clusters_stability <- readRDS(file = "gbj002_clusters_stability.rds")
+gil01_clusters_stability <- readRDS(file = "gil01_clusters_stability.rds")
+gil16_clusters_stability <- readRDS(file = "gil16_clusters_stability.rds")
+```
+
+# Clusters composition
+
+This section contains the annotation of the genes and the clusters to which they belong in each of the three hierarchical clusterings.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: clusters_composition
+#| code-fold: true
+
+gbj002_map <- make_cluster_map(gbj002_clusters, "GBJ002_clusters")
+gil01_map  <- make_cluster_map(gil01_clusters, "GIL01_clusters")
+gil16_map  <- make_cluster_map(gil16_clusters, "GIL16_clusters")
+
+cluster_gene_table <- annotation %>%
+  left_join(gbj002_map, by = c("Gene_ID" = "Gene")) %>%
+  left_join(gil01_map, by = c("Gene_ID" = "Gene")) %>%
+  left_join(gil16_map, by = c("Gene_ID" = "Gene"))
+
+cluster_gene_table$GBJ002_clusters <- factor(cluster_gene_table$GBJ002_clusters, levels = names(gbj002_clusters))
+cluster_gene_table$GIL01_clusters <- factor(cluster_gene_table$GIL01_clusters, levels = names(gil01_clusters))
+cluster_gene_table$GIL16_clusters <- factor(cluster_gene_table$GIL16_clusters, levels = names(gil16_clusters))
+
+datatable(cluster_gene_table, rownames = FALSE,
+  colnames = c("Gene ID", "Element", "Start", "End", "Strand", "Gene symbol", "Description", "COG category", "Association", "Type", "Subtype", "Source", "GBJ002 cluster", "GIL01 cluster", "GIL16 cluster"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 1, rightColumns = 3),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE))
+```
+
+# Clusters stability
+
+To evaluate whether differences in cluster stability existed across strains, we compared the distribution of stability values obtained for each set of clusters. Under a subsampling scheme retaining 80% of genes, based on 1000 random permutations of gene subsets, a Kruskal–Wallis test revealed highly significant differences between strains (p = 2.07 × 10^-8^). Pairwise comparisons using Wilcoxon rank-sum tests showed that GBJ002 differed significantly from both GIL01 and GIL16, whereas no significant differences were observed between GIL01 and GIL16 strains. Consistently, pairwise Kolmogorov–Smirnov tests confirmed significant differences in the full distributions of stability values for comparisons involving GBJ002, with no differences detected between GIL01 and GIL16.
+
+Effect size estimates indicated that these differences were small in magnitude (r ≈ 0.10–0.12 for comparisons involving GBJ002), while the comparison between GIL01 and GIL16 showed a negligible effect size (r ≈ 0.02), consistent with their similar stability profiles. Together, these results indicate that the observed differences are driven by subtle but consistent shifts affecting a large number of clusters, rather than large changes in individual modules. Overall, these findings suggest that GIL01 and GIL16 exhibit a more stable and structured coexpression organization than GBJ002, reflecting a global but modest increase in transcriptomic modularity.
+
+When applying a more stringent subsampling scheme retaining 75% of genes, the same overall pattern was observed but with reduced statistical support. In this context, differences did not reach statistical significance, although a consistent trend towards higher stability in GIL01 and GIL16 was still apparent. Notably, effect size estimates increased under these conditions, indicating that the remaining differences were more pronounced at the level of individual clusters, but less consistent across the full dataset. This suggests that the signal underlying the observed differences is moderate in magnitude and sensitive to perturbation, with stronger subsampling emphasizing larger but less ubiquitous effects across clusters.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: stability
+#| code-fold: true
+#| warning: false
+
+gbj002_clusters_stability$Strain <- "GBJ002"
+gil01_clusters_stability$Strain  <- "GIL01"
+gil16_clusters_stability$Strain  <- "GIL16"
+
+stability_df <- rbind(gbj002_clusters_stability, gil01_clusters_stability, gil16_clusters_stability)
+
+kruskal.test(Stability ~ Strain, data = stability_df)
+
+wilcox_mat <- pairwise.wilcox.test(stability_df$Stability, stability_df$Strain, p.adjust.method = "BH")$p.value
+
+wilcox_padj <- c(wilcox_mat["GIL01", "GBJ002"], wilcox_mat["GIL16", "GBJ002"], wilcox_mat["GIL16", "GIL01"])
+
+ks <- c(
+  ks.test(gil01_clusters_stability$Stability, gbj002_clusters_stability$Stability)$p.value,  
+  ks.test(gil16_clusters_stability$Stability, gbj002_clusters_stability$Stability)$p.value,
+  ks.test(gil16_clusters_stability$Stability, gil01_clusters_stability$Stability)$p.value
+)
+
+ks_padj <- p.adjust(ks, method = "BH")
+
+comparisons <- list(c("GIL01", "GBJ002"), c("GIL16", "GBJ002"), c("GIL16", "GIL01"))
+
+effsize_df <- lapply(comparisons, function(comp) {
+  stability_df %>%
+    filter(Strain %in% comp) %>%
+    wilcox_effsize(Stability ~ Strain)
+}) %>%
+  bind_rows() %>%
+  select(-.y.) %>%
+  mutate(
+    magnitude = paste0(toupper(substr(as.character(magnitude), 1, 1)),
+                       substr(as.character(magnitude), 2, nchar(as.character(magnitude)))),
+    wilcox_padj = wilcox_padj,
+    ks_padj = ks_padj
+  ) %>%
+  select(1, 4, 2, 5, wilcox_padj, ks_padj, 3, 6)
+
+datatable(effsize_df, rownames = FALSE,
+          colnames = c("Strain 1", "Clusters (n)", "Strain 2", "Clusters (n)", "Wilcoxon adjusted p value", "KS adjusted p value", "Effect size (r)", "Magnitude")) %>%
+          formatSignif(columns = c("wilcox_padj", "ks_padj", "effsize"), digits = 3)
+```
+
+# Alluvial plot
+
+An alluvial plot is a type of flow diagram used to visualize how elements move or change group membership across different conditions, classifications or time points. In this case, the plot represents how gene clusters correspond across the three hierarchical clusterings. In the plot, only genes belonging to clusters of 20 or more genes (plus GIL16_C019) in at least one of the three hierarchical clusterings are shown. The strain clusters are ordered according to their distance (1 – ρ). Clusters from GBJ002 are represented twice to visualize their relationships relative to both GIL01 and GIL16. Cluster colors were assigned manually, prioritizing functional annotations in the order COG \> KEGG \> GO \> EC. The fill colors of each cluster indicate their main functional enrichment (see the legend for reference) and diagonal stripes indicate additional functional enrichments. Names in bold highlight clusters composed predominantly of genes from the prophage region, pBtic235, GIL01 and/or GIL16.
+
+Although the proportions of shared genes between strains are more easily seen in the lower heatmaps, the alluvial plot reveals several interesting flow patterns. For instance, GBJ002_C235 flows almost entirely into GIL01_C290, which itself flows into GIL16_C289. These transitions are driven by the presence of a large set of pBtic235 genes shared across these clusters. Moreover, the Energy production and conversion enrichment seen in GBJ002_C384 is maintained in GIL01_C092 within GIL01, and in GIL16_C100, GIL16_C025a and GIL16_C023c within GIL16. Overall, the plot highlights strong differences in hierarchical clustering patterns among the three strains, indicating substantial transcriptional reorganization across most genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: alluvial_plot
+#| code-fold: true
+#| fig-width: 15
+#| fig-height: 12
+
+clusters_design <- read.csv("clusters_design.tsv", header = TRUE, sep = "\t")
+clusters_legend <- read.csv("clusters_legend.tsv", header = TRUE, sep = "\t")
+
+genes_clusters <- cluster_gene_table[, c(1, 13:15)]
+genes_clusters <- genes_clusters[rowSums(is.na(genes_clusters[, 2:4])) < 3, ]
+genes_clusters <- genes_clusters[rowSums(is.na(genes_clusters)) < ncol(genes_clusters), ]
+genes_clusters$GBJ002_clusters_copy <- genes_clusters$GBJ002_clusters
+
+genes_clusters <- genes_clusters %>%
+  mutate(across(
+    2:5,
+    ~ ifelse(
+      is.na(.),
+      case_when(
+        cur_column() == "GBJ002_clusters"        ~ "Unclustered_GBJ002",
+        cur_column() == "GIL01_clusters"         ~ "Unclustered_GIL01",
+        cur_column() == "GIL16_clusters"         ~ "Unclustered_GIL16",
+        cur_column() == "GBJ002_clusters_copy"   ~ "Unclustered_GBJ002_copy"
+      ),
+      as.character(.)
+    )
+  )) %>%
+  pivot_longer(cols = 2:5, names_to = "Strain", values_to = "Cluster")
+
+strain_levels <- c("GBJ002_clusters", "GIL01_clusters", "GIL16_clusters", "GBJ002_clusters_copy")
+cluster_levels <- c("Unclustered_GBJ002", "Unclustered_GBJ002_copy", names(gbj002_clusters), names(gil01_clusters), "Unclustered_GIL01", names(gil16_clusters), "Unclustered_GIL16")
+
+genes_clusters$Strain <- factor(genes_clusters$Strain, levels = strain_levels)
+genes_clusters$Cluster <- factor(genes_clusters$Cluster, levels = cluster_levels)
+
+genes_clusters <- genes_clusters %>%
+  left_join(clusters_design, by = "Cluster") %>%
+  mutate(
+    Stripe = ifelse(is.na(Stripe), NA, Stripe),
+    Stripes_number = ifelse(is.na(Stripes_number), 0, Stripes_number),
+    Text = case_when(
+      Text == "bold" ~ "bold",
+      Text == "white" ~ "white",
+      TRUE ~ "plain"
+    ),
+    Size = ifelse(is.na(Size), 3, Size)
+  )
+
+genes_clusters$Strain <- factor(genes_clusters$Strain, levels = strain_levels)
+genes_clusters$Cluster <- factor(genes_clusters$Cluster, levels = cluster_levels)
+
+p <- ggplot(
+  genes_clusters,
+  aes(
+    x = Strain,
+    stratum = Cluster,
+    alluvium = Gene_ID,
+    fill = Base
+  )
+) +
+  geom_flow(alpha = 0.5) +
+  geom_stratum(color = "black") +  
+  scale_fill_identity(
+    guide = "legend",
+    breaks = clusters_legend$Colour,
+    labels = clusters_legend$Category,
+    name   = NULL
+  ) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +  
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+p_aux <- ggplot(
+  genes_clusters,
+  aes(
+    x = Strain,
+    stratum = Cluster,
+    alluvium = Gene_ID
+  )
+) + geom_stratum()
+
+pb <- ggplot_build(p_aux)
+stratum_df <- pb$data[[1]]
+stratum_df$Cluster <- levels(genes_clusters$Cluster)[stratum_df$stratum]
+x_levels <- levels(genes_clusters$Strain)
+stratum_df$Strain <- factor(x_levels[round(stratum_df$x)], levels = x_levels)
+
+strata_striped <- stratum_df %>%
+  left_join(clusters_design, by = "Cluster") %>%
+  filter(Stripes_number > 0, !is.na(Stripe))
+
+stripe_segments <- do.call(
+  rbind,
+  lapply(seq_len(nrow(strata_striped)), function(i) {
+    row <- strata_striped[i, ]
+    xmin <- row$xmin; xmax <- row$xmax
+    ymin <- row$ymin; ymax <- row$ymax
+    dx <- xmax - xmin; dy <- ymax - ymin
+    if (dx <= 0 || dy <= 0) return(NULL)
+    k <- dy/dx
+    cx <- (xmin + xmax)/2
+    cy <- (ymin + ymax)/2
+    t_central <- cy - k*(cx - xmin)
+    R <- max(ymax - t_central, t_central - ymin)
+    t_values <- seq(t_central - R, t_central + R, length.out = row$Stripes_number)
+
+    rect_intersections <- function(t) {
+      pts <- list()
+      yL <- t
+      if (yL >= ymin && yL <= ymax) pts <- append(pts, list(c(xmin, yL)))
+      yR <- k*dx + t
+      if (yR >= ymin && yR <= ymax) pts <- append(pts, list(c(xmax, yR)))
+      if (abs(k) > 1e-12) {
+        xB <- xmin + (ymin - t)/k
+        if (xB >= xmin && xB <= xmax) pts <- append(pts, list(c(xB, ymin)))
+        xT <- xmin + (ymax - t)/k
+        if (xT >= xmin && xT <= xmax) pts <- append(pts, list(c(xT, ymax)))
+      }
+      if (length(pts) < 2) return(NULL)
+      df <- as.data.frame(do.call(rbind, pts))
+      df <- distinct(df)
+      if (nrow(df) < 2) return(NULL)
+      df[1:2, ]
+    }
+
+    do.call(rbind, lapply(t_values, function(t) {
+      inters <- rect_intersections(t)
+      if (is.null(inters)) return(NULL)
+      data.frame(
+        x = inters[1,1],
+        y = inters[1,2],
+        xend = inters[2,1],
+        yend = inters[2,2],
+        Stripe = row$Stripe,
+        Strain = row$Strain
+      )
+    }))
+  })
+)
+
+p <- p +
+  geom_segment(
+    data = stripe_segments,
+    mapping = aes(x = x, xend = xend, color = Stripe),
+    y = stripe_segments$y,
+    yend = stripe_segments$yend,
+    inherit.aes = FALSE,
+    linewidth = 0.6,
+    alpha = 0.75
+  ) +
+  scale_color_identity()
+
+pb_final <- ggplot_build(p)
+strata_final <- pb_final$data[[2]]
+strata_final$Cluster <- levels(genes_clusters$Cluster)[strata_final$stratum]
+
+strata_final <- strata_final %>%
+  left_join(clusters_design, by = "Cluster") %>%
+  mutate(
+    Text = case_when(
+      Text == "bold" ~ "bold",
+      Text == "white" ~ "white",
+      Text == "bold_white" ~ "bold_white",
+      TRUE ~ "plain"
+    ),
+    Text_color = case_when(
+      Text == "white" ~ "white",
+      Text == "bold_white" ~ "white",
+      TRUE ~ "black"
+    ),
+    Text_face = case_when(
+      Text == "bold" ~ "bold",
+      Text == "bold_white" ~ "bold",
+      TRUE ~ "plain"
+    )
+  ) %>%
+  mutate(Cluster = ifelse(grepl("^Unclustered", Cluster), "", Cluster))
+
+p <- p +
+  geom_text(
+    data = strata_final,
+    aes(
+      x = x,
+      y = (ymin + ymax) / 2,
+      label = Cluster,
+      fontface = Text_face,
+      size = Size
+    ),
+    color = strata_final$Text_color,
+    inherit.aes = FALSE
+  ) +
+  scale_size_identity() +
+  coord_cartesian(clip = "off") +
+  labs(y = NULL) +
+  scale_x_discrete(
+    position = "bottom",
+    labels = c(
+      GBJ002_clusters      = "GBJ002",
+      GIL01_clusters       = "GIL01",
+      GIL16_clusters       = "GIL16",
+      GBJ002_clusters_copy = "GBJ002"
+    ),
+    sec.axis = dup_axis()
+  ) +
+  theme(
+    axis.text.y        = element_text(color = "black"),
+    axis.text.x        = element_text(color = "black", face = "bold", size = 14),
+    axis.text.x.top    = element_text(color = "black", face = "bold", size = 14),
+    axis.title.x       = element_blank(),
+    axis.title.y       = element_blank()
+  )
+
+p
+```
+
+# Heatmaps
+
+This section compares the clusters obtained for each sample set (GBJ002, GIL01 and GIL16). Specifically, the heatmaps represent how conserved the clusters are from one sample set to another, i.e., what proportion of genes in the cluster is maintained.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: heatmaps
+#| code-fold: true
+
+gil01_gbj002 <- cluster_compare(gbj002_clusters, gil01_clusters)
+gil16_gbj002 <- cluster_compare(gbj002_clusters, gil16_clusters)
+gil16_gil01 <- cluster_compare(gil01_clusters, gil16_clusters)
+
+gil01_gbj002_heatmaps <- heatmap_comparison(comparison_matrix = gil01_gbj002, rows = "GIL01", columns = "GBJ002")
+gil16_gbj002_heatmaps <- heatmap_comparison(comparison_matrix = gil16_gbj002, rows = "GIL16", columns = "GBJ002")
+gil16_gil01_heatmaps <- heatmap_comparison(comparison_matrix = gil16_gil01, rows = "GIL16", columns = "GIL01")
+```
+
+## GIL01 vs GBJ002 heatmaps
+
+### Gene ratio on GIL01 clusters
+
+This heatmap reflects the gene ratio on GIL01 clusters within GBJ002 clusters. Between the two largest clusters in GBJ002 (GBJ002_C384 and GBJ002_C281), we can observe a set of bright colors in the columns, reflecting that the genes in these clusters have specialized in other clusters in GIL01. Additionally, GBJ002_C072 has subdivided into two clusters in GIL01: GIL01_C040 and GIL01_C020e. This subdivision is primarily due to gene location, as the genes in the first cluster are located upstream of those in the second cluster. In addition, a high gene ratio (0.710) between GBJ002_C235 and GIL01_C290 is observed, which is mainly due to the presence of pBtic235 genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil01_gbj002_heatmap_rows
+#| code-fold: true
+
+gil01_gbj002_heatmaps$heatmap_rows
+```
+
+### Gene ratio on GBJ002 clusters
+
+This heatmap reflects the gene ratio on GBJ002 clusters within GIL01 clusters. On this occasion, we only found that the largest GIL01 cluster (GIL01_C290) is more specialized in GBJ002, specifically in GBJ002_C235 and GBJ002_C029a. Additionally, other gene ratios greater than 50% could be highlighted, as occurs between GIL01_C054 and GBJ002_C029c (gene ratio = 0.793) and GIL01_C055 and GBJ002_C034 (gene ratio = 0.588).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil01_gbj002_heatmap_columns
+#| code-fold: true
+
+gil01_gbj002_heatmaps$heatmap_columns
+```
+
+## GIL16 vs GBJ002 heatmaps
+
+### Gene ratio on GIL16 clusters
+
+This heatmap reflects the gene ratio on GIL16 clusters within GBJ002 clusters. Between the two largest clusters in GBJ002 (GBJ002_C384 and GBJ002_C281), we can observe a set of bright colors in the columns, reflecting that the genes in these clusters have specialized in other clusters in GIL16. GBJ002_C072 was subdivided into GIL01_C040 and GIL01_C020e, but on this occassion only a high conservation (gene ratio = 0.757) is found with GIL16_C074. In view of the genes shared between these clusters, the results suggest that coexpression of these tRNA genes is similar in GBJ002 and GIL16 strains. In addition, a high gene ratio (0.692) between GBJ002_C235 and GIL16_C289 is observed, which is mainly due to the presence of pBtic235 genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil16_gbj002_heatmap_rows
+#| code-fold: true
+
+gil16_gbj002_heatmaps$heatmap_rows
+```
+
+### Gene ratio on GBJ002 clusters
+
+This heatmap reflects the gene ratio on GBJ002 clusters within GIL16 clusters. On this occasion, we only found that the largest GIL16 cluster (GIL16_C289) is more specialized in GBJ002, specifically in GBJ002_C235 and GBJ002_C029a. Additionally, other gene ratios greater than 50% could be highlighted, as occurs between GIL16_C074 and GBJ002_C072 (gene ratio = 0.778) and GIL16_C062b and GBJ002_C029c (gene ratio = 0.828).
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil16_gbj002_heatmap_columns
+#| code-fold: true
+
+gil16_gbj002_heatmaps$heatmap_columns
+```
+
+## GIL16 vs GIL01 heatmaps
+
+### Gene ratio on GIL16 clusters
+
+This heatmap reflects the gene ratio on GIL16 clusters within GIL01 clusters. This time, we don't find specializations as high as in previous heatmaps. Instead, we observe some low to moderate conservations when we divide the graph along the main diagonal. The only notable conservation is between GIL16_C289 and GIL01_C290 (gene ratio = 0.824), whose shared genes are mostly from pBtic235. Also, a gene ratio = 0.421 can be observed between GIL16_C019 (cluster with the GIL16 genes expressed from the P1-P2 tandem promoters) and GIL01_C055 (cluster with the majority of GIL01 genes), which corresponds to GBJ002_01361 (magnesium-translocating P-type ATPase), GBJ002_01362 (Mg^2+^ transport ATPase C), GBJ002_03168 (arginine deiminase), GBJ002_03169 (ornithine carbamoyltransferase), GBJ002_03170 (arginine-ornithine antiporter), GBJ002_03171 (carbamate kinase), GBJ002_03173 (ABC transporter permease) and GBJ002_03410 (diacylglycerol kinase) genes. These genes, therefore, appear to be associated with the expression of tectiviruses.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil16_gil01_heatmap_rows
+#| code-fold: true
+
+gil16_gil01_heatmaps$heatmap_rows
+```
+
+### Gene ratio on GIL01 clusters
+
+This heatmap reflects the gene ratio on GIL01 clusters within GIL16 clusters. Again, we observe some low to moderate conservations when we divide the graph along the main diagonal. However, on this occasion, some specializations appear to be observed in GIL01. For example, GIL16_C289 has subdivided into GIL01_C290 and GIL01_C029b and GIL16_C074 into GIL01_C040 and GIL01_C020e. Additionally, between GIL16_C062b and GIL01_C054 there is a gene ratio = 0.722, with most of the shared genes corresponding to ribosomal proteins.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil16_gil01_heatmap_columns
+#| code-fold: true
+
+gil16_gil01_heatmaps$heatmap_columns
+```

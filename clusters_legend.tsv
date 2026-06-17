@@ -1,0 +1,23 @@
+﻿Colour	Category
+#FF0000	Translation, ribosomal structure and biogenesis
+#FF9900	Transcription
+#FFFF00	Replication, recombination and repair
+#99FF00	Cell cycle control, cell division and chromosome partitioning
+#FF008A	Defense mechanisms
+#0000FF	Signal transduction mechanisms
+#9EC928	Membrane transport
+#006633	Cell motility
+#00FFFF	Posttranslational modification, protein turnover and chaperones
+#336699	Mobilome: prophages and transposons
+#9900FF	Energy production, conversion and metabolism
+#805642	Carbohydrate transport and metabolism
+#FF00FF	Amino acid transport and metabolism
+#99334D	Nucleotide transport and metabolism
+#727DCC	Coenzyme transport and metabolism
+#5C5A1B	Metabolism of cofactors and vitamins
+#0099FF	Inorganic ion transport and metabolism
+#FF9999	Heterogeneous or non‑canonical metabolic enrichments
+#D6AADF	Function unknown
+#BFBFBF	Ambiguous enrichment
+#7F7F7F	No significant enrichment
+#000000	Unclustered genes

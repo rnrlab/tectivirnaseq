@@ -1,0 +1,844 @@
+---
+title: GIL01 network
+---
+
+```{r}
+#| include: false
+
+library("DT")
+library("ggplot2")
+library("heatmaply")
+library("dplyr")
+library("tidyr")
+library("propr")
+library("igraph")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+```{r}
+#| include: false
+
+counts <- readRDS(file = "gene_coexpression_counts.rds")
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+```
+
+# Obtain rho proportionality
+
+Correlation shows how two variables vary together. In the case of RNAseq data, these correlations are inevitably relative, since we don't have the total number of reads, but rather a proportion of the total. Although algorithms like WGCNA employ Pearson correlation, this can lead to spurious associations, and more recent advances, especially in metagenomics, suggest the use of compositionally-aware methods. One such method is the rho (ρ) statistic, which can be used instead of correlation as the basis for familiar analyses and visualization methods, including coexpression networks and clustered heatmaps.
+
+In the Hierarchical clustering section, we used all ρ values from 0, 10, 30 and 60 minute samples ​​to determine coexpression clusters. In this case, the goal is to create a network, and if we retain all values, the network will be fully connected and therefore uninformative. The `propr` package contains a function to determine the significance of proportionality using a built-in permutation procedure and estimate the false discovery rate (FDR). Although the code is not shown below due to its computationally intensive execution, to find a threshold where the FDR \< 0.05, both positive and negative values ​​were considered and tests were performed to the second decimal place with up to 1000 permutation tests.
+
+For the GIL01 networks, the selected threshold was 0.81, i.e., all coexpressions between -0.81 and 0.81 were considered null because they could be random. Subsequently, the rho values ​​were rounded to five decimal places, and the positive and negative coexpression matrices, along with their respective strength-associated matrices, were constructed. Since edge weights in networks are usually interpreted as distances between nodes, the positive matrix was reconstructed so that the weights were 1 - ρ. However, for the strength matrix, since this parameter is associated with the edge weight, the same conversion was performed again to calculate this parameter. For the negative coexpression matrix, since the values ​​are obviously negative, the conversion was performed as 1 + ρ, so that very strong negative coexpressions would tend towards 0 (although they would never be 0 in any case). For the strength-associated matrix, the conversion was the same as that performed for the strength-associated positive matrix.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: rho
+#| code-fold: true
+#| warning: false
+
+pseudocount <- min(counts[counts > 0])/10
+counts <- counts + pseudocount
+counts <- counts[1:4967, 13:24]
+all_genes <- rownames(counts)
+
+rhos <- propr(t(counts), metric = "rho")
+
+rhos_mat <- rhos@matrix
+threshold <- 0.81
+rhos_mat[ rhos_mat > -threshold & rhos_mat < threshold ] <- 0
+rhos_mat <- round(rhos_mat, 5)
+
+pos_mat <- rhos_mat
+pos_mat[pos_mat < threshold] <- 0
+pos_mat <- ifelse(pos_mat != 0, 1 - pos_mat, pos_mat)
+pos_mat_strength <- ifelse(pos_mat != 0, 1 - pos_mat, pos_mat)
+
+neg_mat <- rhos_mat
+neg_mat[neg_mat > -threshold] <- 0
+neg_mat <- ifelse(neg_mat != 0, neg_mat + 1, neg_mat)
+neg_mat_strength <- ifelse(neg_mat != 0, 1 - neg_mat, neg_mat)
+```
+
+# Create graphs
+
+From the four matrices above, four networks were generated: two for positive coexpressions and two for negative coexpressions. All networks were constructed in undirected mode, since coexpressions do not have an associated direction; they were weighted, so that ρ values ​​were used as edge weights; and the diagonal was set to 0, since coexpression of a gene with itself has no biological meaning. The networks used for calculating the metrics were primarily g_pos and g_neg, as strength-associated networks were only used to calculate node strength.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: graphs
+#| code-fold: true
+
+g_pos <- graph_from_adjacency_matrix(pos_mat, mode = "undirected", weighted = TRUE, diag = FALSE)
+g_pos_strength <- graph_from_adjacency_matrix(pos_mat_strength, mode = "undirected", weighted = TRUE, diag = FALSE)
+
+g_neg <- graph_from_adjacency_matrix(neg_mat, mode = "undirected", weighted = TRUE, diag = FALSE)
+g_neg_strength <- graph_from_adjacency_matrix(neg_mat_strength, mode = "undirected", weighted = TRUE, diag = FALSE)
+```
+
+# Obtain networks metrics
+
+## Positive network
+
+### Full-network attributes
+
+This section will display the main full-network attributes. While not very informative on their own, they will allow us to compare these metrics across different networks. An additional table is also included, showing the number of components in which the network is divided and the size (number of genes) of each component. In this case, we see that 89.97% of the genes (4469 out of 4967) are interconnected somehow. Conversely, 7.57% of the genes (376 out of 4469) are not coexpressed with any other genes. The remaining genes are distributed in components of intermediate sizes, i.e., they are not isolated, but are coexpressed with few genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: fna_pos
+#| code-fold: true
+#| warning: false
+
+order_pos <- gorder(g_pos)
+size_pos <- gsize(g_pos)
+mean_degree_pos <- 2 * (size_pos/order_pos)
+assortativity_pos <- assortativity_degree(g_pos)
+density_pos <- edge_density(g_pos)
+diameter_pos <- diameter(g_pos)
+avg_path_length_pos <- mean_distance(g_pos)
+ta_pos <- transitivity(g_pos, type = "average")
+tg_pos <- transitivity(g_pos, type = "global")
+ge_pos <- global_efficiency(g_pos)
+
+df_pos <- data.frame(
+  Order = order_pos,
+  Size = size_pos,
+  Mean_degree = round(mean_degree_pos, 2),
+  Assortativity = round(assortativity_pos, 3),
+  Density = round(density_pos, 3),
+  Diameter = round(diameter_pos, 2),
+  Average_path_length = round(avg_path_length_pos, 3),
+  Average_clustering_coefficient = round(ta_pos, 3),
+  Global_transitivity = round(tg_pos, 3),
+  Global_efficiency = round(ge_pos, 2),
+  row.names = "Positive network"
+)
+
+datatable(t(df_pos), rownames = c(
+      "Order", "Size", "Mean degree (<k>)", "Assortativity", "Density",
+      "Diameter", "Average path length (L)", "Clustering coefficient (C)",
+      "Global transitivity", "Global efficiency"),
+      colnames = c("Full-network attributes" = 1))
+
+components_pos_df <- as.data.frame(table(Size = table(components(g_pos)$membership)))
+colnames(components_pos_df)[2] <- "Components"
+components_pos_df <- components_pos_df[order(components_pos_df$Components), c("Components", "Size")]
+datatable(components_pos_df, rownames = FALSE)
+```
+
+### Per-node attributes
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pna_pos
+#| code-fold: true
+
+degree_pos <- degree(g_pos, normalized = TRUE)
+strength_pos <- strength(g_pos_strength)
+betweenness_pos <- betweenness(g_pos, normalized = TRUE)
+coreness_pos <- coreness(g_pos)
+tl_pos <- transitivity(g_pos, type = "local")
+triangles_pos <- setNames(count_triangles(g_pos), V(g_pos)$name)
+harmonic_centrality_pos <- harmonic_centrality(g_pos, normalized = TRUE)
+eig_pos <- eigen_centrality(g_pos)$vector
+pr_pos <- page_rank(g_pos)$vector
+apl_pos <- apl(g_pos)
+```
+
+#### Degree
+
+The degree of a vertex is its most basic structural property, the number of its adjacent edges. In the lower histogram, which can also be called the degree distribution, we see how many genes have a given normalized degree (degree divided by the network size minus 1) in each interval. As is often the case in biological networks, most nodes have few connections and only a few have many connections, i.e., a small fraction of genes are coexpressed with many other genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: degree_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(degree_pos, xlab = "Degree")
+```
+
+#### Strength
+
+The strength of a node is calculated by summing the edge weights of the adjacent edges for each node. While conceptually similar to degree, at the gene level it allows us to discern whether coexpressions with other genes are strong or weak, whereas in the case of degree, the attribute is more boolean, indicating whether or not a gene coexpression exists. Comparing strength distribution with degree distribution reveals a similar pattern, with few genes exhibiting high strength.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: strength_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(strength_pos, xlab = "Strength")
+```
+
+#### Betweenness
+
+Betweenness measures how often a node lies on the shortest paths (geodesics) between other pairs of nodes in the network. In other words, it captures the extent to which a node acts as an intermediary in connecting different parts of the network. In most networks, the normalized betweenness distribution is highly uneven: the majority of nodes have very low betweenness, while only a few nodes concentrate high values. Nodes with high betweenness can be interpreted as bottlenecks, since many shortest paths rely on them; as a result, they may play a crucial role in controlling information flow, i.e., gene expression.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: betweenness_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(betweenness_pos, xlab = "Betweenness")
+```
+
+#### Coreness
+
+The k-core of graph is a maximal subgraph in which each vertex has at least degree k. The coreness of a vertex is k if it belongs to the k-core but not to the (k+1)-core. In this case, we see three distinct groups: genes with low coreness, genes in intermediate k-cores and genes belonging to high k-cores. The first group will be genes that have few positive coexpressions with other genes, while the last group will be those closely related to each other.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: coreness_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(coreness_pos, xlab = "Coreness")
+```
+
+#### Clustering coefficient (C)
+
+The clustering coefficient (C) is a local metric that measures the level of clustering of the nodes. In this case, the distribution approximates a normal distribution, although with longer tails. In any case, it is observed that there are few genes with a C \> 0.9. However, a high value does not necessarily reflect that a node is important, since it may be isolated nodes that, conceptually, form a perfect cluster, since they are grouped with each other. Therefore, these results should be interpreted with caution.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: tl_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(tl_pos, xlab = "Clustering coefficient (C)")
+```
+
+#### Triangles
+
+Triangles reflect the number of triangles a node is part of, i.e., the number of sets of three nodes that a particular node belongs to. In this case, a distribution with high positive skewness is observed. In other words, few nodes form many triangles with other nodes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: triangles_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(triangles_pos, xlab = "Triangles")
+```
+
+#### Harmonic centrality
+
+The harmonic centrality of a vertex is the mean inverse distance to all other vertices. The inverse distance to an unreachable vertex is considered to be zero. Since some nodes are disconnected, this metric allows us to determine how central their position is in the network. In this way, it is the equivalent of closeness for disconnected networks. In the histogram below, we can observe that most nodes have a harmonic centrality between 0 and 5, while only six exceed this latter value. In other words, only a few genes occupy a very central position (i.e., are close to the rest) in the positive coexpression network.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: harmonic_centrality_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(harmonic_centrality_pos, xlab = "Harmonic centrality")
+```
+
+#### Eigenvector centrality
+
+Eigenvector centrality measures how important a node is in a network by considering not only how many connections it has, but also how important its neighbors are. A node gets a high score if it is connected to other nodes that are themselves well connected. This reflects a recursive idea: being connected to important nodes makes a node more important in return. As a result, nodes with high eigenvector centrality tend to belong to dense groups or cliques, where many nodes are interconnected. From a mathematical perspective, these scores come from the main eigenvector of the network's adjacency matrix, which captures the strongest overall pattern of connections in the network.
+
+In the lower histogram, we observe that more than 90% of the nodes have a low eigenvector centrality, while only 1.05% exceed a value of 0.8.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: eig_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(eig_pos, xlab = "Eigenvector centrality", n_intervals = 5)
+```
+
+#### PageRank
+
+PageRank measures how central or important a node is based on the idea that connections from important nodes contribute more than connections from less important ones, even when the network has no direction. In an undirected network, PageRank works similarly to eigenvector centrality: a node has a high PageRank if it is connected to other nodes that are themselves well connected. The score can be interpreted as the probability that a random walker moving along edges (and occasionally jumping to a random node) will be found at that node. Therefore, nodes with high PageRank tend to lie in dense or well-connected parts of the network, rather than being isolated or peripheral.
+
+In this case, the distribution is much more platykurtic than for eigenvector centrality, although there are still few genes with high values.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pr_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(pr_pos, xlab = "PageRank", n_intervals = 5)
+```
+
+#### Average path length (L)
+
+Average path length (also known as average shortest path length or characteristic path) for a node describes how far is, on average, from all other nodes in the network. It is computed as the mean of the shortest path distances from that node to every other reachable node. In simple terms, it tells us how many steps are typically needed to reach the rest of the network starting from this node. A small average path length indicates that the node is centrally located and can reach others efficiently, while a large value suggests that the node lies in a more peripheral position, requiring more intermediaries to connect to the rest of the network.
+
+In this case, the distribution is heavily centered on values between 0.4 and 1. The most important nodes regarding this attribute are those with the lowest L values. Therefore, this attribute is expected to be negatively correlated with the other centrality values ​​obtained. In any case, this attribute is not particularly informative, since the nodes with lowest L values could be in low order components. Hence, this attribute should be interpreted with caution.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: apl_pos
+#| code-fold: true
+#| warning: false
+
+network_hist(apl_pos, xlab = "Average path length (L)")
+```
+
+### Per-edge attributes
+
+Edge betweenness centrality measures how often an edge lies on the shortest paths (geodesics) between pairs of nodes in the network. Conceptually, it quantifies the extent to which an edge acts as a bridge for connecting different parts of the network. Edges with high betweenness can be interpreted as critical links or bottlenecks, since their removal may strongly affect network connectivity or information flow. From a biological point of view, the edges could be interactions between proteins that, when eliminated, would alter the coexpression network.
+
+The table below shows the edge betweenness values ​​for each pair of genes that exhibit positive coexpression. The highest values within each of the six gene-pair categories are obtained for the following combinations:
+
+-   **Chromosome–chromosome**: DNA alkylation repair protein (GBJ002_02142) gene with cell wall metabolism sensor histidine kinase WalK (GBJ002_02704) gene.
+
+-   **Chromosome–pBtic235**: winged helix DNA-binding domain protein (GBJ002_00399) gene with hypothetical protein (GBJ002_05065) gene.
+
+-   **Chromosome-GIL01**: bacterial transcription activator effector binding domain-containing protein (GBJ002_02156) gene with DNA polymerase (GIL01_05) gene.
+
+-   **pBtic235–pBtic235**: two hypothetical protein (GBJ002_05056 and GBJ002_05060) genes.
+
+-   **pBtic235-GIL01**: hypothetical protein (GBJ002_05231) gene with head and packaging (GIL01_34) gene.
+
+-   **GIL01-GIL01**: SSB (GIL01_02) gene with DNA polymerase (GIL01_05) gene.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: edge_betweenness_pos
+#| code-fold: true
+#| warning: false
+
+edge_betweenness_pos <- igraph::as_data_frame(g_pos, what = "edges")
+edge_betweenness_pos$edge_id <- seq_len(size_pos)
+edge_betweenness_pos$edge_betweenness <- edge_betweenness(g_pos)
+edge_betweenness_pos <- edge_betweenness_pos[order(edge_betweenness_pos$edge_betweenness, decreasing = TRUE), ]
+rownames(edge_betweenness_pos) <- as.character(edge_betweenness_pos$edge_id)
+edge_betweenness_pos$edge_id <- NULL
+
+datatable(edge_betweenness_pos, rownames = FALSE, colnames = c("Gene 1", "Gene 2", "Weight (1 - ρ)", "Edge betweenness"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "weight", digits = 5) %>%
+  formatRound(columns = "edge_betweenness", digits = 2)
+```
+
+## Negative network
+
+### Full-network attributes
+
+This section will display the main full-network attributes. While not very informative on their own, they will allow us to compare these metrics across different networks. An additional table is also included, showing the number of components in which the network is divided and the size (number of genes) of each component. In this case, we see that 71.33% of the genes (3543 out of 4967) are interconnected somehow. Conversely, 26.27% of the genes (1305 out of 4967) are not negatively coexpressed with any other genes. The remaining genes are distributed in components of intermediate sizes, i.e., they are not isolated, but are coexpressed with few genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: fna_neg
+#| code-fold: true
+#| warning: false
+
+order_neg <- gorder(g_neg)
+size_neg <- gsize(g_neg)
+mean_degree_neg <- 2 * (size_neg/order_neg)
+assortativity_neg <- assortativity_degree(g_neg)
+density_neg <- edge_density(g_neg)
+diameter_neg <- diameter(g_neg)
+avg_path_length_neg <- mean_distance(g_neg)
+ta_neg <- transitivity(g_neg, type = "average")
+tg_neg <- transitivity(g_neg, type = "global")
+ge_neg <- global_efficiency(g_neg)
+
+df_neg <- data.frame(
+  Order = order_neg,
+  Size = size_neg,
+  Mean_degree = round(mean_degree_neg, 2),
+  Assortativity = round(assortativity_neg, 3),
+  Density = round(density_neg, 3),
+  Diameter = round(diameter_neg, 2),
+  Average_path_length = round(avg_path_length_neg, 3),
+  Average_clustering_coefficient = ta_neg,
+  Global_transitivity = tg_neg,
+  Global_efficiency = round(ge_neg, 2),
+  row.names = "Negative network"
+)
+
+datatable(t(df_neg), rownames = c(
+      "Order", "Size", "Mean degree (<k>)", "Assortativity", "Density",
+      "Diameter", "Average path length (L)", "Clustering coefficient (C)",
+      "Global transitivity", "Global efficiency"),
+      colnames = c("Full-network attributes" = 1))
+
+components_neg_df <- as.data.frame(table(Size = table(components(g_neg)$membership)))
+colnames(components_neg_df)[2] <- "Components"
+components_neg_df <- components_neg_df[order(components_neg_df$Components), c("Components", "Size")]
+datatable(components_neg_df, rownames = FALSE)
+```
+
+### Per-node attributes
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pna_neg
+#| code-fold: true
+
+degree_neg <- degree(g_neg, normalized = TRUE)
+strength_neg <- strength(g_neg_strength)
+betweenness_neg <- betweenness(g_neg, normalized = TRUE)
+coreness_neg <- coreness(g_neg)
+tl_neg <- transitivity(g_neg, type = "local")
+triangles_neg <- setNames(count_triangles(g_neg), V(g_neg)$name)
+harmonic_centrality_neg <- harmonic_centrality(g_neg, normalized = TRUE)
+eig_neg <- eigen_centrality(g_neg)$vector
+pr_neg <- page_rank(g_neg)$vector
+apl_neg <- apl(g_neg)
+```
+
+#### Degree
+
+The degree of a vertex is its most basic structural property, the number of its adjacent edges. In the lower histogram, which can also be called the degree distribution, we see how many genes have a given normalized degree (degree divided by the network size minus 1) in each interval. As is often the case in biological networks, most nodes have few connections and only a few have many connections, i.e., a small fraction of genes are negatively coexpressed with many other genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: degree_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(degree_neg, xlab = "Degree")
+```
+
+#### Strength
+
+The strength of a node is calculated by summing the edge weights of the adjacent edges for each node. While conceptually similar to degree, at the gene level it allows us to discern whether coexpressions with other genes are strong or weak, whereas in the case of degree, the attribute is more boolean, indicating whether or not a gene coexpression exists. Comparing strength distribution with degree distribution reveals a similar pattern, with few genes exhibiting high strength.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: strength_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(strength_neg, xlab = "Strength")
+```
+
+#### Betweenness
+
+Betweenness measures how often a node lies on the shortest paths (geodesics) between other pairs of nodes in the network. In other words, it captures the extent to which a node acts as an intermediary in connecting different parts of the network. In most networks, the normalized betweenness distribution is highly uneven: the majority of nodes have very low betweenness, while only a few nodes concentrate high values. Nodes with high betweenness can be interpreted as bottlenecks, since many shortest paths rely on them; as a result, they may play a crucial role in controlling information flow, i.e., gene expression.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: betweenness_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(betweenness_neg, xlab = "Betweenness")
+```
+
+#### Coreness
+
+The k-core of graph is a maximal subgraph in which each vertex has at least degree k. The coreness of a vertex is k if it belongs to the k-core but not to the (k+1)-core. In this case, we see three distinct groups: genes with low coreness, genes in intermediate k-cores and genes belonging to high k-cores. The first group will be genes that have few negative coexpressions with other genes, while the last group will be those closely related to each other.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: coreness_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(coreness_neg, xlab = "Coreness")
+```
+
+#### Clustering coefficient (C)
+
+The clustering coefficient (C) is a local metric that measures the level of clustering of the nodes. In this case, the distribution is uniform, with all nodes that have two or more neighbours showing C = 0. This is logical by definition, although it is better understood with the concept of triangles, explained below.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: tl_neg
+#| code-fold: true
+#| warning: false
+
+sprintf("All %d nodes that have two or more neighbours show C = %s.", as.integer(table(tl_neg)), names(table(tl_neg)))
+```
+
+#### Triangles
+
+Triangles reflect the number of triangles a node is part of, i.e., the number of sets of three nodes that a particular node belongs to. In this case, the distribution is uniform, since no node is included in any triangle. This is logical by definition, because if the interactions are negative, there cannot be triangles. Assuming three nodes A, B, and C, if A is negatively coexpressed with B and B is negatively coexpressed with C, then B could never be negatively coexpressed with C. Therefore, we will never obtain triangles in negative coexpression networks.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: triangles_neg
+#| code-fold: true
+#| warning: false
+
+sprintf("All %d nodes have %s triangles.", as.integer(table(triangles_neg)), names(table(triangles_neg)))
+```
+
+#### Harmonic centrality
+
+The harmonic centrality of a vertex is the mean inverse distance to all other vertices. The inverse distance to an unreachable vertex is considered to be zero. Since some nodes are disconnected, this metric allows us to determine how central their position is in the network. In this way, it is the equivalent of closeness for disconnected networks. In the histogram below, we can observe that most nodes have a harmonic centrality between 1 and 2 (although there is also a significant portion of nodes concentrated in values ​​close to 0, i.e., nodes not in the major component), while only four nodes exceed a value of 3. In other words, only a few genes occupy a very central position (i.e., are close to the rest) in the negative coexpression network.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: harmonic_centrality_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(harmonic_centrality_neg, xlab = "Harmonic centrality")
+```
+
+#### Eigenvector centrality
+
+Eigenvector centrality measures how important a node is in a network by considering not only how many connections it has, but also how important its neighbors are. A node gets a high score if it is connected to other nodes that are themselves well connected. This reflects a recursive idea: being connected to important nodes makes a node more important in return. As a result, nodes with high eigenvector centrality tend to belong to dense groups or cliques, where many nodes are interconnected. From a mathematical perspective, these scores come from the main eigenvector of the network's adjacency matrix, which captures the strongest overall pattern of connections in the network.
+
+In the lower histogram, we observe that almost 82% of the nodes have a low eigenvector centrality, while nine genes exceed a value of 0.9.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: eig_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(eig_neg, xlab = "Eigenvector centrality")
+```
+
+#### PageRank
+
+PageRank measures how central or important a node is based on the idea that connections from important nodes contribute more than connections from less important ones, even when the network has no direction. In an undirected network, PageRank works similarly to eigenvector centrality: a node has a high PageRank if it is connected to other nodes that are themselves well connected. The score can be interpreted as the probability that a random walker moving along edges (and occasionally jumping to a random node) will be found at that node. Therefore, nodes with high PageRank tend to lie in dense or well-connected parts of the network, rather than being isolated or peripheral.
+
+In this case, the distribution is similar to the eigenvector centrality one and there are few genes with high values.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pr_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(pr_neg, xlab = "PageRank")
+```
+
+#### Average path length (L)
+
+Average path length (also known as average shortest path length or characteristic path) for a node describes how far is, on average, from all other nodes in the network. It is computed as the mean of the shortest path distances from that node to every other reachable node. In simple terms, it tells us how many steps are typically needed to reach the rest of the network starting from this node. A small average path length indicates that the node is centrally located and can reach others efficiently, while a large value suggests that the node lies in a more peripheral position, requiring more intermediaries to connect to the rest of the network.
+
+In this case, the distribution is heavily centered on values between 0.4 and 0.6. The most important nodes regarding this attribute are those with the lowest L values. Therefore, this attribute is expected to be negatively correlated with the other centrality values ​​obtained. In any case, this attribute is not particularly informative, since the nodes with lowest L values could be in low order components. Hence, this attribute should be interpreted with caution.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: apl_neg
+#| code-fold: true
+#| warning: false
+
+network_hist(apl_neg, xlab = "Average path length (L)")
+```
+
+### Per-edge attributes
+
+Edge betweenness centrality measures how often an edge lies on the shortest paths (geodesics) between pairs of nodes in the network. Conceptually, it quantifies the extent to which an edge acts as a bridge for connecting different parts of the network. Edges with high betweenness can be interpreted as critical links or bottlenecks, since their removal may strongly affect network connectivity or information flow. From a biological point of view, the edges could be interactions between proteins that, when eliminated, would alter the coexpression network.
+
+The table below shows the edge betweenness values ​​for each pair of genes that exhibit negative coexpression. The highest values within each of the six gene-pair categories are obtained for the following combinations:
+
+-   **Chromosome–chromosome**: formate–tetrahydrofolate ligase (GBJ002_04823) gene with peptidoglycan glycosyltransferase (GBJ002_05001) gene.
+
+-   **Chromosome–pBtic235**: tetraprenyl‑beta‑curcumene synthase (GBJ002_01963) gene with phosphoesterase (GBJ002_05265) gene.
+
+-   **Chromosome-GIL01**: T-box leader (BHPEJKKPJL_173) region with DNA, RNA and nucleotide metabolism (GIL01_08) gene.
+
+-   **pBtic235–pBtic235**: Phr family secreted Rap phosphatase inhibitor (GBJ002_05148) gene with tRNA‑Leu(tag) (GBJ002_05161) gene.
+
+No negative coexpressions were found between pBtic235-GIL01 and GIL01-GIL01 gene-pair categories.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: edge_betweenness_neg
+#| code-fold: true
+#| warning: false
+
+edge_betweenness_neg <- igraph::as_data_frame(g_neg, what = "edges")
+edge_betweenness_neg$edge_id <- seq_len(size_neg)
+edge_betweenness_neg$edge_betweenness <- edge_betweenness(g_neg)
+edge_betweenness_neg <- edge_betweenness_neg[order(edge_betweenness_neg$edge_betweenness, decreasing = TRUE), ]
+rownames(edge_betweenness_neg) <- as.character(edge_betweenness_neg$edge_id)
+edge_betweenness_neg$edge_id <- NULL
+
+datatable(edge_betweenness_neg, rownames = FALSE, colnames = c("Gene 1", "Gene 2", "Weight (1 - ρ)", "Edge betweenness"),
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "weight", digits = 5) %>%
+  formatRound(columns = "edge_betweenness", digits = 2)
+```
+
+## Networks comparison
+
+This section compares the full-network attributes obtained for positive and negative coexpression networks. Since the same nodes (genes) are used in both cases, the order (number of genes) is expected to be the same. However, the size of the positive network is larger than that of the negative network, indicating more positive than negative coexpressions. Similarly, the mean degree of the positive network is higher.
+
+Regarding the number of components, in both networks most nodes belong to a single component. However, the negative network has a higher proportion of isolated nodes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: networks_comparison
+#| code-fold: true
+#| warning: false
+
+datatable(t(rbind(df_pos, df_neg)), rownames = c(
+      "Order", "Size", "Mean degree (<k>)", "Assortativity", "Density",
+      "Diameter", "Average path length (L)", "Clustering coefficient (C)",
+      "Global transitivity", "Global efficiency"),
+      colnames = c("Full-network attributes" = 1))
+
+datatable(components_pos_df, rownames = FALSE, caption = "Positive network components")
+datatable(components_neg_df, rownames = FALSE, caption = "Negative network components")
+```
+
+The tables below show the values ​​of each per-node attribute for each of the nodes in the positive and negative networks.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: networks_data
+#| code-fold: true
+
+data_pos <- build_nodes_data(data = list(
+      Degree = degree_pos,
+      Strength = strength_pos,
+      Betweenness = betweenness_pos,
+      Coreness = coreness_pos,
+      Clustering_coefficient = tl_pos,
+      Triangles = triangles_pos,
+      Harmonic_centrality = harmonic_centrality_pos,
+      Eigenvector_centrality = eig_pos,
+      PageRank = pr_pos,
+      Average_path_length = apl_pos
+))
+
+data_neg <- build_nodes_data(data = list(
+      Degree = degree_neg,
+      Strength = strength_neg,
+      Betweenness = betweenness_neg,
+      Coreness = coreness_neg,
+      Harmonic_centrality = harmonic_centrality_neg,
+      Eigenvector_centrality = eig_neg,
+      PageRank = pr_neg,
+      Average_path_length = apl_neg
+))
+
+datatable(data_pos, rownames = FALSE,
+  colnames = c("Gene", "Degree", "Strength", "Betweenness", "Coreness", "Clustering coefficient (C)", "Triangles",
+               "Harmonic centrality", "Eigenvector centrality", "PageRank", "Average path length (L)"),
+  caption = "Positive network per-node attributes",
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 1),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "Degree", digits = 3) %>%
+  formatRound(columns = "Strength", digits = 3) %>%
+  formatRound(columns = "Betweenness", digits = 5) %>%
+  formatRound(columns = "Clustering_coefficient", digits = 3) %>%
+  formatRound(columns = "Harmonic_centrality", digits = 3) %>%
+  formatRound(columns = "Eigenvector_centrality", digits = 5) %>%
+  formatRound(columns = "PageRank", digits = 5) %>%
+  formatRound(columns = "Average_path_length", digits = 3)
+
+datatable(data_neg, rownames = FALSE,
+  colnames = c("Gene", "Degree", "Strength", "Betweenness", "Coreness", "Harmonic centrality",
+               "Eigenvector centrality", "PageRank", "Average path length (L)"),
+  caption = "Negative network per-node attributes",
+  filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+    autoWidth = TRUE,
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 1),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE)) %>%
+  formatRound(columns = "Degree", digits = 3) %>%
+  formatRound(columns = "Strength", digits = 3) %>%
+  formatRound(columns = "Betweenness", digits = 5) %>%
+  formatRound(columns = "Harmonic_centrality", digits = 3) %>%
+  formatRound(columns = "Eigenvector_centrality", digits = 5) %>%
+  formatRound(columns = "PageRank", digits = 5) %>%
+  formatRound(columns = "Average_path_length", digits = 3)
+```
+
+Below, two interactive heatmaps are shown, one for each network, displaying the Spearman correlations (ρ) between per-node attributes. Each correlation is computed using only those nodes for which both attributes are available, so the set of nodes contributing to each cell may vary across comparisons, reflecting the presence of missing values while maximizing statistical power. In the positive network, degree shows very high correlation with several measures, such as strength, coreness, harmonic centrality, PageRank and the number of triangles, indicating that these attributes largely capture the same topological dimension. In contrast, betweenness centrality exhibits only moderate association with degree, suggesting that it provides complementary information related to global network mediation. Eigenvector centrality shows an intermediate level of association with degree, indicating partial redundancy. A similar pattern is observed in the negative network, where degree is strongly correlated with most connectivity-based measures, including eigenvector centrality, reflecting the more centralized architecture of this network. In this case, betweenness centrality again shows substantially lower correlation with degree, highlighting its role as a distinct descriptor of node importance. Taken together, these results indicate that many commonly used attributes are highly redundant within each network.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: cor_mat
+#| code-fold: true
+
+cor_mat_pos <- cor(data_pos[, 2:ncol(data_pos)], use = "pairwise.complete.obs", method = "spearman")
+cor_mat_neg <- cor(data_neg[, 2:ncol(data_neg)], use = "pairwise.complete.obs", method = "spearman")
+
+p_cor_mat_pos <- heatmaply(
+      round(cor_mat_pos, 3),
+      limits = c(-1, 1),
+      dendrogram = "none",
+      main = "Positive network nodes attributes associations",
+      label_names = c("Row", "Column", "ρ"))
+
+p_cor_mat_neg <- heatmaply(
+      round(cor_mat_neg, 3),
+      limits = c(-1, 1),
+      dendrogram = "none",
+      main = "Positive network nodes attributes associations",
+      label_names = c("Row", "Column", "ρ"))
+
+p_cor_mat_pos
+p_cor_mat_neg
+```
+
+# Keystone genes
+
+To avoid biasing the identification of influential genes toward a single topological dimension, we selected a subset of per-node attributes to define node importance in the positive and negative networks. Degree, betweenness and eigenvector centrality were initially considered as complementary descriptors of node influence. However, correlation analyses revealed strong redundancy between degree and eigenvector centrality in the negative network (ρ = 0.965), whereas this association was substantially weaker in the positive network (ρ = 0.617), supporting their joint use only in the latter case. Average path length and clustering coefficient were excluded from further analyses because they primarily reflect node proximity and local redundancy rather than influence on global network connectivity. In addition, average path length showed strong redundancy with degree-based measures, while the clustering coefficient does not capture a node's capacity to mediate interactions across the network. Based on these considerations, degree and betweenness were selected as complementary and largely non-redundant measures to define important nodes in both positive and negative networks, with eigenvector centrality additionally retained for the positive network. To identify the most influential nodes, hereafter referred to as keystone genes, nodes were independently ranked in descending order according to each selected attribute, allowing capturing genes that are highly connected (degree), topologically influential (betweenness) and embedded within central network neighborhoods (eigenvector centrality). Keystone genes were then defined as those ranking within the top 5% for the corresponding attributes.
+
+According to the criteria for the positive network, 29 keystone genes were obtained. In contrast, up to 88 keystone genes were obtained in the negative network.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: kg
+#| code-fold: true
+
+kg_pos <- get_keystone_genes(data_pos, attributes = c("Degree", "Betweenness", "Eigenvector_centrality"), top = 0.05)
+
+kg_pos <- kg_pos %>%
+  dplyr::rename(Gene_ID = Gene) %>%
+  dplyr::left_join(
+    annotation %>%
+      dplyr::select(-Element, -Start, -End, -Strand),
+    by = "Gene_ID"
+  ) %>%
+  dplyr::relocate(Degree, Betweenness, Eigenvector_centrality, .after = last_col())
+
+datatable(kg_pos,
+  colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association", "Type", "Subtype", "Source",
+               "Degree position", "Betweenness position", "Eigenvector centrality position"),
+  caption = "Positive network keystone genes",
+  filter = "top", extensions = c("FixedColumns", "Scroller"), options = list(
+    fixedColumns = list(leftColumns = 2, rightColumns = 3),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE
+  ))
+
+kg_neg <- get_keystone_genes(data_neg, attributes = c("Degree", "Betweenness"), top = 0.05)
+
+kg_neg <- kg_neg %>%
+  dplyr::rename(Gene_ID = Gene) %>%
+  dplyr::left_join(
+    annotation %>%
+      dplyr::select(-Element, -Start, -End, -Strand),
+    by = "Gene_ID"
+  ) %>%
+  dplyr::relocate(Degree, Betweenness, .after = last_col())
+
+datatable(kg_neg, colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association", "Type", "Subtype", "Source",
+                               "Degree position", "Betweenness position"),
+  caption = "Negative network keystone genes",
+  filter = "top", extensions = c("FixedColumns", "Scroller"), options = list(
+    fixedColumns = list(leftColumns = 2, rightColumns = 2),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE
+  ))
+```
+
+# Save results
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: results
+#| code-fold: true
+
+objs <- list(
+  df_pos  = df_pos,
+  data_pos = data_pos,
+  df_neg  = df_neg,
+  data_neg = data_neg
+)
+
+saveRDS(objs, file = "gil01_network.rds")
+```

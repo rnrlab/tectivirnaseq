@@ -1,0 +1,27 @@
+﻿Initial	Colour	Name
+J	#ff0000	Translation, ribosomal structure and biogenesis
+A	#c2af58	RNA processing and modification
+K	#ff9900	Transcription
+L	#ffff00	Replication, recombination and repair
+B	#ffc600	Chromatin structure and dynamics
+D	#99ff00	Cell cycle control, cell division, chromosome partitioning
+Y	#493126	Nuclear structure
+V	#ff008a	Defense mechanisms
+T	#0000ff	Signal transduction mechanisms
+M	#9ec928	Cell wall/membrane/envelope biogenesis
+N	#006633	Cell motility
+Z	#660099	Cytoskeleton
+W	#336699	Extracellular structures
+U	#33cc99	Intracellular trafficking, secretion, and vesicular transport
+O	#00ffff	Posttranslational modification, protein turnover, chaperones
+X	#000000	Mobilome: prophages, transposons
+C	#9900ff	Energy production and conversion
+G	#805642	Carbohydrate transport and metabolism
+E	#ff00ff	Amino acid transport and metabolism
+F	#99334d	Nucleotide transport and metabolism
+H	#727dcc	Coenzyme transport and metabolism
+I	#5c5a1b	Lipid transport and metabolism
+P	#0099ff	Inorganic ion transport and metabolism
+Q	#ffcc99	Secondary metabolites biosynthesis, transport and catabolism
+R	#ff9999	General function prediction only
+S	#d6aadf	Function unknown

@@ -1,0 +1,15 @@
+Contrast	Time	Direction	COG	DE	No_DE	Total	Ratio	p
+GIL16 vs GBJ002	30	UP	Translation, ribosomal structure and biogenesis (J)	34	262	296	0.114864865	1.94E-20
+GIL16 vs GBJ002	30	DOWN	Inorganic ion transport and metabolism (P)	11	195	206	0.053398058	0.000307517
+GIL16 vs GIL01	30	UP	Carbohydrate transport and metabolism (G)	4	197	201	0.019900498	0.001453853
+GIL01 vs GBJ002	60	DOWN	General function prediction only (R)	35	225	260	0.134615385	0.013253353
+GIL01 vs GBJ002	60	DOWN	Function unknown (S)	24	127	151	0.158940397	0.013253353
+GIL16 vs GBJ002	60	UP	Inorganic ion transport and metabolism (P)	38	168	206	0.184466019	0.001874932
+GIL16 vs GBJ002	60	DOWN	General function prediction only (R)	48	212	260	0.184615385	0.001009226
+GIL16 vs GBJ002	60-mock	UP	Translation, ribosomal structure and biogenesis (J)	37	259	296	0.125	6.68E-11
+GIL16 vs GBJ002	60-mock	UP	Energy production and conversion (C)	14	158	172	0.081395349	0.039551492
+GIL16 vs GBJ002	60-mock	UP	Carbohydrate transport and metabolism (G)	15	186	201	0.074626866	0.043263531
+GIL16 vs GBJ002	60-mock	DOWN	Transcription (K)	36	239	275	0.130909091	5.48E-07
+GIL16 vs GBJ002	60-mock	DOWN	Function unknown (S)	19	132	151	0.125827815	0.001486733
+GIL16 vs GIL01	60-mock	DOWN	Transcription (K)	14	261	275	0.050909091	0.001333771
+GIL16 vs GIL01	60-mock	DOWN	Function unknown (S)	8	143	151	0.052980132	0.026477689

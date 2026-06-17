@@ -1,0 +1,166 @@
+Lysogen	Contrast	Direction	KEGG	DE	No_DE	Total	Ratio	p
+GBJ002	Time 10 vs 0	UP	Replication and repair	3	9	12	0.25	3.35E-05
+GBJ002	Time 10 vs 0	DOWN	Glycan biosynthesis and metabolism	1	23	24	0.041666667	0.0192
+GBJ002	Time 30 vs 0	UP	Carbohydrate metabolism	12	21	33	0.363636364	0.000492526
+GBJ002	Time 30 vs 0	UP	Global and overview maps	30	149	179	0.167597765	0.003633469
+GBJ002	Time 30 vs 0	UP	Replication and repair	6	6	12	0.5	0.004754547
+GBJ002	Time 30 vs 0	UP	Carbohydrate metabolism	8	19	27	0.296296296	0.021839903
+GBJ002	Time 30 vs 0	DOWN	Amino acid metabolism	9	24	33	0.272727273	0.033061451
+GBJ002	Time 30 vs 0	DOWN	Folding, sorting and degradation	7	16	23	0.304347826	0.035259857
+GBJ002	Time 60 vs 0	UP	Carbohydrate metabolism	12	19	31	0.387096774	0.030172215
+GBJ002	Time 60 vs 0	UP	Carbohydrate metabolism	12	21	33	0.363636364	0.030172215
+GBJ002	Time 60 vs 0	UP	Carbohydrate metabolism	14	28	42	0.333333333	0.030172215
+GBJ002	Time 60 vs 0	UP	Carbohydrate metabolism	16	37	53	0.301886792	0.032549399
+GBJ002	Time 60 vs 0	UP	Global and overview maps	39	140	179	0.217877095	0.032549399
+GBJ002	Time 60 vs 0	UP	Replication and repair	6	6	12	0.5	0.042284688
+GBJ002	Time 60 vs 0	DOWN	Amino acid metabolism	14	2	16	0.875	9.14E-09
+GBJ002	Time 60 vs 0	DOWN	Cell motility	13	16	29	0.448275862	0.00273559
+GBJ002	Time 60 vs 0	DOWN	Global and overview maps	35	97	132	0.265151515	0.002899387
+GBJ002	Time 60 vs 0	DOWN	Carbohydrate metabolism	7	4	11	0.636363636	0.004541821
+GBJ002	Time 60 vs 0	DOWN	Cell motility	12	19	31	0.387096774	0.010255929
+GBJ002	Time 60 vs 0	DOWN	Lipid metabolism	9	11	20	0.45	0.010255929
+GBJ002	Time 60 vs 0	DOWN	Drug resistance: antimicrobial	9	11	20	0.45	0.010255929
+GBJ002	Time 60 vs 0	DOWN	Global and overview maps	14	27	41	0.341463415	0.010828513
+GBJ002	Time 60 vs 0	DOWN	Metabolism of cofactors and vitamins	10	15	25	0.4	0.012612505
+GBJ002	Time 60 vs 0	DOWN	Energy metabolism	7	10	17	0.411764706	0.048653882
+GBJ002	Time 60 vs 60-mock	UP	Global and overview maps	21	31	52	0.403846154	8.28E-06
+GBJ002	Time 60 vs 60-mock	UP	Replication and repair	13	13	26	0.5	7.23E-05
+GBJ002	Time 60 vs 60-mock	UP	Replication and repair	12	12	24	0.5	0.000123691
+GBJ002	Time 60 vs 60-mock	UP	Replication and repair	12	13	25	0.48	0.000159782
+GBJ002	Time 60 vs 60-mock	UP	Replication and repair	8	4	12	0.666666667	0.000189714
+GBJ002	Time 60 vs 60-mock	UP	Nucleotide metabolism	17	39	56	0.303571429	0.002008366
+GBJ002	Time 60 vs 60-mock	UP	Nucleotide metabolism	14	29	43	0.325581395	0.002992683
+GBJ002	Time 60 vs 60-mock	DOWN	Cell motility	13	16	29	0.448275862	0.001630811
+GBJ002	Time 60 vs 60-mock	DOWN	Cell motility	12	19	31	0.387096774	0.007872407
+GBJ002	Time 60 vs 60-mock	DOWN	Cellular community - prokaryotes	21	54	75	0.28	0.007872407
+GBJ002	Time 60 vs 60-mock	DOWN	Amino acid metabolism	11	22	33	0.333333333	0.033272738
+GBJ002	Time 60 vs 60-mock	DOWN	Drug resistance: antimicrobial	8	12	20	0.4	0.033272738
+GBJ002	Time 60 vs 60-mock	DOWN	Signal transduction	27	96	123	0.219512195	0.035942898
+GBJ002	Time 60 vs 60-mock	DOWN	Amino acid metabolism	11	24	35	0.314285714	0.035942898
+GBJ002	Time 60-mock vs 0	UP	Global and overview maps	33	77	110	0.3	9.33E-08
+GBJ002	Time 60-mock vs 0	UP	Carbohydrate metabolism	14	10	24	0.583333333	2.37E-07
+GBJ002	Time 60-mock vs 0	UP	Energy metabolism	12	16	28	0.428571429	0.000155468
+GBJ002	Time 60-mock vs 0	UP	Global and overview maps	36	143	179	0.201117318	0.000302046
+GBJ002	Time 60-mock vs 0	UP	Metabolism of cofactors and vitamins	8	10	18	0.444444444	0.002648532
+GBJ002	Time 60-mock vs 0	UP	Carbohydrate metabolism	11	22	33	0.333333333	0.002964031
+GBJ002	Time 60-mock vs 0	UP	Amino acid metabolism	9	15	24	0.375	0.003494573
+GBJ002	Time 60-mock vs 0	UP	Carbohydrate metabolism	11	24	35	0.314285714	0.003986768
+GBJ002	Time 60-mock vs 0	UP	Global and overview maps	52	304	356	0.146067416	0.01393335
+GBJ002	Time 60-mock vs 0	DOWN	Amino acid metabolism	10	6	16	0.625	1.46E-05
+GBJ002	Time 60-mock vs 0	DOWN	Energy metabolism	9	8	17	0.529411765	0.000212244
+GBJ002	Time 60-mock vs 0	DOWN	Carbohydrate metabolism	7	4	11	0.636363636	0.000333941
+GBJ002	Time 60-mock vs 0	DOWN	Global and overview maps	25	107	132	0.189393939	0.005177706
+GBJ002	Time 60-mock vs 0	DOWN	Global and overview maps	11	30	41	0.268292683	0.013718212
+GBJ002	Time 60-mock vs 0	DOWN	Global and overview maps	48	308	356	0.134831461	0.026929824
+GIL01	Time 10 vs 0	UP	Replication and repair	3	9	12	0.25	0.000139211
+GIL01	Time 30 vs 0	UP	Replication and repair	6	6	12	0.5	0.001373344
+GIL01	Time 30 vs 0	UP	Carbohydrate metabolism	10	32	42	0.238095238	0.002550841
+GIL01	Time 30 vs 0	UP	Global and overview maps	21	158	179	0.117318436	0.016669578
+GIL01	Time 30 vs 0	UP	Global and overview maps	33	323	356	0.092696629	0.020770287
+GIL01	Time 30 vs 0	UP	Carbohydrate metabolism	7	26	33	0.212121212	0.020770287
+GIL01	Time 30 vs 0	UP	Metabolism of cofactors and vitamins	6	19	25	0.24	0.020770287
+GIL01	Time 30 vs 0	UP	Carbohydrate metabolism	9	44	53	0.169811321	0.020770287
+GIL01	Time 30 vs 0	UP	Metabolism of cofactors and vitamins	5	13	18	0.277777778	0.020770287
+GIL01	Time 30 vs 0	UP	Carbohydrate metabolism	6	21	27	0.222222222	0.023893734
+GIL01	Time 30 vs 0	UP	Amino acid metabolism	5	16	21	0.238095238	0.034301491
+GIL01	Time 30 vs 0	DOWN	Amino acid metabolism	12	4	16	0.75	7.21E-10
+GIL01	Time 30 vs 0	DOWN	Global and overview maps	25	107	132	0.189393939	3.68E-05
+GIL01	Time 30 vs 0	DOWN	Carbohydrate metabolism	7	4	11	0.636363636	3.68E-05
+GIL01	Time 30 vs 0	DOWN	Global and overview maps	12	29	41	0.292682927	0.000173524
+GIL01	Time 30 vs 0	DOWN	Membrane transport	20	87	107	0.186915888	0.000289009
+GIL01	Time 30 vs 0	DOWN	Metabolism of cofactors and vitamins	8	17	25	0.32	0.001834214
+GIL01	Time 30 vs 0	DOWN	Drug resistance: antimicrobial	7	13	20	0.35	0.00215848
+GIL01	Time 30 vs 0	DOWN	Cell motility	8	21	29	0.275862069	0.004289175
+GIL01	Time 30 vs 0	DOWN	Amino acid metabolism	7	26	33	0.212121212	0.042566741
+GIL01	Time 60 vs 0	UP	Nucleotide metabolism	19	24	43	0.441860465	0.000101511
+GIL01	Time 60 vs 0	UP	Energy metabolism	17	27	44	0.386363636	0.001119617
+GIL01	Time 60 vs 0	UP	Replication and repair	8	4	12	0.666666667	0.001119617
+GIL01	Time 60 vs 0	UP	Amino acid metabolism	11	13	24	0.458333333	0.003310038
+GIL01	Time 60 vs 0	UP	Carbohydrate metabolism	10	14	24	0.416666667	0.013411489
+GIL01	Time 60 vs 0	UP	Replication and repair	10	16	26	0.384615385	0.023257674
+GIL01	Time 60 vs 0	UP	Replication and repair	9	15	24	0.375	0.036148548
+GIL01	Time 60 vs 0	UP	Carbohydrate metabolism	11	22	33	0.333333333	0.036148548
+GIL01	Time 60 vs 0	UP	Global and overview maps	26	84	110	0.236363636	0.036148548
+GIL01	Time 60 vs 0	UP	Amino acid metabolism	8	13	21	0.380952381	0.042862803
+GIL01	Time 60 vs 0	DOWN	Cell motility	10	19	29	0.344827586	0.032030879
+GIL01	Time 60 vs 0	DOWN	Amino acid metabolism	7	9	16	0.4375	0.032030879
+GIL01	Time 60 vs 60-mock	UP	Translation	19	36	55	0.345454545	6.48E-05
+GIL01	Time 60 vs 60-mock	UP	Replication and repair	8	4	12	0.666666667	0.000146727
+GIL01	Time 60 vs 60-mock	UP	Replication and repair	10	16	26	0.384615385	0.003412523
+GIL01	Time 60 vs 60-mock	UP	Replication and repair	9	15	24	0.375	0.006921554
+GIL01	Time 60 vs 60-mock	UP	Energy metabolism	12	32	44	0.272727273	0.017453141
+GIL01	Time 60 vs 60-mock	UP	Replication and repair	8	17	25	0.32	0.031545321
+GIL01	Time 60 vs 60-mock	DOWN	Cellular community - prokaryotes	20	55	75	0.266666667	0.01001
+GIL01	Time 60-mock vs 0	UP	Global and overview maps	33	77	110	0.3	1.30E-08
+GIL01	Time 60-mock vs 0	UP	Global and overview maps	38	141	179	0.212290503	1.11E-05
+GIL01	Time 60-mock vs 0	UP	Global and overview maps	58	298	356	0.162921348	3.95E-05
+GIL01	Time 60-mock vs 0	UP	Carbohydrate metabolism	11	13	24	0.458333333	5.02E-05
+GIL01	Time 60-mock vs 0	UP	Amino acid metabolism	11	13	24	0.458333333	5.02E-05
+GIL01	Time 60-mock vs 0	UP	Metabolism of cofactors and vitamins	9	9	18	0.5	0.000140098
+GIL01	Time 60-mock vs 0	UP	Amino acid metabolism	9	12	21	0.428571429	0.000562081
+GIL01	Time 60-mock vs 0	UP	Carbohydrate metabolism	11	22	33	0.333333333	0.001060366
+GIL01	Time 60-mock vs 0	UP	Energy metabolism	10	18	28	0.357142857	0.001060366
+GIL01	Time 60-mock vs 0	UP	Carbohydrate metabolism	10	25	35	0.285714286	0.007342147
+GIL01	Time 60-mock vs 0	UP	Amino acid metabolism	9	24	33	0.272727273	0.016921565
+GIL01	Time 60-mock vs 0	UP	Global and overview maps	10	31	41	0.243902439	0.022408817
+GIL01	Time 60-mock vs 0	UP	Carbohydrate metabolism	8	22	30	0.266666667	0.027710681
+GIL01	Time 60-mock vs 0	UP	Nucleotide metabolism	10	33	43	0.23255814	0.027710681
+GIL01	Time 60-mock vs 0	UP	Metabolism of cofactors and vitamins	6	13	19	0.315789474	0.02909297
+GIL01	Time 60-mock vs 0	UP	Carbohydrate metabolism	7	20	27	0.259259259	0.045703904
+GIL01	Time 60-mock vs 0	DOWN	Amino acid metabolism	8	8	16	0.5	1.44E-06
+GIL01	Time 60-mock vs 0	DOWN	Global and overview maps	16	116	132	0.121212121	0.000315025
+GIL01	Time 60-mock vs 0	DOWN	Carbohydrate metabolism	5	6	11	0.454545455	0.000473739
+GIL01	Time 60-mock vs 0	DOWN	Global and overview maps	8	33	41	0.195121951	0.001284658
+GIL01	Time 60-mock vs 0	DOWN	Energy metabolism	5	12	17	0.294117647	0.00319613
+GIL16	Time 10 vs 0	UP	Replication and repair	2	10	12	0.166666667	0.002007523
+GIL16	Time 30 vs 0	UP	Carbohydrate metabolism	16	26	42	0.380952381	7.26E-07
+GIL16	Time 30 vs 0	UP	Global and overview maps	32	147	179	0.17877095	1.55E-05
+GIL16	Time 30 vs 0	UP	Global and overview maps	20	90	110	0.181818182	0.001627649
+GIL16	Time 30 vs 0	UP	Replication and repair	6	6	12	0.5	0.001627649
+GIL16	Time 30 vs 0	UP	Global and overview maps	41	315	356	0.115168539	0.011695111
+GIL16	Time 30 vs 0	UP	Energy metabolism	10	34	44	0.227272727	0.011695111
+GIL16	Time 30 vs 0	UP	Carbohydrate metabolism	7	17	24	0.291666667	0.012323439
+GIL16	Time 30 vs 0	UP	Carbohydrate metabolism	7	20	27	0.259259259	0.022876135
+GIL16	Time 30 vs 0	UP	Energy metabolism	6	15	21	0.285714286	0.024144976
+GIL16	Time 30 vs 0	UP	Carbohydrate metabolism	4	6	10	0.4	0.02807019
+GIL16	Time 30 vs 0	UP	Carbohydrate metabolism	10	43	53	0.188679245	0.02807019
+GIL16	Time 30 vs 0	DOWN	Membrane transport	16	91	107	0.14953271	0.017090975
+GIL16	Time 30 vs 0	DOWN	Amino acid metabolism	8	25	33	0.242424242	0.017090975
+GIL16	Time 30 vs 0	DOWN	Amino acid metabolism	6	17	23	0.260869565	0.039099092
+GIL16	Time 60 vs 0	UP	Nucleotide metabolism	17	26	43	0.395348837	7.46E-06
+GIL16	Time 60 vs 0	UP	Energy metabolism	16	28	44	0.363636364	3.55E-05
+GIL16	Time 60 vs 0	UP	Replication and repair	8	4	12	0.666666667	5.09E-05
+GIL16	Time 60 vs 0	UP	Replication and repair	9	17	26	0.346153846	0.007272829
+GIL16	Time 60 vs 0	UP	Amino acid metabolism	8	16	24	0.333333333	0.013552911
+GIL16	Time 60 vs 0	UP	Replication and repair	8	16	24	0.333333333	0.013552911
+GIL16	Time 60 vs 60-mock	UP	Replication and repair	8	4	12	0.666666667	7.42E-05
+GIL16	Time 60 vs 60-mock	UP	Replication and repair	9	17	26	0.346153846	0.007145536
+GIL16	Time 60 vs 60-mock	UP	Replication and repair	8	16	24	0.333333333	0.011301797
+GIL16	Time 60 vs 60-mock	UP	Global and overview maps	23	109	132	0.174242424	0.011301797
+GIL16	Time 60 vs 60-mock	UP	Nucleotide metabolism	11	32	43	0.255813953	0.011301797
+GIL16	Time 60 vs 60-mock	UP	Amino acid metabolism	6	10	16	0.375	0.017010042
+GIL16	Time 60 vs 60-mock	UP	Amino acid metabolism	7	16	23	0.304347826	0.024057121
+GIL16	Time 60 vs 60-mock	UP	Replication and repair	7	18	25	0.28	0.035364179
+GIL16	Time 60 vs 60-mock	DOWN	Carbohydrate metabolism	14	10	24	0.583333333	1.06E-05
+GIL16	Time 60 vs 60-mock	DOWN	Global and overview maps	33	77	110	0.3	2.36E-05
+GIL16	Time 60 vs 60-mock	DOWN	Global and overview maps	43	136	179	0.240223464	0.000217375
+GIL16	Time 60 vs 60-mock	DOWN	Global and overview maps	33	99	132	0.25	0.000910139
+GIL16	Time 60 vs 60-mock	DOWN	Global and overview maps	68	288	356	0.191011236	0.000910139
+GIL16	Time 60 vs 60-mock	DOWN	Energy metabolism	12	16	28	0.428571429	0.000910139
+GIL16	Time 60 vs 60-mock	DOWN	Translation	12	23	35	0.342857143	0.009298484
+GIL16	Time 60 vs 60-mock	DOWN	Energy metabolism	7	8	15	0.466666667	0.01312815
+GIL16	Time 60 vs 60-mock	DOWN	Amino acid metabolism	8	15	23	0.347826087	0.048926755
+GIL16	Time 60-mock vs 0	UP	Global and overview maps	33	77	110	0.3	6.24E-09
+GIL16	Time 60-mock vs 0	UP	Carbohydrate metabolism	14	10	24	0.583333333	6.48E-08
+GIL16	Time 60-mock vs 0	UP	Global and overview maps	40	139	179	0.223463687	2.87E-07
+GIL16	Time 60-mock vs 0	UP	Global and overview maps	54	302	356	0.151685393	0.000416902
+GIL16	Time 60-mock vs 0	UP	Energy metabolism	10	18	28	0.357142857	0.001562952
+GIL16	Time 60-mock vs 0	UP	Carbohydrate metabolism	9	21	30	0.3	0.012564632
+GIL16	Time 60-mock vs 0	UP	Energy metabolism	11	33	44	0.25	0.016412474
+GIL16	Time 60-mock vs 0	UP	Carbohydrate metabolism	9	26	35	0.257142857	0.030788022
+GIL16	Time 60-mock vs 0	DOWN	Amino acid metabolism	8	8	16	0.5	5.56E-05
+GIL16	Time 60-mock vs 0	DOWN	Amino acid metabolism	9	14	23	0.391304348	7.02E-05
+GIL16	Time 60-mock vs 0	DOWN	Global and overview maps	21	111	132	0.159090909	0.000166967
+GIL16	Time 60-mock vs 0	DOWN	Carbohydrate metabolism	5	6	11	0.454545455	0.003389205
+GIL16	Time 60-mock vs 0	DOWN	Global and overview maps	8	33	41	0.195121951	0.024599386
+GIL16	Time 60-mock vs 0	DOWN	Membrane transport	5	13	18	0.277777778	0.030166369

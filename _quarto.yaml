@@ -1,0 +1,204 @@
+project:
+    type: website
+    render:
+      - index.qmd
+      - lysogeny.qmd
+      - lytic_cycle_induction.qmd
+      - lytic_cycle_induction_gbj002.qmd
+      - lytic_cycle_induction_gil01.qmd
+      - lytic_cycle_induction_gil16.qmd
+      - gil01_gbj002_lysogeny.qmd
+      - gil16_gbj002_lysogeny.qmd
+      - gil16_gil01_lysogeny.qmd
+      - gil01_gbj002_t0.qmd
+      - gil16_gbj002_t0.qmd
+      - gil16_gil01_t0.qmd
+      - gil01_gbj002_t10.qmd
+      - gil16_gbj002_t10.qmd
+      - gil16_gil01_t10.qmd
+      - gil01_gbj002_t30.qmd
+      - gil16_gbj002_t30.qmd
+      - gil16_gil01_t30.qmd
+      - gil01_gbj002_t60.qmd
+      - gil16_gbj002_t60.qmd
+      - gil16_gil01_t60.qmd
+      - gil01_gbj002_t60-mock.qmd
+      - gil16_gbj002_t60-mock.qmd
+      - gil16_gil01_t60-mock.qmd
+      - gbj002_t10_t0.qmd
+      - gbj002_t30_t0.qmd
+      - gbj002_t60_t0.qmd
+      - gbj002_t60_t60-mock.qmd
+      - gbj002_t60-mock_t0.qmd
+      - gil01_t10_t0.qmd
+      - gil01_t30_t0.qmd
+      - gil01_t60_t0.qmd
+      - gil01_t60_t60-mock.qmd
+      - gil01_t60-mock_t0.qmd
+      - gil16_t10_t0.qmd
+      - gil16_t30_t0.qmd
+      - gil16_t60_t0.qmd
+      - gil16_t60_t60-mock.qmd
+      - gil16_t60-mock_t0.qmd
+      - hierarchical_clustering_gbj002.qmd
+      - hierarchical_clustering_gil01.qmd
+      - hierarchical_clustering_gil16.qmd
+      - hierarchical_clusterings_comparisons.qmd
+      - gbj002_network.qmd
+      - gil01_network.qmd
+      - gil16_network.qmd
+      - networks_comparisons.qmd
+      - results_summary.qmd
+
+website:
+  title: "RNAseq analysis"
+  navbar:
+    background: dark
+    pinned: true
+    right:
+      - href: index.qmd
+        text: Main menu
+
+      - text: General analysis
+        menu:
+          - text: Lysogeny
+            href: lysogeny.qmd
+          - text: Lytic cycle induction
+            href: lytic_cycle_induction.qmd
+          - text: "---"
+          - text: Per lysogen lytic cycle induction analysis
+          - text: GBJ002
+            href: lytic_cycle_induction_gbj002.qmd
+          - text: GIL01
+            href: lytic_cycle_induction_gil01.qmd
+          - text: GIL16
+            href: lytic_cycle_induction_gil16.qmd
+
+      - text: Inter-lysogen contrasts
+        menu:
+          - text: "Lysogeny contrasts"
+          - text: "GIL01 vs GBJ002"
+            href: gil01_gbj002_lysogeny.qmd
+          - text: "GIL16 vs GBJ002"
+            href: gil16_gbj002_lysogeny.qmd
+          - text: "GIL16 vs GIL01"
+            href: gil16_gil01_lysogeny.qmd
+          - text: "---"
+          - text: Time 0 contrasts
+          - text: "GIL01 vs GBJ002"
+            href: gil01_gbj002_t0.qmd
+          - text: "GIL16 vs GBJ002"
+            href: gil16_gbj002_t0.qmd
+          - text: "GIL16 vs GIL01"
+            href: gil16_gil01_t0.qmd
+          - text: "---"
+          - text: Time 10 contrasts
+          - text: "GIL01 vs GBJ002"
+            href: gil01_gbj002_t10.qmd
+          - text: "GIL16 vs GBJ002"
+            href: gil16_gbj002_t10.qmd
+          - text: "GIL16 vs GIL01"
+            href: gil16_gil01_t10.qmd
+          - text: "---"
+          - text: Time 30 contrasts
+          - text: "GIL01 vs GBJ002"
+            href: gil01_gbj002_t30.qmd
+          - text: "GIL16 vs GBJ002"
+            href: gil16_gbj002_t30.qmd
+          - text: "GIL16 vs GIL01"
+            href: gil16_gil01_t30.qmd
+          - text: "---"
+          - text: Time 60 contrasts
+          - text: "GIL01 vs GBJ002"
+            href: gil01_gbj002_t60.qmd
+          - text: "GIL16 vs GBJ002"
+            href: gil16_gbj002_t60.qmd
+          - text: "GIL16 vs GIL01"
+            href: gil16_gil01_t60.qmd
+          - text: "---"
+          - text: Time 60-mock contrasts
+          - text: "GIL01 vs GBJ002"
+            href: gil01_gbj002_t60-mock.qmd
+          - text: "GIL16 vs GBJ002"
+            href: gil16_gbj002_t60-mock.qmd
+          - text: "GIL16 vs GIL01"
+            href: gil16_gil01_t60-mock.qmd
+
+      - text: Intra-lysogen contrasts
+        menu:
+          - text: GBJ002 contrasts
+          - text: "Times 10 vs 0"
+            href: gbj002_t10_t0.qmd
+          - text: "Times 30 vs 0"
+            href: gbj002_t30_t0.qmd
+          - text: "Times 60 vs 0"
+            href: gbj002_t60_t0.qmd
+          - text: "Times 60 vs 60-mock"
+            href: gbj002_t60_t60-mock.qmd
+          - text: "Times 60-mock vs 0"
+            href: gbj002_t60-mock_t0.qmd
+          - text: "---"
+          - text: GIL01 contrasts
+          - text: "Times 10 vs 0"
+            href: gil01_t10_t0.qmd
+          - text: "Times 30 vs 0"
+            href: gil01_t30_t0.qmd
+          - text: "Times 60 vs 0"
+            href: gil01_t60_t0.qmd
+          - text: "Times 60 vs 60-mock"
+            href: gil01_t60_t60-mock.qmd
+          - text: "Times 60-mock vs 0"
+            href: gil01_t60-mock_t0.qmd
+          - text: "---"
+          - text: GIL16 contrasts
+          - text: "Times 10 vs 0"
+            href: gil16_t10_t0.qmd
+          - text: "Times 30 vs 0"
+            href: gil16_t30_t0.qmd
+          - text: "Times 60 vs 0"
+            href: gil16_t60_t0.qmd
+          - text: "Times 60 vs 60-mock"
+            href: gil16_t60_t60-mock.qmd
+          - text: "Times 60-mock vs 0"
+            href: gil16_t60-mock_t0.qmd
+
+      - text: Gene coexpression analysis
+        menu:
+          - text: Hierarchical clusterings
+          - text: "GBJ002"
+            href: hierarchical_clustering_gbj002.qmd
+          - text: "GIL01"
+            href: hierarchical_clustering_gil01.qmd
+          - text: "GIL16"
+            href: hierarchical_clustering_gil16.qmd
+          - text: "Comparisons"
+            href: hierarchical_clusterings_comparisons.qmd
+          - text: "---"
+          - text: Networks
+          - text: "GBJ002"
+            href: gbj002_network.qmd
+          - text: "GIL01"
+            href: gil01_network.qmd
+          - text: "GIL16"
+            href: gil16_network.qmd
+          - text: "Comparisons"
+            href: networks_comparisons.qmd
+
+      - text: Results summary
+        href: results_summary.qmd
+
+author: Eduardo Lozano
+date: last-modified
+format:
+  html:
+    page-layout: full
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    smooth-scroll: true
+    anchor-sections: true
+    css: styles.css
+execute:
+  cache: true
+  freeze: auto

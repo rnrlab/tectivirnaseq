@@ -1,0 +1,653 @@
+---
+title: Lytic cycle induction analysis
+---
+
+```{r}
+#| include: false
+
+library("DT")
+library("edgeR")
+library("DESeq2")
+library("ggplot2")
+library("plotly")
+library("heatmaply")
+library("pheatmap")
+library("dplyr")
+library("tidyr")
+library("stringr")
+library("purrr")
+library("scales")
+library("RColorBrewer")
+library("vegan")
+library("clusterProfiler")
+library("org.Bthuringiensis.eg.db")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+# Load counts
+
+Raw counts were obtained by preprocessing `featureCounts` results. Specifically, they were obtained by summing counts of paired reads plus half the sum of the counts of unpaired reads:
+
+$$
+Counts = \sum \text{paired reads counts} + \frac{\sum \text{unpaired reads counts}}{2}
+$$
+
+Once the counts are obtained, we upload them along with the metadata.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_counts
+#| code-fold: true
+#| warning: false
+
+counts <- read.csv("lysis_counts.tsv", sep = "\t", header = TRUE, row.names = 1, check.names = FALSE)
+
+metadata <- read.csv("metadata_lysis.tsv", sep = "\t", header = TRUE)
+metadata[] <- lapply(metadata, function(x) if (is.character(x)) gsub("-", "_", x) else x)
+metadata$Group <- as.factor(metadata$Group)
+metadata$Replicate <- as.factor(metadata$Replicate)
+metadata$Time <- as.factor(metadata$Time)
+
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+```
+
+# Remove rRNA genes reads
+
+rRNA genes are one of the most common sources of noise in RNAseq analyses. Although rRNA gene reads removal was efficient using Bowtie2, we chose to discard these gene counts before normalization.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: rrna
+#| code-fold: true
+
+rrna_genes <- rownames(read.csv("rrna.tsv", sep = "\t", header = FALSE, row.names = 1))
+rrna_counts <- counts[rownames(counts) %in% rrna_genes, ]
+counts <- counts[!(rownames(counts) %in% rrna_genes), ]
+```
+
+# Delete low expression genes
+
+Another source of noise are low-expression genes. Although DESeq2 has an internal filter, we decided to use a conservative criterion beforehand: deleting genes that didn't have at least 10 counts in any of the strain-time combinations. As we can see, low expression genes represent less than 0.01% of the counts.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: delete_genes
+#| code-fold: true
+#| message: false
+#| warning: false
+
+group_means_coexpression <- sapply(levels(metadata$Group)[!grepl("mock", levels(metadata$Group))], function(g) {rowMeans(counts[, metadata$Group == g, drop = FALSE])})
+keep_coexpression <- rowSums(group_means_coexpression >= 10) >= 1
+gene_coexpression_counts <- counts[keep_coexpression, ]
+gene_coexpression_counts <- gene_coexpression_counts[, !grepl("mock", colnames(gene_coexpression_counts))]
+
+group_means <- sapply(levels(metadata$Group), function(g) {rowMeans(counts[, metadata$Group == g, drop = FALSE])})
+keep <- rowSums(group_means >= 10) >= 1
+leg_counts <- counts[!keep, ]
+counts <- counts[keep, ]
+lytic_cycle_induction_counts <- counts
+
+leg_percentage <- signif(sum(leg_counts)/sum(counts) * 100, 3)
+paste("Low expressed genes counts: ", leg_percentage, "%", sep = "")
+```
+
+# Create dds object and delete phages genes
+
+With the following code, we created the dds object. Since DESeq2 works with integers, decimals were rounded to the nearest unit. Furthermore, since phages genes are not comparable across these conditions, they were removed after normalization, thus contributing to library sizes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dds
+#| code-fold: true
+#| message: false
+#| warning: false
+
+counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
+
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Group)
+
+dds <- DESeq(dds)
+
+dds <- dds[!grepl("^GIL", rownames(dds)), ]
+```
+
+# Dimensionality reduction
+
+DESeq2 uses Variance Stabilizing Transformation (VST) to transform RNAseq counts so that the variance is approximately constant across different expression levels. This facilitates analyses like clustering or dimensionality reduction techniques, such as PCA and MDS.
+
+The results obtained, although sometimes difficult to visualize clearly, are reasonably consistent, as the first two dimensions capture more than 45% of the variability or separation between samples. In general, samples tend to group according to condition and time. However, in most cases, at least one replicate deviates from the other two. Given the absence of phage genes, it would be advisable to repeat this analysis separately for each condition in order to better assess the presence of potential batch effects.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dimensionality_reduction
+#| message: false
+#| warning: false
+#| code-fold: true
+#| fig-width: 9
+#| fig-height: 9
+
+vsdata <- vst(dds, blind = TRUE)
+pca_df <- plotPCA(vsdata, intgroup = "Group", ntop = nrow(dds), returnData = TRUE)
+pca_df$Sample <- rownames(pca_df)
+
+percentVar <- round(100 * attr(pca_df, "percentVar"), 2)
+
+pca_df$hover <- paste0(
+  "Sample: ", pca_df$Sample, "<br>",
+  "PC1: ", round(pca_df$PC1, 2), "<br>",
+  "PC2: ", round(pca_df$PC2, 2)
+)
+
+p <- ggplot(pca_df, aes(x = PC1, y = PC2, color = Group, text = hover)) +
+  geom_point(size = 3) +
+  labs(
+    x = paste0("PC1 (", percentVar[1], "%)"),
+    y = paste0("PC2 (", percentVar[2], "%)"),    
+    color = "Group") +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
+
+dge <- DGEList(counts = counts(dds))
+dge <- calcNormFactors(dge)
+mds <- plotMDS(dge, top = nrow(dds), plot = FALSE)
+
+mds_df <- data.frame(
+  MDS1 = mds$x,
+  MDS2 = mds$y,
+  Sample = colnames(dge),
+  Group = colData(dds)$Group
+)
+
+percentVar <- round(100 * mds$var.explained, 2)
+
+mds_df$hover <- paste0(
+  "Sample: ", mds_df$Sample, "<br>",
+  "MDS1: ", round(mds_df$MDS1, 2), "<br>",
+  "MDS2: ", round(mds_df$MDS2, 2)
+)
+
+p <- ggplot(mds_df, aes(x = MDS1, y = MDS2, color = Group, text = hover)) +
+  geom_point(size = 3) +
+  labs(
+    x = paste0("MDS1 (", percentVar[1], "%)"),
+    y = paste0("MDS2 (", percentVar[2], "%)"),
+    color = "Group"
+  ) +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
+```
+
+Below this plot, we show two heatmaps with the 20 genes that contribute most to PC1 and PC2 in the PCA.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: genes_pca
+#| code-fold: true
+
+vs_mat <- assay(vsdata)
+topVarGenes <- head(order(rowVars(vs_mat), decreasing = TRUE), nrow(dds))
+pca <- prcomp(t(vs_mat[topVarGenes, ]))
+sample_pca <- as.data.frame(pca$x)
+sample_pca$Group <- colData(vsdata)$Group
+
+gene_loadings <- as.data.frame(pca$rotation)
+top_genes_PC1 <- head(gene_loadings[order(abs(gene_loadings$PC1), decreasing=TRUE), ], 20)
+top_genes_PC2 <- head(gene_loadings[order(abs(gene_loadings$PC2), decreasing=TRUE), ], 20)
+
+labels_PC1 <- mark_pBtic235_genes(rownames(top_genes_PC1), annotation)
+labels_PC2 <- mark_pBtic235_genes(rownames(top_genes_PC2), annotation)
+```
+
+## PC1
+
+In the case of PC1, we can see two main branches: the left branch, with all samples induced at 60 minutes, and the right branch, with the rest. In the right branch, the separation of samples according to the strain or the time intervals is not as clear. Regarding the genes, we see two clearly defined regions. In the upper region are 9 genes from the prophage region, which are repressed in most samples, but their expression increases 60 minutes after induction with MMC. In the lower region, we find 11 genes belonging to pBtic235. In this case, expression appears weaker in some samples from minute 0 or without induction (60-mock) and increases at 60 minutes. Furthermore, it is interesting to note the presence of a de novo transcript (DNT) among the most variable genes, excluding phage genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pheatmap_pc1
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 7
+
+pheatmap(vs_mat[rownames(top_genes_PC1), ], labels_row = labels_PC1, legend = FALSE)
+```
+
+## PC2
+
+In the case of PC2, there appears to be some separation between the samples induced at early time points and the rest. Regarding the genes, we observe the following differences from top to bottom:
+
+-   The highest expression of GBJ002_03168 (arginine deiminase), GBJ002_03169 (ornithine carbamoyltransferase), GBJ002_03170 (arginine-ornithine antiporter) and GBJ002_03171 (carbamate kinase) genes is found in late time points, regardless of MMC induction.
+
+-   GBJ002_03392 (PTS trehalose transporter subunit IIBC) and GBJ002_03393 (alpha,alpha-phosphotrehalase) genes, on the other hand, are more highly expressed in early and intermediate time points than in late time points.
+
+-   GBJ002_02405 (PTS cellobiose transporter subunit IIC), GBJ002_03173 (ABC transporter permease) and GBJ002_04467 (group-specific protein) genes are similar to the first four, although their expression is weaker in this case.
+
+-   GBJ002_00877 (PTS system fructose-specific EIIABC component), GBJ002_00878 (1-phosphofructokinase) and GBJ002_00879 (HTH deoR-type domain-containing protein) genes are more highly expressed in early time points, with their expression being weakest in the uninduced samples.
+
+-   GBJ002_00714 (aldehyde dehydrogenase DhaS), GBJ002_01842 (argininosuccinate lyase), GBJ002_01843 (argininosuccinate synthase), GBJ002_02402 (chitin disaccharide deacetylase) and GBJ002_02406 (lichenan-specific phosphotransferase enzyme IIB component) genes have low expression in early time points and intermediate expression in later time points.
+
+-   GBJ002_00049 (foldase protein PrsA 4), GBJ002_00160 (pyrroline-5-carboxylate reductase) and GBJ002_05018 (transcriptional regulator, ArsR family) genes have the inverse expression of the previous five.
+
+These results seem to suggest metabolic changes and that certain genes are co-expressed with others, regardless of their location on the chromosome. Therefore, it would be interesting to investigate the coexpression of genes throughout MMC induction.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pheatmap_pc2
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 7
+
+pheatmap(vs_mat[rownames(top_genes_PC2), ], labels_row = labels_PC2, legend = FALSE)
+```
+
+# Heatmap
+
+The heatmap uses information from all genes in the model built using VST transformation to see how the samples cluster. From left to right, or top to bottom, the samples can be seen grouped by low induction times, non-induced samples, and samples induced at 30 and 60 minutes. However, sometimes some replicates group with other strains and/or times, suggesting the presence of a batch effect, as seen in the PCA plot.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: heatmap
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 7
+
+sampleDists <- dist(t(assay(vsdata)))
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsdata$Sample)
+
+heatmaply(
+  sampleDistMatrix,
+  colors = viridis(n = 256, alpha = 1, begin = 1, end = 0, option = "viridis"),
+  Rowv = as.dendrogram(hclust(sampleDists)),
+  Colv = as.dendrogram(hclust(sampleDists)),
+  label_names = c("Row", "Column", "Value"),
+  width = 1200,
+  height = 800
+)
+```
+
+# Boxplot and dispersion plot
+
+The boxplot of VST-transformed expression values illustrates the distribution of normalized expression levels across samples. All samples show very similar medians, interquartile ranges and overall dispersion, with no evidence of systematic shifts between experimental groups. This indicates that the variance-stabilizing transformation has effectively reduced heteroscedasticity and that the normalization procedure has removed global differences in expression distributions, supporting the suitability of the data for downstream analyses such as clustering or differential expression. If there were one thing to highlight, we could point out that the samples seem to show a greater number of outliers as time goes on, regardless of the induction.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: boxplot
+#| code-fold: true
+#| message: false
+#| fig-width: 10
+#| fig-height: 7
+
+op <- par(mar = c(10, 4, 4, 2))
+boxplot(assay(vsdata), las = 2)
+```
+
+```{r}
+#| include: false
+
+par(op)
+```
+
+The dispersion versus mean of normalized counts plot illustrates the mean–variance relationship assumed by the negative binomial model. Gene-wise dispersion estimates (black points) show higher variability at low expression levels and progressively lower dispersion as mean expression increases. The fitted dispersion trend (red line) captures this overall pattern well and the final dispersion estimates after shrinkage (blue points) are stabilized around this curve. The close agreement between observed and fitted dispersions, together with the lack of anomalous structure, suggests that the dispersion estimation is robust and that the model assumptions are appropriate for these data.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dispersion
+#| code-fold: true
+#| message: false
+#| fig-width: 10
+#| fig-height: 7
+
+plotDispEsts(dds)
+```
+
+# Check batch effect
+
+In this section, we evaluated the presence and magnitude of a potential batch effect associated with experimental replication, as samples were processed on different days.
+
+```{r}
+#| include: false
+
+set.seed(0)
+```
+
+## Explained variance per gene and factor
+
+First, we compared the proportion of gene expression variance explained by the experimental design (i.e., biological factors corresponding to Strain and Time) and by Replicate as a proxy for batch effects. To ensure comparability across all lytic cycle inducted samples, this analysis was restricted to the gene set shared across conditions, corresponding to genes from GBJ002 (including both chromosomal genes and those located on pBtic235).
+
+At the gene level, biological factors accounted for a substantially larger fraction of expression variability than Replicate. Specifically, the median proportion of variance explained by the experimental structure was 55.49%, whereas Replicate accounted for a median of 14.10% across genes. Thus, biological effects explained approximately three times more variance than batch effects at the gene level.
+
+These results indicate that, although a batch effect associated with Replicate is present and detectable, it does not dominate the expression signal. Instead, the primary source of variability in the data is driven by the intended experimental factors, supporting the suitability of the dataset for downstream differential expression analyses when Replicate is appropriately included as a covariate.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: batch_effect
+#| code-fold: true
+#| warning: false
+#| message: false
+
+metadata <- metadata %>%
+  mutate(
+    Strain   = factor(sub("_.*", "", Group)),
+    Time      = factor(Time),
+    Replicate = factor(Replicate)
+  ) %>%
+  dplyr::select(Sample, Strain, Time, Replicate)
+
+dds <- DESeqDataSetFromMatrix(
+  countData = counts,
+  colData   = metadata,
+  design    = ~ Replicate + Strain * Time
+)
+
+dds <- DESeq(dds)
+dds <- dds[!grepl("^GIL", rownames(dds)), ]
+
+expr_mat <- assay(vst(dds, blind = FALSE))
+
+var_explained <- apply(expr_mat, 1, function(gene_expr) {
+  model <- aov(gene_expr ~ Strain * Time + Replicate, data = metadata)
+  ss <- summary(model)[[1]][["Sum Sq"]]
+  total <- sum(ss)
+  c(
+    Strain_Time  = sum(ss[1:3]) / total,
+    Replicate     = ss[4] / total
+  )
+})
+
+var_explained <- t(var_explained) %>% as.data.frame()
+
+var_long <- var_explained %>%
+  mutate(Gene = rownames(var_explained)) %>%
+  pivot_longer(
+    cols = c("Strain_Time", "Replicate"),
+    names_to = "Factor",
+    values_to = "VarianceExplained"
+  ) %>%
+  mutate(
+      VariancePct = VarianceExplained * 100,
+      hover_text = paste0(
+        "Gene: ", Gene,
+        "<br>Factor: ", Factor,
+        "<br>Explained variance (%): ", round(VariancePct, 2)
+      )
+    )
+
+p <- ggplot(
+  var_long,
+  aes(x = Factor, y = VariancePct, fill = Factor, text = hover_text)
+) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.25, alpha = 0.3, size = 0.5) +
+  theme_minimal() +
+  ylab("Explained variance (%)") +
+  theme(legend.position = "none")
+
+ggplotly(p, tooltip = "text")
+```
+
+## Permutational Multivariate Analysis of Variance (PERMANOVA)
+
+To assess batch effects at the transcriptome-wide level, we used permutational multivariate analysis of variance (PERMANOVA) as implemented in the `adonis2` function. This method evaluates whether predefined factors explain significant differences in multivariate expression profiles by partitioning the total variance of a distance matrix (here, based on variance-stabilized expression values) among explanatory variables. Statistical significance is assessed via permutations, making the test robust to deviations from normality and suitable for high-dimensional RNA‑seq data. Unlike gene‑wise models, PERMANOVA evaluates effects on the global expression structure, providing an estimate of the proportion of total variance (R²) attributable to each factor.
+
+### Global batch test
+
+We first performed a global PERMANOVA including the main biological factors (Strain, Time and their interaction) together with Replicate as a potential batch effect. In this model, biological factors explained the majority of the transcriptomic variation. Time was the dominant source of variability (R² = 47%, p < 0.001), followed by the interaction between Strain and Time (R² = 15.43%, p < 0.001), indicating that temporal expression dynamics differ between strains. Strain alone also contributed significantly to expression differences (R² = 11.74%, p < 0.001). Replicate accounted for a much smaller fraction of the total variance (R² = 2.77%) and showed a marginal effect (p = 0.0584). This suggests that, although Replicate introduces some variability in the data, its contribution is minor compared to the intended biological structure of the experiment.
+
+Overall, the global PERMANOVA indicates that transcriptomic variation is primarily driven by biological factors, while the batch effect associated with Replicate is limited in magnitude and does not dominate the expression space.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: adonis_result
+#| code-fold: true
+
+adonis_result <- adonis2(
+  t(expr_mat) ~ Strain + Time + Strain:Time + Replicate,
+  data = metadata,
+  permutations = 9999,
+  by = "terms"
+)
+
+datatable(adonis_result, colnames = c("Term", "DF", "SS", "R²", "F statistic", "Permutated p value")) %>%
+  formatRound(columns = c("SumOfSqs", "F"), digits = 3) %>%
+  formatPercentage(columns = "R2", digits = 2)
+```
+
+### Batch effect within biological strata
+
+To further evaluate whether the effect of Replicate persists once biological variability is fully controlled, we performed a PERMANOVA restricted to biologically equivalent samples. In this analysis, permutations were constrained within Strain × Time strata, such that samples were only compared against others sharing the same strain and time point. This approach specifically tests whether Replicate introduces systematic differences beyond the biological structure of the experiment.
+
+Under this restricted model, Replicate explained a small but statistically significant fraction of the total transcriptomic variance (R² = 2.77%, p = 0.0027). Although the effect size remained modest, the significant result indicates that Replicate consistently affects expression profiles when comparisons are limited to biologically matched samples.
+
+Importantly, the proportion of variance explained by Replicate was identical to that observed in the global model, indicating that the magnitude of the batch effect is stable and not driven by confounding with strain or time. The increased statistical significance in the stratified analysis reflects the removal of biological heterogeneity, which increases sensitivity to detect technical effects.
+
+Together, these results demonstrate that Replicate introduces a reproducible batch effect across samples. While this effect is small relative to biological factors, it is statistically robust and should therefore be accounted for in downstream analyses.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: adonis_batch_within
+#| code-fold: true
+
+adonis_batch_within <- adonis2(
+  t(expr_mat) ~ Replicate,
+  data = metadata,
+  permutations = 9999,
+  strata = interaction(metadata$Strain, metadata$Time)
+)
+
+datatable(adonis_batch_within, colnames = c("Term", "DF", "SS", "R²", "F statistic", "Permutated p value")) %>%
+  formatRound(columns = c("SumOfSqs", "F"), digits = 3) %>%
+  formatPercentage(columns = "R2", digits = 2)
+```
+
+### Interaction between strain and batch effect
+
+To assess whether the effect of Replicate differs between strains, we extended the PERMANOVA model to include an interaction term between Strain and Replicate. Marginal tests were used to evaluate each term independently of the order in which factors enter the model.
+
+In this model, the interaction between Strain and Time remained highly significant (R² = 15.43%, p < 0.001), confirming that temporal expression dynamics differ across strains and reinforcing the biological relevance of modeling this interaction in downstream analyses.
+
+In contrast, the interaction between Strain and Replicate explained a small fraction of the total variance (R² = 4.60%) and showed only a marginal effect (p = 0.0574). This indicates limited evidence that the batch effect associated with Replicate differs systematically between strains. While minor strain‑specific differences in batch response cannot be completely excluded, the overall magnitude of this interaction is small compared to both the main biological effects and the Strain × Time interaction.
+
+These results suggest that Replicate introduces a broadly similar effect across strains rather than strain‑specific batch effects. Consequently, modeling Replicate as an additive covariate is sufficient to account for batch effects, without the need to include strain‑specific batch terms in the differential expression models.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: adonis_inter
+#| code-fold: true
+
+adonis_inter <- adonis2(
+  t(expr_mat) ~ Strain + Time + Strain:Time + Replicate + Strain:Replicate,
+  data = metadata,
+  permutations = 9999,
+  by = "margin"
+)
+
+datatable(adonis_inter, colnames = c("Term", "DF", "SS", "R²", "F statistic", "Permutated p value")) %>%
+  formatRound(columns = c("SumOfSqs", "F"), digits = 3) %>%
+  formatPercentage(columns = "R2", digits = 2)
+```
+
+### Batch effect assessed separately for each strain
+
+To further evaluate whether the batch effect associated with Replicate differs across strains, we performed PERMANOVA analyses independently for each strain. In these tests, only samples belonging to a given strain were considered and permutations were restricted within time points to control for temporal effects. This approach allows the assessment of batch effects within each strain while accounting for time‑dependent expression changes.
+
+Across all three strains, Replicate explained a similar proportion of transcriptomic variance, with R² values of 8.21% for GBJ002, 8.12% for GIL01 and 8.59% for GIL16. In all cases, the effect of Replicate was statistically significant (p < 0.05), indicating that it consistently contributes to expression variability within each strain.
+
+Importantly, both the magnitude and direction of the batch effect were highly comparable across strains. No strain exhibited a disproportionately large batch contribution, and differences in R² values were minimal. These results indicate that the batch effect associated with Replicate is reproducible but homogeneous across strains, rather than being driven by strain‑specific technical artifacts.
+
+Together with the interaction analysis, these findings support the conclusion that Replicate introduces a small but consistent batch effect that affects all strains similarly. Consequently, modeling Replicate as a shared covariate across strains is sufficient to account for batch effects in downstream analyses.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: batch_per_strain
+#| code-fold: true
+#| message: false
+
+strain_levels <- levels(metadata$Strain)
+res_list <- lapply(strain_levels, function(strain) {
+  idx <- metadata$Strain == strain
+  md_sub <- droplevels(metadata[idx, ])
+  ex_sub <- expr_mat[, idx, drop = FALSE]
+  
+  ad2 <- adonis2(
+    t(ex_sub) ~ Replicate,
+    data = md_sub,
+    permutations = 9999,
+    strata = md_sub$Time
+  )
+  data.frame(
+    Strain = strain,
+    Df = ad2$Df[1],
+    R2 = ad2$R2[1],
+    F = ad2$F[1],
+    p = ad2$`Pr(>F)`[1]
+  )
+})
+
+batch_per_strain <- do.call(rbind, res_list)
+
+datatable(batch_per_strain, rownames = FALSE, colnames = c("Strain", "DF", "R²", "F statistic", "Permutated p value")) %>%
+  formatPercentage(columns = "R2", digits = 2) %>%
+  formatRound(columns = "F", digits = 3) %>%
+  formatSignif(columns = "p", digits = 3)
+```
+
+### Batch effect assessment including phage‑specific gene sets
+
+Because phages (GIL01 and GIL16) contain genes that are not shared, we additionally evaluated the batch effect using specific gene sets. For this purpose, independent DESeq2 objects were constructed for each strain, allowing the assessment of batch effects on the full transcriptome of each one and avoiding potential underestimation of technical variability caused by restricting the analysis to shared genes.
+
+For each specific dataset, variance‑stabilized expression values were analyzed using PERMANOVA, testing the effect of Replicate while restricting permutations within time points. Under this framework, Replicate explained a comparable fraction of transcriptomic variance across all strains, with R² values of 8.11% for GBJ002, 7.76% for GIL01 and 8.19% for GIL16. In all cases, the effect of Replicate was statistically significant (p < 0.05).
+
+These results closely mirror those obtained using the shared gene set and confirm that the batch effect associated with Replicate is not driven by the exclusion of specific genes. Instead, Replicate consistently contributes a small but reproducible proportion of expression variability across the full gene complement of each strain.
+
+Taken together, the consistency of effect sizes across strains and gene sets indicates that the batch effect is homogeneous and moderate in magnitude. This supports the use of a common modeling strategy in downstream analyses, whereby Replicate is included as an additive covariate to control for batch effects without applying explicit batch correction.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: adonis_by_strain
+#| code-fold: true
+#| message: false
+#| warning: false
+
+make_dds_by_strain <- function(strain, counts, metadata) {
+
+  idx_samples <- metadata$Strain == strain
+  md_sub <- droplevels(metadata[idx_samples, ])
+  counts_sub <- counts[, idx_samples, drop = FALSE]
+
+  if (strain == "GBJ002") {
+    counts_sub <- counts_sub[!grepl("^GIL", rownames(counts_sub)), ]
+  }
+
+  if (strain == "GIL01") {
+    counts_sub <- counts_sub[!grepl("^GIL16", rownames(counts_sub)), ]
+  }
+
+  if (strain == "GIL16") {
+    counts_sub <- counts_sub[!grepl("^GIL01", rownames(counts_sub)), ]
+  }
+
+  DESeqDataSetFromMatrix(
+    countData = counts_sub,
+    colData   = md_sub,
+    design    = ~ Replicate + Time
+  )
+}
+
+strains <- levels(metadata$Strain)
+
+dds_list <- lapply(strains, function(strain) {
+  make_dds_by_strain(
+    strain = strain,
+    counts = counts,
+    metadata = metadata
+  )
+})
+
+names(dds_list) <- strains
+
+adonis_by_strain <- lapply(names(dds_list), function(strain) {
+
+  dds <- DESeq(dds_list[[strain]])
+  expr <- assay(vst(dds, blind = FALSE))
+
+  ad2 <- adonis2(
+    t(expr) ~ Replicate,
+    data = as.data.frame(colData(dds)),
+    permutations = 9999,
+    strata = colData(dds)$Time
+  )
+
+  data.frame(
+    Strain = strain,
+    R2 = ad2$R2[1],
+    F = ad2$F[1],
+    p = ad2$`Pr(>F)`[1]
+  )
+})
+
+adonis_by_strain <- do.call(rbind, adonis_by_strain)
+
+datatable(adonis_by_strain, rownames = FALSE, colnames = c("Strain", "R²", "F statistic", "Permutated p value")) %>%
+  formatPercentage(columns = "R2", digits = 2) %>%
+  formatRound(columns = "F", digits = 3) %>%
+  formatSignif(columns = "p", digits = 3)
+```
+
+# Save results
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: save_results
+#| code-fold: true
+
+saveRDS(lytic_cycle_induction_counts, file = "lytic_cycle_induction_counts.rds")
+saveRDS(metadata, file = "lytic_cycle_induction_metadata.rds")
+
+saveRDS(gene_coexpression_counts, file = "gene_coexpression_counts.rds")
+saveRDS(metadata %>% filter(Time != "60_mock") %>% droplevels(), file = "coexpression_metadata.rds")
+```

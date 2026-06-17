@@ -1,0 +1,1227 @@
+﻿Element	Start	End	Strand	Association	Type	Subtype	Source
+chromosome	1	430	+	De novo transcript	Non-coding DNT 	Coding probability = 12%	Popcorn
+chromosome	4260	5532	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	4410	4582	+	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	6562	6821	-	De novo transcript	Non-coding DNT 	Coding probability = 47%	Popcorn
+chromosome	7962	9940	+	De novo transcript	Coding DNT 	Coding probability = 93%	Popcorn
+chromosome	12126	12791	-	Virulence factor	VFG043577	NA	VFDB
+chromosome	20820	21995	-	Virulence factor	VFG015926	NA	VFDB
+chromosome	24215	24547	+	Virulence factor	VFG015916	NA	VFDB
+chromosome	24544	25788	+	Virulence factor	VFG015920	NA	VFDB
+chromosome	31289	32911	-	Virulence factor	VFG032254	NA	VFDB
+chromosome	37988	38479	-	Virulence factor	VFG041423	NA	VFDB
+chromosome	43621	44463	-	Virulence factor	VFG032908	NA	VFDB
+chromosome	46022	46669	-	Virulence factor	VFG031729	NA	VFDB
+chromosome	49343	50092	-	Virulence factor	VFG007687	NA	VFDB
+chromosome	58765	60300	-	Virulence factor	VFG036964	NA	VFDB
+chromosome	71051	71371	-	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	75986	76384	+	Virulence factor	VFG052302	NA	VFDB
+chromosome	79667	80752	-	Virulence factor	VFG044071	NA	VFDB
+chromosome	81846	82111	-	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	82240	83352	-	Virulence factor	VFG029362	NA	VFDB
+chromosome	85298	86053	-	Virulence factor	VFG013573	NA	VFDB
+chromosome	95042	95989	-	Virulence factor	VFG044254	NA	VFDB
+chromosome	97895	98610	+	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	98719	99546	+	Virulence factor	VFG033024	NA	VFDB
+chromosome	100835	101678	-	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	104296	105921	-	Virulence factor	VFG013716	NA	VFDB
+chromosome	106234	109350	-	Virulence factor	VFG029919	NA	VFDB
+chromosome	114085	115185	-	Virulence factor	VFG044377	NA	VFDB
+chromosome	122816	123346	-	Virulence factor	VFG044244	NA	VFDB
+chromosome	135046	136527	-	Virulence factor	VFG052947	NA	VFDB
+chromosome	141826	142152	-	Virulence factor	VFG044211	NA	VFDB
+chromosome	142249	143427	-	Virulence factor	VFG044165	NA	VFDB
+chromosome	149034	149852	+	Virulence factor	VFG022639	NA	VFDB
+chromosome	151748	152497	-	Virulence factor	VFG049118	NA	VFDB
+chromosome	157875	160262	-	Virulence factor	VFG043812	NA	VFDB
+chromosome	160552	161382	-	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanW)	RGI
+chromosome	175983	177200	-	Virulence factor	VFG015825	NA	VFDB
+chromosome	177335	177484	-	De novo transcript	Non-coding DNT 	Coding probability = 25%	Popcorn
+chromosome	177502	178881	+	Virulence factor	VFG037032	NA	VFDB
+chromosome	183959	184093	-	De novo transcript	Non-coding DNT 	Coding probability = 30%	Popcorn
+chromosome	184129	186820	+	De novo transcript	Non-coding DNT 	Coding probability = 41%	Popcorn
+chromosome	184661	184945	-	Virulence factor	VFG051987	NA	VFDB
+chromosome	188851	190794	+	Antimicrobial resistance	Tetracyclines	Tetracycline-resistant ribosomal protection protein	RGI
+chromosome	194199	194864	-	Virulence factor	VFG035924	NA	VFDB
+chromosome	211708	214648	-	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	215121	215291	+	Virulence factor	VFG030900	NA	VFDB
+chromosome	220593	220820	-	Virulence factor	VFG027254	NA	VFDB
+chromosome	222806	223381	+	Virulence factor	VFG023867	NA	VFDB
+chromosome	223416	223937	-	Virulence factor	VFG043006	NA	VFDB
+chromosome	232133	232885	-	Virulence factor	VFG049118	NA	VFDB
+chromosome	233041	233592	-	Virulence factor	VFG043006	NA	VFDB
+chromosome	235954	237102	-	Virulence factor	VFG044398	NA	VFDB
+chromosome	252152	253285	+	Virulence factor	VFG030301	NA	VFDB
+chromosome	258096	258327	-	De novo transcript	Non-coding DNT 	Coding probability = 21%	Popcorn
+chromosome	261293	262393	+	De novo transcript	Coding DNT 	Coding probability = 56%	Popcorn
+chromosome	265643	267043	-	Virulence factor	Hemolytic enterotoxin HBL binding subunit HblA; VFG016254	NA	AMRFinderPlus; VFDB
+chromosome	267418	268545	-	Virulence factor	Hemolytic enterotoxin HBL binding subunit HblB; VFG016255	NA	AMRFinderPlus; VFDB
+chromosome	268582	269802	-	Virulence factor	Hemolytic enterotoxin HBL lytic component L1; VFG016261	NA	AMRFinderPlus; VFDB
+chromosome	269864	271183	-	Virulence factor	Hemolytic enterotoxin HBL lytic component L2; VFG050101	NA	AMRFinderPlus; VFDB
+chromosome	271066	271881	+	De novo transcript	Non-coding DNT 	Coding probability = 9%	Popcorn
+chromosome	271365	271771	-	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	272145	277722	+	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	277678	278496	-	Virulence factor	VFG022639	NA	VFDB
+chromosome	282598	283051	+	De novo transcript	Non-coding DNT 	Coding probability = 14%	Popcorn
+chromosome	288634	289011	-	De novo transcript	Non-coding DNT 	Coding probability = 40%	Popcorn
+chromosome	290767	291078	+	De novo transcript	Non-coding DNT 	Coding probability = 45%	Popcorn
+chromosome	293418	295007	-	Virulence factor	VFG049850	NA	VFDB
+chromosome	300924	301802	-	Virulence factor	VFG044083	NA	VFDB
+chromosome	302022	302465	-	Virulence factor	VFG042390	NA	VFDB
+chromosome	303743	303991	+	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	319231	319788	+	Antimicrobial resistance	Streptothricin	Streptothricin N-acetyltransferase SatA	AMRFinderPlus
+chromosome	321170	322105	-	Virulence factor	VFG006731	NA	VFDB
+chromosome	322123	322989	-	Virulence factor	VFG012587	NA	VFDB
+chromosome	322986	323735	-	Virulence factor	VFG012578	NA	VFDB
+chromosome	325023	325427	-	Virulence factor	VFG037873	NA	VFDB
+chromosome	328752	329609	-	Virulence factor	VFG037468	NA	VFDB
+chromosome	336819	337031	-	Virulence factor	VFG045470	NA	VFDB
+chromosome	343795	344559	-	Virulence factor	VFG005766	NA	VFDB
+chromosome	346807	349116	-	Defense system	Mokosh type II	MkoC	PADLOC
+chromosome	352530	352938	-	De novo transcript	Coding DNT 	Coding probability = 90%	Popcorn
+chromosome	354564	355238	+	Virulence factor	VFG009865	NA	VFDB
+chromosome	355235	356608	+	Virulence factor	VFG032653	NA	VFDB
+chromosome	362128	362350	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	364854	365026	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	369336	370097	-	Virulence factor	VFG030724	NA	VFDB
+chromosome	370345	371421	-	Virulence factor	VFG022911	NA	VFDB
+chromosome	371418	372104	-	Virulence factor	VFG031738	NA	VFDB
+chromosome	372296	373246	-	Antimicrobial resistance	β‑lactams	Class A beta-lactamase	ResFinder; AMRFinderPlus; RGI
+chromosome	380431	380664	+	De novo transcript	Non-coding DNT 	Coding probability = 12%	Popcorn
+chromosome	380817	382295	-	Virulence factor	VFG044351	NA	VFDB
+chromosome	382489	382900	-	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	390902	391573	-	Virulence factor	VFG036559	NA	VFDB
+chromosome	395410	395541	+	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	396958	397635	-	Virulence factor	VFG031736	NA	VFDB
+chromosome	409712	410059	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	410973	411359	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	417022	417501	-	De novo transcript	Coding DNT 	Coding probability = 73%	Popcorn
+chromosome	419931	420088	+	De novo transcript	Coding DNT 	Coding probability = 54%	Popcorn
+chromosome	422740	423228	-	Virulence factor	VFG049760	NA	VFDB
+chromosome	428343	429056	-	Virulence factor	VFG025311	NA	VFDB
+chromosome	435792	436184	-	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	436388	437107	-	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanY)	RGI
+chromosome	442307	443506	+	Virulence factor	VFG044198	NA	VFDB
+chromosome	451254	452909	-	Virulence factor	VFG013728	NA	VFDB
+chromosome	457693	458011	-	De novo transcript	Coding DNT 	Coding probability = 96%	Popcorn
+chromosome	465072	465275	-	De novo transcript	Non-coding DNT 	Coding probability = 9%	Popcorn
+chromosome	470617	471401	+	De novo transcript	Coding DNT 	Coding probability = 97%	Popcorn
+chromosome	471626	472384	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	474093	474818	-	Virulence factor	VFG007914	NA	VFDB
+chromosome	475628	475831	+	Virulence factor	VFG045470	NA	VFDB
+chromosome	477074	477784	-	Virulence factor	VFG011675	NA	VFDB
+chromosome	488016	488777	-	Virulence factor	VFG030700	NA	VFDB
+chromosome	491554	492675	-	Virulence factor	VFG044071	NA	VFDB
+chromosome	494295	496046	-	Virulence factor	VFG043608	NA	VFDB
+chromosome	494549	495818	+	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	502131	503459	-	Virulence factor	VFG038903	NA	VFDB
+chromosome	511135	512028	-	Virulence factor	VFG048845	NA	VFDB
+chromosome	515674	515816	-	De novo transcript	Coding DNT 	Coding probability = 85%	Popcorn
+chromosome	523231	523473	-	De novo transcript	Non-coding DNT 	Coding probability = 10%	Popcorn
+chromosome	532532	533431	-	Virulence factor	VFG015519	NA	VFDB
+chromosome	534152	535654	-	Virulence factor	VFG030408	NA	VFDB
+chromosome	537389	537717	+	De novo transcript	Coding DNT 	Coding probability = 54%	Popcorn
+chromosome	540265	540540	-	Virulence factor	VFG050076	NA	VFDB
+chromosome	546344	546656	-	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	546860	547109	-	De novo transcript	Non-coding DNT 	Coding probability = 9%	Popcorn
+chromosome	549062	549811	-	Virulence factor	VFG007924	NA	VFDB
+chromosome	549812	550573	-	Virulence factor	VFG023850	NA	VFDB
+chromosome	556139	556615	-	Antimicrobial resistance	β‑lactams	BcII family subclass B1 metallo-beta-lactamase	AMRFinderPlus
+chromosome	562250	599043	Both	Biosynthetic gene cluster	Saccharide	BGC 1	antiSMASH
+chromosome	567540	568739	-	Virulence factor	VFG047356	NA	VFDB
+chromosome	570953	571300	+	De novo transcript	Non-coding DNT 	Coding probability = 35%	Popcorn
+chromosome	571396	572139	+	Virulence factor	VFG038840	NA	VFDB
+chromosome	575266	575817	-	Virulence factor	VFG037969	NA	VFDB
+chromosome	580725	581618	-	Virulence factor	VFG044083	NA	VFDB
+chromosome	581742	582707	+	Virulence factor	VFG007851	NA	VFDB
+chromosome	591992	593038	-	Virulence factor	VFG053990	NA	VFDB
+chromosome	595873	597667	+	De novo transcript	Coding DNT 	Coding probability = 83%	Popcorn
+chromosome	596294	597451	-	Virulence factor	VFG053990	NA	VFDB
+chromosome	600738	601589	+	Virulence factor	VFG037474	NA	VFDB
+chromosome	603084	603375	-	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	605963	606961	+	Virulence factor	VFG029831	NA	VFDB
+chromosome	613146	660748	Both	Biosynthetic gene cluster	Saccharide pseudaminic acid	BGC 2	antiSMASH
+chromosome	620593	621034	+	De novo transcript	Non-coding DNT 	Coding probability = 37%	Popcorn
+chromosome	620743	621535	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	621161	621453	+	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	621542	622591	-	Virulence factor	VFG037984	NA	VFDB
+chromosome	622584	623144	-	Virulence factor	VFG037972	NA	VFDB
+chromosome	623146	624246	-	Virulence factor	VFG037954	NA	VFDB
+chromosome	625282	626487	-	Virulence factor	VFG037927	NA	VFDB
+chromosome	626487	627449	-	Virulence factor	VFG013164	NA	VFDB
+chromosome	627446	628471	-	Virulence factor	VFG037909	NA	VFDB
+chromosome	637527	638348	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	638544	639587	+	Defense system	SoFic	SoFic	PADLOC
+chromosome	639588	640406	+	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	645239	645519	-	De novo transcript	Non-coding DNT 	Coding probability = 14%	Popcorn
+chromosome	645778	646527	+	Virulence factor	VFG003392	NA	VFDB
+chromosome	648672	649631	+	Virulence factor	VFG038016	NA	VFDB
+chromosome	649660	650748	+	Virulence factor	VFG003127	NA	VFDB
+chromosome	653338	655320	-	Virulence factor	VFG000104	NA	VFDB
+chromosome	668307	669653	+	Antimicrobial resistance	MLS (macrolides, lincosamides and streptogramin B)	lsa(B)	ResFinder
+chromosome	669934	670539	-	Virulence factor	Hemolysin II regulator HlyIIR	NA	AMRFinderPlus
+chromosome	671047	672285	-	Virulence factor	Hemolysin II HlyII; VFG016250	NA	AMRFinderPlus; VFDB
+chromosome	674529	675272	-	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanY)	RGI
+chromosome	681110	681660	-	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	683283	686198	-	Virulence factor	VFG002276	NA	VFDB
+chromosome	685466	686232	+	De novo transcript	Coding DNT 	Coding probability = 72%	Popcorn
+chromosome	689019	689930	-	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanW)	RGI
+chromosome	697572	698129	+	Virulence factor	VFG053848	NA	VFDB
+chromosome	705768	706517	+	Virulence factor	VFG038839	NA	VFDB
+chromosome	705965	727818	Both	Biosynthetic gene cluster	Terpene molybdenum cofactor	BGC 3	antiSMASH
+chromosome	714869	715609	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	723702	724718	-	Virulence factor	VFG044378	NA	VFDB
+chromosome	728516	731455	-	Virulence factor	VFG017486	NA	VFDB
+chromosome	733234	734490	-	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	743707	745401	-	Virulence factor	VFG032250	NA	VFDB
+chromosome	745775	747322	-	Virulence factor	VFG032255	NA	VFDB
+chromosome	747816	749519	-	Virulence factor	VFG032254	NA	VFDB
+chromosome	751331	752368	-	Virulence factor	VFG016423	NA	VFDB
+chromosome	753389	753922	-	Virulence factor	VFG027083	NA	VFDB
+chromosome	754118	754924	-	Virulence factor	VFG050112	NA	VFDB
+chromosome	754917	755810	-	Virulence factor	VFG050113	NA	VFDB
+chromosome	757680	758032	-	De novo transcript	Coding DNT 	Coding probability = 84%	Popcorn
+chromosome	758189	759220	-	Virulence factor	VFG000038	NA	VFDB
+chromosome	764885	766126	-	Virulence factor	VFG019090	NA	VFDB
+chromosome	766330	767007	-	Virulence factor	VFG031738	NA	VFDB
+chromosome	771320	771664	-	De novo transcript	Coding DNT 	Coding probability = 97%	Popcorn
+chromosome	775129	776772	-	Virulence factor	VFG044147	NA	VFDB
+chromosome	780096	780737	-	Virulence factor	VFG033055	NA	VFDB
+chromosome	787251	788714	-	Virulence factor	VFG030402	NA	VFDB
+chromosome	789479	791092	-	Virulence factor	VFG030400	NA	VFDB
+chromosome	797187	798719	+	Virulence factor	VFG015679	NA	VFDB
+chromosome	821474	822385	-	Virulence factor	VFG007914	NA	VFDB
+chromosome	828097	828806	-	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	832957	834720	-	Virulence factor	VFG013250	NA	VFDB
+chromosome	834720	836471	-	Virulence factor	VFG013250	NA	VFDB
+chromosome	838827	859051	Both	Biosynthetic gene cluster	UviB	BGC 4	BAGEL4
+chromosome	841381	842154	-	Virulence factor	VFG013732	NA	VFDB
+chromosome	843373	844956	+	Virulence factor	VFG049857	NA	VFDB
+chromosome	852846	854224	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	855674	857008	-	Virulence factor	VFG026433	NA	VFDB
+chromosome	861144	862100	-	Virulence factor	VFG022030	NA	VFDB
+chromosome	863334	865896	-	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	863444	866107	+	Virulence factor	VFG043608	NA	VFDB
+chromosome	872864	874027	-	Virulence factor	VFG031961	NA	VFDB
+chromosome	875476	876870	-	Virulence factor	VFG047663	NA	VFDB
+chromosome	880764	881036	+	Virulence factor	VFG043551	NA	VFDB
+chromosome	881694	884114	-	Virulence factor	VFG031404	NA	VFDB
+chromosome	887628	888446	-	Virulence factor	VFG048533	NA	VFDB
+chromosome	888462	889283	-	Virulence factor	VFG021794	NA	VFDB
+chromosome	889298	890320	-	Virulence factor	VFG044174	NA	VFDB
+chromosome	890313	891320	-	Virulence factor	VFG044356	NA	VFDB
+chromosome	891348	892313	-	Virulence factor	VFG044253	NA	VFDB
+chromosome	892615	893373	-	Virulence factor	VFG042739	NA	VFDB
+chromosome	893072	916426	Both	Biosynthetic gene cluster	Saccharide	BGC 5	antiSMASH
+chromosome	899032	899847	-	Virulence factor	VFG050118	NA	VFDB
+chromosome	900252	902996	+	Virulence factor	VFG049933	NA	VFDB
+chromosome	904532	905443	-	Virulence factor	VFG002556	NA	VFDB
+chromosome	905440	906426	-	Virulence factor	VFG043383	NA	VFDB
+chromosome	906574	907523	-	De novo transcript	Non-coding DNT 	Coding probability = 13%	Popcorn
+chromosome	914232	915212	-	Virulence factor	Phosphatidylinositol diacylglycerol-lyase; VFG016323	NA	AMRFinderPlus; VFDB
+chromosome	946588	947301	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	952184	953716	-	Virulence factor	VFG052947	NA	VFDB
+chromosome	953834	954910	-	Virulence factor	VFG052853	NA	VFDB
+chromosome	955885	1008492	Both	Prophage region	Complete prophage	Completeness = 100%	PHASTEST; CheckV
+chromosome	990067	991049	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	990489	990762	+	De novo transcript	Coding DNT 	Coding probability = 51%	Popcorn
+chromosome	991450	991813	-	De novo transcript	Non-coding DNT 	Coding probability = 27%	Popcorn
+chromosome	991966	992508	-	Virulence factor	VFG033171	NA	VFDB
+chromosome	994067	994356	+	De novo transcript	Non-coding DNT 	Coding probability = 10%	Popcorn
+chromosome	994561	995877	+	Virulence factor	VFG043546	NA	VFDB
+chromosome	997150	998455	+	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	1000221	1000692	+	De novo transcript	Non-coding DNT 	Coding probability = 13%	Popcorn
+chromosome	1002619	1002834	-	Virulence factor	VFG045470	NA	VFDB
+chromosome	1006674	1007855	+	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	1020079	1020549	-	Virulence factor	VFG039488	NA	VFDB
+chromosome	1027119	1028375	-	Virulence factor	VFG015012	NA	VFDB
+chromosome	1029559	1030350	-	Virulence factor	VFG045683	NA	VFDB
+chromosome	1030368	1031144	-	Virulence factor	VFG045688	NA	VFDB
+chromosome	1046991	1047542	-	Virulence factor	VFG043006	NA	VFDB
+chromosome	1057466	1057699	-	Virulence factor	VFG011430	NA	VFDB
+chromosome	1057769	1058509	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	1058509	1059453	-	Virulence factor	VFG009412	NA	VFDB
+chromosome	1067073	1067717	-	Virulence factor	VFG046612	NA	VFDB
+chromosome	1068849	1070822	-	Defense system	PD-T4-6	PD-T4-6	PADLOC
+chromosome	1070831	1071583	-	Virulence factor	VFG032387	NA	VFDB
+chromosome	1074012	1074956	-	Virulence factor	VFG021856	NA	VFDB
+chromosome	1081394	1084117	-	Virulence factor	VFG018402	NA	VFDB
+chromosome	1084223	1085932	+	Virulence factor	VFG006764	NA	VFDB
+chromosome	1086158	1087546	-	De novo transcript	Coding DNT 	Coding probability = 55%	Popcorn
+chromosome	1089780	1090380	-	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	1093847	1097065	-	Virulence factor	VFG047710	NA	VFDB
+chromosome	1097050	1098147	-	Virulence factor	VFG047724	NA	VFDB
+chromosome	1098144	1099430	-	Virulence factor	VFG049120	NA	VFDB
+chromosome	1099414	1100328	-	Virulence factor	VFG047699	NA	VFDB
+chromosome	1103567	1104025	-	Virulence factor	VFG006811	NA	VFDB
+chromosome	1109684	1134391	Both	Biosynthetic gene cluster	Saccharide	BGC 6	antiSMASH
+chromosome	1111941	1112720	-	Virulence factor	VFG022873	NA	VFDB
+chromosome	1112879	1113598	-	Virulence factor	VFG000477	NA	VFDB
+chromosome	1118566	1119471	-	Virulence factor	VFG002184	NA	VFDB
+chromosome	1123417	1124391	-	Virulence factor	VFG018674	NA	VFDB
+chromosome	1141243	1141734	-	Virulence factor	VFG000320	NA	VFDB
+chromosome	1177266	1178243	-	Virulence factor	VFG016504	NA	VFDB
+chromosome	1193825	1194589	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	1196172	1197476	-	Virulence factor	VFG042931	NA	VFDB
+chromosome	1197455	1198279	-	Virulence factor	VFG042931	NA	VFDB
+chromosome	1201257	1201732	-	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	1202821	1232592	Both	Biosynthetic gene cluster	Saccharide	BGC 7	antiSMASH
+chromosome	1203858	1205399	+	Virulence factor	VFG036958	NA	VFDB
+chromosome	1214000	1215022	-	Virulence factor	VFG045670	NA	VFDB
+chromosome	1215292	1216134	-	Virulence factor	VFG030630	NA	VFDB
+chromosome	1216135	1217436	-	Virulence factor	VFG030576	NA	VFDB
+chromosome	1222837	1223937	+	Virulence factor	VFG030724	NA	VFDB
+chromosome	1224002	1224511	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	1233783	1234559	+	Virulence factor	VFG038840	NA	VFDB
+chromosome	1253227	1253343	+	De novo transcript	Non-coding DNT 	Coding probability = 31%	Popcorn
+chromosome	1262484	1262921	-	Virulence factor	VFG041304	NA	VFDB
+chromosome	1269433	1269916	+	De novo transcript	Coding DNT 	Coding probability = 96%	Popcorn
+chromosome	1271705	1272463	-	Virulence factor	VFG009731	NA	VFDB
+chromosome	1275179	1276060	+	Virulence factor	VFG050113	NA	VFDB
+chromosome	1278299	1278768	+	De novo transcript	Non-coding DNT 	Coding probability = 13%	Popcorn
+chromosome	1280265	1281554	+	Virulence factor	VFG052932	NA	VFDB
+chromosome	1288413	1288868	-	Virulence factor	VFG000478	NA	VFDB
+chromosome	1294166	1295755	+	Virulence factor	VFG002420	NA	VFDB
+chromosome	1298952	1299815	-	Virulence factor	VFG045670	NA	VFDB
+chromosome	1302325	1302594	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	1306594	1307592	-	Virulence factor	VFG047514	NA	VFDB
+chromosome	1309106	1310293	-	Virulence factor	VFG026064	NA	VFDB
+chromosome	1310259	1310987	-	Virulence factor	VFG047461	NA	VFDB
+chromosome	1310987	1312375	-	Virulence factor	VFG047531	NA	VFDB
+chromosome	1319905	1320855	-	Virulence factor	VFG015903	NA	VFDB
+chromosome	1320868	1322067	-	Virulence factor	VFG044347	NA	VFDB
+chromosome	1323021	1324318	+	De novo transcript	Coding DNT 	Coding probability = 96%	Popcorn
+chromosome	1325518	1326312	-	Virulence factor	VFG038839	NA	VFDB
+chromosome	1327441	1328280	+	Virulence factor	VFG009349	NA	VFDB
+chromosome	1332447	1332717	-	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	1333313	1336018	+	Virulence factor	VFG000574	NA	VFDB
+chromosome	1336092	1336793	+	Virulence factor	VFG026457	NA	VFDB
+chromosome	1340297	1340555	+	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	1342532	1343254	-	Virulence factor	VFG006259	NA	VFDB
+chromosome	1343247	1343906	-	Virulence factor	VFG002901	NA	VFDB
+chromosome	1343943	1344722	-	Virulence factor	VFG043099	NA	VFDB
+chromosome	1350240	1351223	-	Virulence factor	VFG016502	NA	VFDB
+chromosome	1361457	1361827	-	De novo transcript	Coding DNT 	Coding probability = 69%	Popcorn
+chromosome	1370146	1370956	+	De novo transcript	Coding DNT 	Coding probability = 95%	Popcorn
+chromosome	1372554	1372780	-	De novo transcript	Coding DNT 	Coding probability = 52%	Popcorn
+chromosome	1373048	1373237	+	De novo transcript	Non-coding DNT 	Coding probability = 23%	Popcorn
+chromosome	1373943	1374889	-	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	1374248	1395138	Both	Biosynthetic gene cluster	Terpene-precursor	BGC 8	antiSMASH
+chromosome	1378615	1380354	-	Virulence factor	VFG037121	NA	VFDB
+chromosome	1381211	1382050	-	Virulence factor	VFG016516	NA	VFDB
+chromosome	1390649	1390853	-	De novo transcript	Non-coding DNT 	Coding probability = 15%	Popcorn
+chromosome	1403017	1403445	-	Virulence factor	VFG013755	NA	VFDB
+chromosome	1406838	1407674	-	Virulence factor	VFG002158	NA	VFDB
+chromosome	1408737	1409049	-	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	1409196	1410173	+	Virulence factor	VFG045668	NA	VFDB
+chromosome	1415932	1417032	-	Virulence factor	VFG005784	NA	VFDB
+chromosome	1421649	1422146	-	Virulence factor	VFG042129	NA	VFDB
+chromosome	1422659	1450667	Both	Biosynthetic gene cluster	Saccharide	BGC 9	antiSMASH
+chromosome	1424953	1425993	-	Virulence factor	VFG006971	NA	VFDB
+chromosome	1425977	1427020	-	Virulence factor	VFG050758	NA	VFDB
+chromosome	1439461	1442199	-	De novo transcript	Coding DNT 	Coding probability = 71%	Popcorn
+chromosome	1441994	1442506	+	Virulence factor	VFG044244	NA	VFDB
+chromosome	1442940	1443230	+	Virulence factor	VFG050076	NA	VFDB
+chromosome	1451395	1452210	-	Virulence factor	VFG013572	NA	VFDB
+chromosome	1458582	1458720	+	De novo transcript	Non-coding DNT 	Coding probability = 44%	Popcorn
+chromosome	1458964	1459575	-	Virulence factor	VFG001867	NA	VFDB
+chromosome	1462650	1463063	-	Virulence factor	VFG000478	NA	VFDB
+chromosome	1463077	1463910	-	Virulence factor	VFG037063	NA	VFDB
+chromosome	1463910	1464680	-	Virulence factor	VFG034207	NA	VFDB
+chromosome	1473252	1474379	-	Virulence factor	VFG026980	NA	VFDB
+chromosome	1485770	1485924	+	De novo transcript	Coding DNT 	Coding probability = 86%	Popcorn
+chromosome	1486967	1487986	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	1487150	1488017	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	1488116	1488559	-	Virulence factor	VFG039549	NA	VFDB
+chromosome	1490429	1491178	-	Virulence factor	VFG045607	NA	VFDB
+chromosome	1493610	1495445	-	Virulence factor	VFG043573	NA	VFDB
+chromosome	1497303	1498442	-	Virulence factor	VFG013629	NA	VFDB
+chromosome	1508178	1509005	+	Virulence factor	VFG022639	NA	VFDB
+chromosome	1508479	1509076	-	De novo transcript	Non-coding DNT 	Coding probability = 18%	Popcorn
+chromosome	1516128	1516841	-	Virulence factor	VFG043648	NA	VFDB
+chromosome	1529610	1535167	-	De novo transcript	Coding DNT 	Coding probability = 86%	Popcorn
+chromosome	1539709	1540527	-	Virulence factor	VFG044213	NA	VFDB
+chromosome	1540514	1541542	-	Virulence factor	VFG044214	NA	VFDB
+chromosome	1541548	1542495	-	Virulence factor	VFG044215	NA	VFDB
+chromosome	1543007	1545610	-	Virulence factor	VFG031940	NA	VFDB
+chromosome	1547010	1547933	-	Virulence factor	VFG044254	NA	VFDB
+chromosome	1553960	1554598	-	Virulence factor	VFG011675	NA	VFDB
+chromosome	1554616	1555896	-	Virulence factor	VFG054346	NA	VFDB
+chromosome	1555915	1556844	-	Virulence factor	VFG054346	NA	VFDB
+chromosome	1559874	1600967	Both	Biosynthetic gene cluster	Saccharide	BGC 10	antiSMASH
+chromosome	1563575	1564642	-	Virulence factor	VFG044071	NA	VFDB
+chromosome	1567973	1568632	-	Virulence factor	VFG038505	NA	VFDB
+chromosome	1571055	1571471	-	Virulence factor	VFG011938	NA	VFDB
+chromosome	1579959	1582142	-	Virulence factor	VFG009932	NA	VFDB
+chromosome	1596741	1597685	+	Virulence factor	VFG021797	NA	VFDB
+chromosome	1599549	1599742	+	De novo transcript	Coding DNT 	Coding probability = 87%	Popcorn
+chromosome	1606135	1606261	-	De novo transcript	Non-coding DNT 	Coding probability = 28%	Popcorn
+chromosome	1613984	1614760	-	Virulence factor	VFG030700	NA	VFDB
+chromosome	1614854	1615966	-	Virulence factor	VFG032599	NA	VFDB
+chromosome	1615926	1616633	-	Virulence factor	VFG006818	NA	VFDB
+chromosome	1619785	1621244	+	De novo transcript	Coding DNT 	Coding probability = 90%	Popcorn
+chromosome	1623035	1623832	-	Virulence factor	VFG011853	NA	VFDB
+chromosome	1636500	1637786	-	Virulence factor	VFG013203	NA	VFDB
+chromosome	1637786	1638775	-	Virulence factor	VFG013197	NA	VFDB
+chromosome	1639551	1640480	-	Virulence factor	VFG013198	NA	VFDB
+chromosome	1641347	1642681	-	Virulence factor	VFG013607	NA	VFDB
+chromosome	1643553	1643969	+	Virulence factor	VFG043553	NA	VFDB
+chromosome	1644597	1646927	-	Virulence factor	VFG052890	NA	VFDB
+chromosome	1647110	1648780	-	Virulence factor	VFG052891	NA	VFDB
+chromosome	1648887	1650146	-	Virulence factor	VFG000079	NA	VFDB
+chromosome	1650410	1651687	-	Virulence factor	VFG005546	NA	VFDB
+chromosome	1657471	1658079	-	Virulence factor	VFG013265	NA	VFDB
+chromosome	1665398	1665622	-	Virulence factor	VFG009892	NA	VFDB
+chromosome	1673141	1674025	-	Virulence factor	VFG050113	NA	VFDB
+chromosome	1674369	1675196	+	Virulence factor	VFG046580	NA	VFDB
+chromosome	1675221	1676009	-	Virulence factor	VFG043437	NA	VFDB
+chromosome	1675999	1676793	-	Virulence factor	VFG043438	NA	VFDB
+chromosome	1677059	1677838	+	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanY)	RGI
+chromosome	1688272	1689957	-	Virulence factor	VFG030400	NA	VFDB
+chromosome	1690679	1690879	+	De novo transcript	Coding DNT 	Coding probability = 74%	Popcorn
+chromosome	1691497	1692471	+	Virulence factor	VFG044209	NA	VFDB
+chromosome	1692479	1694515	+	Virulence factor	VFG044210	NA	VFDB
+chromosome	1698051	1698974	-	Virulence factor	VFG007913	NA	VFDB
+chromosome	1699100	1700035	-	Virulence factor	VFG031675	NA	VFDB
+chromosome	1700037	1700729	-	Virulence factor	VFG031738	NA	VFDB
+chromosome	1702802	1703125	+	Virulence factor	VFG044211	NA	VFDB
+chromosome	1703198	1703854	-	Virulence factor	VFG044212	NA	VFDB
+chromosome	1703995	1704765	-	Virulence factor	VFG044213	NA	VFDB
+chromosome	1704755	1705738	-	Virulence factor	VFG044214	NA	VFDB
+chromosome	1705766	1706647	-	Virulence factor	VFG044215	NA	VFDB
+chromosome	1706717	1709839	-	Virulence factor	VFG044216	NA	VFDB
+chromosome	1709864	1710322	-	Virulence factor	VFG044217	NA	VFDB
+chromosome	1710346	1711059	-	Virulence factor	VFG044218	NA	VFDB
+chromosome	1720270	1720770	+	De novo transcript	Coding DNT 	Coding probability = 78%	Popcorn
+chromosome	1729949	1731748	-	Virulence factor	VFG036960	NA	VFDB
+chromosome	1744601	1745629	-	Virulence factor	VFG005353	NA	VFDB
+chromosome	1752616	1753335	-	Virulence factor	VFG031736	NA	VFDB
+chromosome	1753419	1753635	-	De novo transcript	Non-coding DNT 	Coding probability = 17%	Popcorn
+chromosome	1754162	1754635	-	Virulence factor	VFG037983	NA	VFDB
+chromosome	1759757	1760875	+	Virulence factor	VFG044071	NA	VFDB
+chromosome	1784901	1785701	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	1793829	1794415	-	De novo transcript	Non-coding DNT 	Coding probability = 21%	Popcorn
+chromosome	1794251	1794423	+	De novo transcript	Non-coding DNT 	Coding probability = 29%	Popcorn
+chromosome	1802062	1802493	-	Virulence factor	VFG039369	NA	VFDB
+chromosome	1802596	1804182	-	Virulence factor	VFG030400	NA	VFDB
+chromosome	1802797	1803058	+	De novo transcript	Coding DNT 	Coding probability = 95%	Popcorn
+chromosome	1817839	1818051	+	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	1818658	1820376	-	Virulence factor	VFG030387	NA	VFDB
+chromosome	1824482	1825180	-	Virulence factor	VFG031738	NA	VFDB
+chromosome	1825173	1826627	-	Virulence factor	VFG022911	NA	VFDB
+chromosome	1826777	1827457	+	Virulence factor	VFG041423	NA	VFDB
+chromosome	1827537	1828463	+	Virulence factor	VFG014142	NA	VFDB
+chromosome	1830473	1831471	-	Virulence factor	VFG045670	NA	VFDB
+chromosome	1831835	1832283	-	De novo transcript	Non-coding DNT 	Coding probability = 27%	Popcorn
+chromosome	1832088	1832304	+	De novo transcript	Coding DNT 	Coding probability = 82%	Popcorn
+chromosome	1838231	1838564	+	De novo transcript	Coding DNT 	Coding probability = 71%	Popcorn
+chromosome	1844992	1872497	Both	Biosynthetic gene cluster	Saccharide	BGC 11	antiSMASH
+chromosome	1854992	1857133	-	Virulence factor	VFG050222	NA	VFDB
+chromosome	1864286	1865725	+	Virulence factor	VFG036959	NA	VFDB
+chromosome	1866698	1866922	+	De novo transcript	Non-coding DNT 	Coding probability = 36%	Popcorn
+chromosome	1868443	1869228	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	1875975	1877387	-	Virulence factor	VFG043608	NA	VFDB
+chromosome	1878151	1878456	-	Virulence factor	VFG044389	NA	VFDB
+chromosome	1890945	1892168	-	Virulence factor	VFG030145	NA	VFDB
+chromosome	1892704	1893270	-	Virulence factor	VFG012271	NA	VFDB
+chromosome	1895486	1896247	-	Virulence factor	VFG030724	NA	VFDB
+chromosome	1900063	1900737	+	Virulence factor	VFG011805	NA	VFDB
+chromosome	1904179	1904691	+	Virulence factor	VFG045340	NA	VFDB
+chromosome	1925800	1927830	+	Virulence factor	VFG037032	NA	VFDB
+chromosome	1934975	1935739	+	Virulence factor	VFG036559	NA	VFDB
+chromosome	1943729	1944202	-	Virulence factor	VFG018243	NA	VFDB
+chromosome	1944331	1944567	+	Virulence factor	VFG050255	NA	VFDB
+chromosome	1948230	1948521	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	1955473	1957461	-	Virulence factor	VFG047394	NA	VFDB
+chromosome	1960794	1961486	-	Virulence factor	VFG031729	NA	VFDB
+chromosome	1968586	1968854	-	De novo transcript	Non-coding DNT 	Coding probability = 44%	Popcorn
+chromosome	1974715	1975416	-	Virulence factor	VFG031776	NA	VFDB
+chromosome	1978716	1979486	-	Virulence factor	VFG030684	NA	VFDB
+chromosome	1982295	1983011	-	Virulence factor	VFG050113	NA	VFDB
+chromosome	1984180	1984593	-	Virulence factor	VFG014918	NA	VFDB
+chromosome	1984855	1985550	+	Virulence factor	VFG006821	NA	VFDB
+chromosome	1985553	1986575	+	Virulence factor	VFG032600	NA	VFDB
+chromosome	1990692	1991444	+	Virulence factor	VFG030684	NA	VFDB
+chromosome	2000299	2001159	-	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanY)	RGI
+chromosome	2001242	2002348	-	Virulence factor	VFG015070	NA	VFDB
+chromosome	2002341	2003039	-	Virulence factor	VFG031731	NA	VFDB
+chromosome	2004345	2005790	-	Virulence factor	VFG030399	NA	VFDB
+chromosome	2009435	2067096	Both	Biosynthetic gene cluster	Saccharide	BGC 12	antiSMASH
+chromosome	2009556	2010950	-	Virulence factor	VFG016148	NA	VFDB
+chromosome	2015837	2016826	-	De novo transcript	Non-coding DNT 	Coding probability = 13%	Popcorn
+chromosome	2019435	2020865	-	Virulence factor	VFG050270	NA	VFDB
+chromosome	2039344	2040696	-	Virulence factor	VFG038132	NA	VFDB
+chromosome	2044965	2045804	+	Virulence factor	VFG000156	NA	VFDB
+chromosome	2047543	2048082	-	Virulence factor	VFG026912	NA	VFDB
+chromosome	2056209	2057096	-	Virulence factor	VFG016417	NA	VFDB
+chromosome	2057204	2058928	-	Virulence factor	VFG013331	NA	VFDB
+chromosome	2066637	2067884	+	Virulence factor	VFG044431	NA	VFDB
+chromosome	2070130	2070370	-	De novo transcript	Coding DNT 	Coding probability = 94%	Popcorn
+chromosome	2071685	2072131	-	De novo transcript	Non-coding DNT 	Coding probability = 32%	Popcorn
+chromosome	2076440	2077099	+	Virulence factor	VFG026731	NA	VFDB
+chromosome	2079955	2081716	+	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	2082310	2082694	-	De novo transcript	Non-coding DNT 	Coding probability = 29%	Popcorn
+chromosome	2082489	2083608	+	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	2094463	2094635	+	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	2095565	2096329	-	Virulence factor	VFG015888	NA	VFDB
+chromosome	2100358	2100721	-	De novo transcript	Non-coding DNT 	Coding probability = 40%	Popcorn
+chromosome	2108865	2109533	+	De novo transcript	Non-coding DNT 	Coding probability = 6%	Popcorn
+chromosome	2111676	2112896	-	Virulence factor	VFG016003	NA	VFDB
+chromosome	2114204	2114989	-	Virulence factor	VFG044228	NA	VFDB
+chromosome	2115228	2116034	-	Virulence factor	VFG045346	NA	VFDB
+chromosome	2116106	2116918	-	Virulence factor	VFG045346	NA	VFDB
+chromosome	2120269	2120877	-	De novo transcript	Coding DNT 	Coding probability = 92%	Popcorn
+chromosome	2136124	2138124	-	Virulence factor	VFG006892	NA	VFDB
+chromosome	2149696	2149917	-	Virulence factor	VFG045470	NA	VFDB
+chromosome	2150988	2151175	-	De novo transcript	Non-coding DNT 	Coding probability = 10%	Popcorn
+chromosome	2152463	2153128	+	Virulence factor	VFG031735	NA	VFDB
+chromosome	2158978	2159327	-	De novo transcript	Coding DNT 	Coding probability = 80%	Popcorn
+chromosome	2169256	2170455	-	Virulence factor	VFG030145	NA	VFDB
+chromosome	2173133	2173573	+	Virulence factor	VFG006375	NA	VFDB
+chromosome	2189374	2189680	-	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	2197767	2198684	-	Virulence factor	VFG002184	NA	VFDB
+chromosome	2204098	2205291	-	Virulence factor	VFG044276	NA	VFDB
+chromosome	2205297	2206844	-	Virulence factor	VFG044077	NA	VFDB
+chromosome	2210496	2211053	+	Virulence factor	VFG044244	NA	VFDB
+chromosome	2216238	2217776	-	Virulence factor	Anthrolysin O/cereolysin O family cholesterol-dependent cytolysin Alo; VFG016217	NA	AMRFinderPlus; VFDB
+chromosome	2218211	2218963	-	Virulence factor	VFG044219	NA	VFDB
+chromosome	2218960	2220024	-	Virulence factor	VFG044220	NA	VFDB
+chromosome	2220021	2221037	-	Virulence factor	VFG044221	NA	VFDB
+chromosome	2221057	2222076	-	Virulence factor	VFG044222	NA	VFDB
+chromosome	2222462	2223139	-	Virulence factor	VFG006826	NA	VFDB
+chromosome	2229908	2230661	-	De novo transcript	Coding DNT 	Coding probability = 78%	Popcorn
+chromosome	2230958	2232253	-	Virulence factor	VFG043469	NA	VFDB
+chromosome	2235922	2236926	-	Virulence factor	VFG005356	NA	VFDB
+chromosome	2238373	2239680	-	Virulence factor	VFG042736	NA	VFDB
+chromosome	2240017	2243788	-	De novo transcript	Coding DNT 	Coding probability = 86%	Popcorn
+chromosome	2244224	2244805	+	Virulence factor	VFG000077	NA	VFDB
+chromosome	2254139	2254951	-	Virulence factor	VFG032455	NA	VFDB
+chromosome	2263672	2264700	+	De novo transcript	Coding DNT 	Coding probability = 93%	Popcorn
+chromosome	2264404	2264601	-	Virulence factor	VFG045470	NA	VFDB
+chromosome	2266011	2266904	+	Virulence factor	VFG037476	NA	VFDB
+chromosome	2267329	2267874	+	Defense system	gcu233	gcu233	DefenseFinder
+chromosome	2268730	2270445	-	Virulence factor	VFG013250	NA	VFDB
+chromosome	2274404	2275048	-	Virulence factor	VFG030700	NA	VFDB
+chromosome	2277381	2279888	-	Virulence factor	VFG023546	NA	VFDB
+chromosome	2278504	2302632	Both	Biosynthetic gene cluster	Saccharide	BGC 13	antiSMASH
+chromosome	2287348	2288466	+	Virulence factor	VFG016408	NA	VFDB
+chromosome	2288504	2289619	-	Virulence factor	VFG001373	NA	VFDB
+chromosome	2289694	2291019	-	Virulence factor	VFG016428	NA	VFDB
+chromosome	2291559	2292632	+	Virulence factor	VFG005841	NA	VFDB
+chromosome	2292833	2293570	+	Virulence factor	VFG033055	NA	VFDB
+chromosome	2312135	2313037	+	Virulence factor	VFG037467	NA	VFDB
+chromosome	2317981	2318611	-	De novo transcript	Coding DNT 	Coding probability = 69%	Popcorn
+chromosome	2322872	2323126	-	De novo transcript	Non-coding DNT 	Coding probability = 14%	Popcorn
+chromosome	2326873	2327024	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	2327141	2328336	-	De novo transcript	Non-coding DNT 	Coding probability = 32%	Popcorn
+chromosome	2336142	2336429	-	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	2347900	2348616	-	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	2351320	2352000	-	Virulence factor	VFG035923	NA	VFDB
+chromosome	2351814	2380583	Both	Biosynthetic gene cluster	Saccharide teichuronic acid	BGC 14	antiSMASH
+chromosome	2353573	2353764	+	Virulence factor	VFG045470	NA	VFDB
+chromosome	2354387	2355721	-	Virulence factor	VFG032151	NA	VFDB
+chromosome	2359063	2359734	-	Virulence factor	VFG027211	NA	VFDB
+chromosome	2359848	2360666	-	Virulence factor	VFG016407	NA	VFDB
+chromosome	2360765	2361673	-	Virulence factor	VFG016389	NA	VFDB
+chromosome	2361814	2362836	-	Virulence factor	VFG050194	NA	VFDB
+chromosome	2362985	2364307	-	Virulence factor	VFG016428	NA	VFDB
+chromosome	2364368	2365150	-	Virulence factor	VFG016398	NA	VFDB
+chromosome	2365349	2366446	-	Virulence factor	VFG000031	NA	VFDB
+chromosome	2367700	2368950	-	Virulence factor	VFG054242	NA	VFDB
+chromosome	2369027	2369686	-	Virulence factor	VFG046630	NA	VFDB
+chromosome	2369705	2370583	-	Virulence factor	VFG016402	NA	VFDB
+chromosome	2370823	2371590	-	Virulence factor	VFG050207	NA	VFDB
+chromosome	2371702	2372403	-	Virulence factor	VFG016419	NA	VFDB
+chromosome	2372393	2373136	-	Virulence factor	VFG016436	NA	VFDB
+chromosome	2373400	2374077	-	Virulence factor	VFG016386	NA	VFDB
+chromosome	2374419	2374853	-	Virulence factor	VFG052299	NA	VFDB
+chromosome	2376937	2377192	+	De novo transcript	Non-coding DNT 	Coding probability = 6%	Popcorn
+chromosome	2377023	2377148	-	De novo transcript	Non-coding DNT 	Coding probability = 24%	Popcorn
+chromosome	2379076	2379918	-	Virulence factor	VFG007914	NA	VFDB
+chromosome	2395727	2398456	+	Virulence factor	VFG049934	NA	VFDB
+chromosome	2400516	2401922	-	Virulence factor	VFG052644	NA	VFDB
+chromosome	2403395	2404903	-	Virulence factor	VFG038348	NA	VFDB
+chromosome	2411806	2412246	-	Virulence factor	VFG031526	NA	VFDB
+chromosome	2414731	2414999	+	De novo transcript	Coding DNT 	Coding probability = 79%	Popcorn
+chromosome	2429138	2429506	-	Virulence factor	VFG019760	NA	VFDB
+chromosome	2433523	2434662	-	Virulence factor	VFG044398	NA	VFDB
+chromosome	2434684	2435814	-	Virulence factor	VFG044398	NA	VFDB
+chromosome	2435888	2436739	-	Virulence factor	VFG049150	NA	VFDB
+chromosome	2440791	2440997	+	Virulence factor	VFG045470	NA	VFDB
+chromosome	2441471	2442068	+	De novo transcript	Non-coding DNT 	Coding probability = 10%	Popcorn
+chromosome	2445282	2445488	-	Virulence factor	VFG045470	NA	VFDB
+chromosome	2445618	2446529	+	Virulence factor	VFG022256	NA	VFDB
+chromosome	2447639	2449570	-	Defense system	Lamassu family	LmuB SMC Sir2	DefenseFinder; PADLOC
+chromosome	2449570	2450055	-	Defense system	Lamassu family	LmuC acc Sir2	DefenseFinder; PADLOC
+chromosome	2450048	2451352	-	Defense system	Lamassu family	LmuA effector Sir2	DefenseFinder; PADLOC
+chromosome	2457067	2457170	-	De novo transcript	Non-coding DNT 	Coding probability = 39%	Popcorn
+chromosome	2457660	2458853	+	Virulence factor	VFG037212	NA	VFDB
+chromosome	2459963	2462644	+	Virulence factor	VFG049934	NA	VFDB
+chromosome	2462661	2462807	-	Virulence factor	VFG049932	NA	VFDB
+chromosome	2462896	2463753	-	Virulence factor	VFG016315	NA	VFDB
+chromosome	2463922	2465673	+	Virulence factor	VFG001314	NA	VFDB
+chromosome	2465714	2466316	-	Virulence factor	VFG045728	NA	VFDB
+chromosome	2468175	2469077	-	Virulence factor	VFG022453	NA	VFDB
+chromosome	2468820	2468967	+	De novo transcript	Coding DNT 	Coding probability = 85%	Popcorn
+chromosome	2470072	2470788	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	2470160	2470674	+	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	2470809	2480489	+	Virulence factor	VFG043508	NA	VFDB
+chromosome	2478547	2480837	-	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	2483883	2484410	-	Virulence factor	VFG009763	NA	VFDB
+chromosome	2499739	2500677	-	Virulence factor	VFG021797	NA	VFDB
+chromosome	2500868	2501680	-	Virulence factor	VFG013732	NA	VFDB
+chromosome	2501696	2502712	-	Virulence factor	VFG044271	NA	VFDB
+chromosome	2502709	2503764	-	Virulence factor	VFG013745	NA	VFDB
+chromosome	2513238	2564069	Both	Biosynthetic gene cluster	Saccharide	BGC 15	antiSMASH
+chromosome	2517374	2518291	-	Virulence factor	VFG050113	NA	VFDB
+chromosome	2519180	2520157	-	Virulence factor	VFG002197	NA	VFDB
+chromosome	2524917	2525612	-	Virulence factor	VFG011675	NA	VFDB
+chromosome	2527269	2527916	-	Virulence factor	VFG024201	NA	VFDB
+chromosome	2534135	2534851	-	Virulence factor	VFG014964	NA	VFDB
+chromosome	2535070	2536269	-	Virulence factor	VFG044370	NA	VFDB
+chromosome	2536485	2537225	-	Virulence factor	VFG019117	NA	VFDB
+chromosome	2537247	2538356	-	Virulence factor	VFG023796	NA	VFDB
+chromosome	2544888	2545616	+	Virulence factor	VFG006079	NA	VFDB
+chromosome	2547559	2548539	+	Virulence factor	VFG005941	NA	VFDB
+chromosome	2553131	2554069	+	Virulence factor	VFG046913	NA	VFDB
+chromosome	2554119	2555057	-	Virulence factor	VFG014119	NA	VFDB
+chromosome	2555859	2557412	+	Virulence factor	VFG044173	NA	VFDB
+chromosome	2558470	2561586	+	Virulence factor	VFG036991	NA	VFDB
+chromosome	2561615	2562580	-	Virulence factor	VFG037104	NA	VFDB
+chromosome	2562682	2563716	-	Virulence factor	VFG044071	NA	VFDB
+chromosome	2565332	2566072	-	Virulence factor	VFG014964	NA	VFDB
+chromosome	2566349	2587365	Both	Biosynthetic gene cluster	Saccharide	BGC 16	antiSMASH
+chromosome	2568116	2568943	-	De novo transcript	Coding DNT 	Coding probability = 98%	Popcorn
+chromosome	2572711	2573337	+	Virulence factor	VFG001867	NA	VFDB
+chromosome	2574416	2575006	-	Virulence factor	VFG006481	NA	VFDB
+chromosome	2575794	2576252	+	De novo transcript	Non-coding DNT 	Coding probability = 42%	Popcorn
+chromosome	2576349	2577365	-	Virulence factor	VFG050194	NA	VFDB
+chromosome	2577550	2578197	-	Virulence factor	VFG050098	NA	VFDB
+chromosome	2580884	2581870	+	Virulence factor	VFG052855	NA	VFDB
+chromosome	2593449	2594948	-	Defense system	Restriction modification type II	Type II restriction endonuclease	DefenseFinder; PADLOC
+chromosome	2595016	2596332	-	Defense system	Restriction modification type II	Type II DNA methyltransferase	DefenseFinder; PADLOC
+chromosome	2596314	2597606	-	Defense system	Restriction modification type II	Type II DNA methyltransferase	DefenseFinder; PADLOC
+chromosome	2603412	2603633	+	De novo transcript	Non-coding DNT 	Coding probability = 19%	Popcorn
+chromosome	2604450	2605161	-	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	2604629	2605203	+	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	2607353	2608258	-	Defense system	Viperin solo	pVip	PADLOC
+chromosome	2610262	2611437	-	Virulence factor	VFG005530	NA	VFDB
+chromosome	2611501	2612295	-	Virulence factor	VFG050269	NA	VFDB
+chromosome	2616260	2616967	-	Virulence factor	VFG031738	NA	VFDB
+chromosome	2629501	2630262	-	Virulence factor	VFG038724	NA	VFDB
+chromosome	2653338	2654801	+	Virulence factor	VFG052858	NA	VFDB
+chromosome	2661756	2662295	-	Virulence factor	VFG048420	NA	VFDB
+chromosome	2688881	2690260	+	Virulence factor	VFG047258	NA	VFDB
+chromosome	2709489	2710277	+	Virulence factor	VFG008123	NA	VFDB
+chromosome	2711264	2712187	+	Virulence factor	VFG044254	NA	VFDB
+chromosome	2712410	2713807	+	Virulence factor	VFG026700	NA	VFDB
+chromosome	2713813	2714400	+	Virulence factor	VFG052420	NA	VFDB
+chromosome	2727450	2729885	+	Virulence factor	VFG000079	NA	VFDB
+chromosome	2733717	2734397	+	Virulence factor	VFG053897	NA	VFDB
+chromosome	2740746	2741405	+	Virulence factor	VFG014909	NA	VFDB
+chromosome	2749728	2753339	+	Antimicrobial resistance	Rifamycins	Rifampicin resistant rpoC	RGI
+chromosome	2757140	2758327	+	Virulence factor	VFG016490	NA	VFDB
+chromosome	2773523	2774365	+	Virulence factor	VFG006259	NA	VFDB
+chromosome	2774341	2775222	+	Virulence factor	VFG037384	NA	VFDB
+chromosome	2782005	2782769	-	Virulence factor	VFG033026	NA	VFDB
+chromosome	2793938	2795284	+	Virulence factor	VFG013516	NA	VFDB
+chromosome	2801445	2802221	+	Virulence factor	VFG005765	NA	VFDB
+chromosome	2802905	2803945	-	Virulence factor	VFG013571	NA	VFDB
+chromosome	2803958	2804770	-	Virulence factor	VFG045346	NA	VFDB
+chromosome	2813810	2819220	-	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	2815883	2816893	+	Virulence factor	VFG013192	NA	VFDB
+chromosome	2817677	2819287	+	Virulence factor	VFG032255	NA	VFDB
+chromosome	2820199	2821839	-	Virulence factor	VFG006783	NA	VFDB
+chromosome	2822244	2823884	-	Virulence factor	VFG032247	NA	VFDB
+chromosome	2825109	2825912	-	Virulence factor	VFG007819	NA	VFDB
+chromosome	2830530	2831396	-	Virulence factor	VFG037468	NA	VFDB
+chromosome	2833148	2833753	+	Virulence factor	VFG015602	NA	VFDB
+chromosome	2834227	2835204	+	Virulence factor	VFG045668	NA	VFDB
+chromosome	2836677	2837355	-	De novo transcript	Coding DNT 	Coding probability = 86%	Popcorn
+chromosome	2837505	2837685	+	De novo transcript	Non-coding DNT 	Coding probability = 19%	Popcorn
+chromosome	2845791	2847518	+	Virulence factor	VFG032254	NA	VFDB
+chromosome	2858833	2860107	+	Virulence factor	VFG047328	NA	VFDB
+chromosome	2859349	2859656	-	De novo transcript	Non-coding DNT 	Coding probability = 40%	Popcorn
+chromosome	2868047	2869216	+	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanT)	RGI
+chromosome	2880889	2881332	+	Virulence factor	VFG039386	NA	VFDB
+chromosome	2887267	2888901	+	Virulence factor	VFG019134	NA	VFDB
+chromosome	2897812	2898519	+	Defense system	RosmerTA	RmrT	DefenseFinder; PADLOC
+chromosome	2898555	2899739	+	Defense system	RosmerTA	RmrA	DefenseFinder; PADLOC
+chromosome	2903461	2905008	+	Virulence factor	VFG052864	NA	VFDB
+chromosome	2915588	2916913	+	Virulence factor	VFG052929	NA	VFDB
+chromosome	2917207	2917908	+	Virulence factor	VFG031730	NA	VFDB
+chromosome	2941682	2942611	-	Virulence factor	VFG050113	NA	VFDB
+chromosome	2942680	2943693	-	Virulence factor	VFG022911	NA	VFDB
+chromosome	2943683	2944396	-	Virulence factor	VFG031738	NA	VFDB
+chromosome	2960536	2961255	+	Virulence factor	VFG022631	NA	VFDB
+chromosome	2965891	2966931	+	Virulence factor	VFG047569	NA	VFDB
+chromosome	2969612	2970883	+	Virulence factor	VFG047591	NA	VFDB
+chromosome	2975789	2977798	+	Virulence factor	VFG043491	NA	VFDB
+chromosome	2981847	2982392	-	Virulence factor	VFG044244	NA	VFDB
+chromosome	2982865	2983884	+	Virulence factor	VFG030678	NA	VFDB
+chromosome	2984561	2985415	+	Virulence factor	VFG045346	NA	VFDB
+chromosome	2994358	2995722	+	Virulence factor	VFG044201	NA	VFDB
+chromosome	2995838	2997205	+	Virulence factor	VFG019760	NA	VFDB
+chromosome	3017824	3018387	-	Virulence factor	VFG024105	NA	VFDB
+chromosome	3023290	3024297	-	Virulence factor	VFG044210	NA	VFDB
+chromosome	3024294	3025334	-	Virulence factor	VFG044272	NA	VFDB
+chromosome	3025383	3026300	-	Virulence factor	VFG044253	NA	VFDB
+chromosome	3034345	3034977	-	Virulence factor	VFG044383	NA	VFDB
+chromosome	3037344	3038645	-	Virulence factor	VFG044370	NA	VFDB
+chromosome	3042039	3042731	-	Virulence factor	VFG002901	NA	VFDB
+chromosome	3042842	3043636	-	Virulence factor	VFG043047	NA	VFDB
+chromosome	3043758	3044480	-	Virulence factor	VFG036559	NA	VFDB
+chromosome	3044691	3045983	+	Virulence factor	VFG006892	NA	VFDB
+chromosome	3048111	3049109	+	Virulence factor	VFG015903	NA	VFDB
+chromosome	3049209	3050624	+	Virulence factor	VFG047663	NA	VFDB
+chromosome	3050428	3094009	Both	Biosynthetic gene cluster	NRPS-like	BGC 17	antiSMASH
+chromosome	3051826	3052515	+	Virulence factor	VFG032545	NA	VFDB
+chromosome	3070428	3074009	+	Virulence factor	VFG029728	NA	VFDB
+chromosome	3076337	3077071	+	Virulence factor	VFG030678	NA	VFDB
+chromosome	3077467	3079011	+	Virulence factor	VFG044173	NA	VFDB
+chromosome	3078870	3079226	-	De novo transcript	Non-coding DNT 	Coding probability = 12%	Popcorn
+chromosome	3090505	3090923	+	De novo transcript	Coding DNT 	Coding probability = 94%	Popcorn
+chromosome	3097985	3100651	-	Virulence factor	VFG021056	NA	VFDB
+chromosome	3101243	3101707	+	Virulence factor	VFG054331	NA	VFDB
+chromosome	3103338	3105263	-	Virulence factor	VFG031406	NA	VFDB
+chromosome	3107461	3107997	+	Virulence factor	VFG043006	NA	VFDB
+chromosome	3118770	3119552	+	Virulence factor	VFG033030	NA	VFDB
+chromosome	3126301	3156610	Both	Biosynthetic gene cluster	Saccharide	BGC 18	antiSMASH
+chromosome	3137895	3139139	+	Virulence factor	VFG014099	NA	VFDB
+chromosome	3138586	3141754	-	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	3139136	3140101	+	Virulence factor	VFG014119	NA	VFDB
+chromosome	3149287	3150192	-	Virulence factor	VFG017989	NA	VFDB
+chromosome	3151888	3152210	-	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	3156532	3158292	+	Virulence factor	VFG013250	NA	VFDB
+chromosome	3164387	3165685	-	Virulence factor	VFG013618	NA	VFDB
+chromosome	3165813	3166826	+	Virulence factor	VFG007914	NA	VFDB
+chromosome	3168922	3169377	+	Virulence factor	VFG001404	NA	VFDB
+chromosome	3169671	3170105	+	Virulence factor	VFG000478	NA	VFDB
+chromosome	3171131	3171562	+	De novo transcript	Non-coding DNT 	Coding probability = 22%	Popcorn
+chromosome	3178632	3179351	+	Virulence factor	VFG039536	NA	VFDB
+chromosome	3185295	3187364	+	Virulence factor	VFG049933	NA	VFDB
+chromosome	3189935	3190111	-	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	3191408	3194437	+	Virulence factor	VFG050120	NA	VFDB
+chromosome	3196422	3199319	+	Virulence factor	VFG019147	NA	VFDB
+chromosome	3208921	3209236	-	De novo transcript	Coding DNT 	Coding probability = 60%	Popcorn
+chromosome	3209318	3210187	+	Virulence factor	VFG041423	NA	VFDB
+chromosome	3211136	3211322	-	De novo transcript	Non-coding DNT 	Coding probability = 6%	Popcorn
+chromosome	3211894	3212991	+	Virulence factor	VFG030724	NA	VFDB
+chromosome	3212991	3213923	+	Virulence factor	VFG030565	NA	VFDB
+chromosome	3213920	3214741	+	Virulence factor	VFG030630	NA	VFDB
+chromosome	3214763	3216139	+	Virulence factor	VFG043535	NA	VFDB
+chromosome	3216167	3216362	-	De novo transcript	Coding DNT 	Coding probability = 87%	Popcorn
+chromosome	3217590	3218261	+	Virulence factor	VFG009801	NA	VFDB
+chromosome	3221607	3223583	+	Virulence factor	VFG000104	NA	VFDB
+chromosome	3234447	3235118	-	Virulence factor	VFG031776	NA	VFDB
+chromosome	3237160	3237427	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	3237234	3237398	+	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	3239805	3242741	+	Virulence factor	VFG024121	NA	VFDB
+chromosome	3248992	3251358	+	Virulence factor	VFG031416	NA	VFDB
+chromosome	3254795	3256495	+	Virulence factor	VFG001314	NA	VFDB
+chromosome	3258358	3259620	-	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanW)	RGI
+chromosome	3259855	3260871	-	Virulence factor	VFG016389	NA	VFDB
+chromosome	3262968	3264266	+	Virulence factor	VFG038903	NA	VFDB
+chromosome	3267152	3301664	Both	Biosynthetic gene cluster	Saccharide	BGC 19	antiSMASH
+chromosome	3267750	3268470	-	De novo transcript	Non-coding DNT 	Coding probability = 39%	Popcorn
+chromosome	3268480	3268767	+	Virulence factor	VFG050076	NA	VFDB
+chromosome	3269176	3270525	-	Virulence factor	VFG010904	NA	VFDB
+chromosome	3270906	3271874	-	Virulence factor	VFG044253	NA	VFDB
+chromosome	3272047	3273051	+	Virulence factor	VFG044356	NA	VFDB
+chromosome	3273048	3274106	+	Virulence factor	VFG016171	NA	VFDB
+chromosome	3274119	3274940	+	Virulence factor	VFG016167	NA	VFDB
+chromosome	3275917	3277107	+	Virulence factor	VFG026073	NA	VFDB
+chromosome	3277152	3278117	+	Virulence factor	VFG048986	NA	VFDB
+chromosome	3284124	3285827	+	Virulence factor	VFG049934	NA	VFDB
+chromosome	3285859	3287256	-	Virulence factor	VFG047663	NA	VFDB
+chromosome	3298306	3299034	+	Virulence factor	VFG036559	NA	VFDB
+chromosome	3299047	3299877	+	Virulence factor	VFG011638	NA	VFDB
+chromosome	3299965	3300621	+	Virulence factor	VFG002901	NA	VFDB
+chromosome	3300622	3301266	+	Virulence factor	VFG002901	NA	VFDB
+chromosome	3303937	3304494	+	Virulence factor	VFG022874	NA	VFDB
+chromosome	3307675	3309066	-	Virulence factor	VFG022911	NA	VFDB
+chromosome	3309078	3309755	-	Virulence factor	VFG031728	NA	VFDB
+chromosome	3312576	3313970	-	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	3315009	3316358	-	Virulence factor	VFG032174	NA	VFDB
+chromosome	3317106	3318719	+	Virulence factor	VFG036972	NA	VFDB
+chromosome	3318857	3319828	+	Virulence factor	VFG002197	NA	VFDB
+chromosome	3319842	3320738	+	Virulence factor	VFG013431	NA	VFDB
+chromosome	3321149	3322633	+	Virulence factor	VFG036556	NA	VFDB
+chromosome	3323586	3324512	+	Virulence factor	VFG049314	NA	VFDB
+chromosome	3325577	3327976	+	Virulence factor	M6 family metalloprotease immune inhibitor InhA2; VFG016339	NA	AMRFinderPlus; VFDB
+chromosome	3330384	3331436	+	Virulence factor	VFG030304	NA	VFDB
+chromosome	3332152	3333003	+	Virulence factor	Phospholipase CerA; VFG016331	NA	AMRFinderPlus; VFDB
+chromosome	3333080	3334081	+	Virulence factor	Sphingomyelinase C; VFG049924	NA	AMRFinderPlus; VFDB
+chromosome	3342376	3342594	+	Virulence factor	VFG045470	NA	VFDB
+chromosome	3343177	3343809	+	Virulence factor	VFG019378	NA	VFDB
+chromosome	3344900	3346285	-	Virulence factor	VFG045725	NA	VFDB
+chromosome	3353139	3354431	+	Virulence factor	VFG052932	NA	VFDB
+chromosome	3354631	3354831	+	Virulence factor	VFG045470	NA	VFDB
+chromosome	3356318	3358054	+	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	3368173	3368422	-	De novo transcript	Coding DNT 	Coding probability = 77%	Popcorn
+chromosome	3371714	3373114	-	Virulence factor	VFG045721	NA	VFDB
+chromosome	3373092	3373814	-	Virulence factor	VFG047402	NA	VFDB
+chromosome	3378070	3381114	-	Virulence factor	VFG049136	NA	VFDB
+chromosome	3388554	3388973	+	Virulence factor	VFG017759	NA	VFDB
+chromosome	3393470	3394219	+	Virulence factor	VFG036559	NA	VFDB
+chromosome	3396593	3397702	+	Virulence factor	VFG015927	NA	VFDB
+chromosome	3403882	3405972	+	Virulence factor	VFG031364	NA	VFDB
+chromosome	3407804	3408985	-	Virulence factor	VFG044123	NA	VFDB
+chromosome	3410998	3412299	-	Virulence factor	VFG052932	NA	VFDB
+chromosome	3412501	3413367	+	Virulence factor	VFG038839	NA	VFDB
+chromosome	3419576	3420653	+	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	3425609	3426136	+	Virulence factor	VFG001353	NA	VFDB
+chromosome	3429059	3429418	+	Virulence factor	VFG044378	NA	VFDB
+chromosome	3429408	3429728	+	Virulence factor	VFG044378	NA	VFDB
+chromosome	3431701	3432900	-	Virulence factor	VFG016389	NA	VFDB
+chromosome	3437468	3437637	-	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	3448624	3449298	-	Virulence factor	VFG035923	NA	VFDB
+chromosome	3464813	3464941	+	De novo transcript	Coding DNT 	Coding probability = 80%	Popcorn
+chromosome	3465578	3466705	+	Virulence factor	VFG030109	NA	VFDB
+chromosome	3475483	3476253	-	Virulence factor	VFG038839	NA	VFDB
+chromosome	3478740	3479942	+	Virulence factor	VFG047328	NA	VFDB
+chromosome	3482086	3482379	+	De novo transcript	Non-coding DNT 	Coding probability = 22%	Popcorn
+chromosome	3482802	3484799	-	Virulence factor	VFG037032	NA	VFDB
+chromosome	3489879	3490120	+	De novo transcript	Coding DNT 	Coding probability = 54%	Popcorn
+chromosome	3490218	3491978	+	Virulence factor	VFG013252	NA	VFDB
+chromosome	3491975	3493975	+	Virulence factor	VFG013149	NA	VFDB
+chromosome	3494270	3495067	+	Virulence factor	VFG043047	NA	VFDB
+chromosome	3495108	3495752	+	Virulence factor	VFG002901	NA	VFDB
+chromosome	3495781	3496515	+	Virulence factor	VFG006259	NA	VFDB
+chromosome	3508183	3508405	+	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	3508428	3511745	+	Virulence factor	VFG042982	NA	VFDB
+chromosome	3515529	3517085	+	Virulence factor	VFG030406	NA	VFDB
+chromosome	3524915	3571079	Both	Biosynthetic gene cluster	NRPS and RRE-containing	BGC 20	antiSMASH
+chromosome	3533646	3534623	+	Virulence factor	VFG044255	NA	VFDB
+chromosome	3534826	3536415	+	Virulence factor	VFG032250	NA	VFDB
+chromosome	3540428	3540862	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	3544148	3544298	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	3544915	3551079	+	Virulence factor	VFG000161	NA	VFDB
+chromosome	3556416	3556672	-	De novo transcript	Non-coding DNT 	Coding probability = 21%	Popcorn
+chromosome	3557560	3558792	+	Virulence factor	VFG044431	NA	VFDB
+chromosome	3563161	3563457	+	Virulence factor	VFG002405	NA	VFDB
+chromosome	3563170	3566178	-	De novo transcript	Coding DNT 	Coding probability = 69%	Popcorn
+chromosome	3568009	3571368	-	De novo transcript	Coding DNT 	Coding probability = 75%	Popcorn
+chromosome	3575117	3575794	+	Virulence factor	VFG022951	NA	VFDB
+chromosome	3578819	3579580	+	Defense system	Restriction modification type IV	Restriction modification type IV	DefenseFinder
+chromosome	3580986	3582074	+	Defense system	Restriction modification type II	Type II DNA methyltransferase	DefenseFinder; PADLOC
+chromosome	3582172	3582966	+	Defense system	Restriction modification type II	Type II restriction endonuclease	DefenseFinder; PADLOC
+chromosome	3584920	3586947	+	Defense system	Gabija	GajA	DefenseFinder; PADLOC
+chromosome	3587003	3588964	+	Defense system	Gabija	GajB	DefenseFinder; PADLOC
+chromosome	3597483	3598958	+	Virulence factor	VFG044351	NA	VFDB
+chromosome	3600063	3600584	+	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	3600729	3602920	-	De novo transcript	Non-coding DNT 	Coding probability = 46%	Popcorn
+chromosome	3601709	3602371	+	Virulence factor	VFG042981	NA	VFDB
+chromosome	3604290	3604863	-	De novo transcript	Non-coding DNT 	Coding probability = 32%	Popcorn
+chromosome	3604396	3604821	+	De novo transcript	Non-coding DNT 	Coding probability = 14%	Popcorn
+chromosome	3610268	3611096	+	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	3610841	3611038	-	De novo transcript	Non-coding DNT 	Coding probability = 9%	Popcorn
+chromosome	3613057	3613288	+	De novo transcript	Non-coding DNT 	Coding probability = 10%	Popcorn
+chromosome	3617963	3619766	-	De novo transcript	Non-coding DNT 	Coding probability = 19%	Popcorn
+chromosome	3622054	3622230	-	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	3628734	3629408	-	Virulence factor	VFG035924	NA	VFDB
+chromosome	3633177	3634070	-	Virulence factor	VFG016315	NA	VFDB
+chromosome	3639558	3640575	+	De novo transcript	Non-coding DNT 	Coding probability = 16%	Popcorn
+chromosome	3640716	3640968	+	De novo transcript	Non-coding DNT 	Coding probability = 34%	Popcorn
+chromosome	3641427	3642469	-	De novo transcript	Coding DNT 	Coding probability = 95%	Popcorn
+chromosome	3641786	3642058	+	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	3645647	3646423	+	Virulence factor	VFG009735	NA	VFDB
+chromosome	3648288	3649145	-	Virulence factor	VFG043254	NA	VFDB
+chromosome	3652608	3653761	-	De novo transcript	Coding DNT 	Coding probability = 59%	Popcorn
+chromosome	3657115	3658086	-	Virulence factor	VFG022415	NA	VFDB
+chromosome	3658236	3659222	+	Virulence factor	VFG006815	NA	VFDB
+chromosome	3671462	3677842	-	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	3686878	3687123	+	Virulence factor	VFG000121	NA	VFDB
+chromosome	3687084	3687407	+	Virulence factor	VFG027083	NA	VFDB
+chromosome	3691776	3692645	-	Virulence factor	VFG032880	NA	VFDB
+chromosome	3695582	3696032	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	3696129	3696860	+	Virulence factor	VFG050113	NA	VFDB
+chromosome	3704634	3710822	+	Virulence factor	VFG050211	NA	VFDB
+chromosome	3711131	3715427	-	De novo transcript	Non-coding DNT 	Coding probability = 6%	Popcorn
+chromosome	3712035	3712781	+	Virulence factor	VFG005766	NA	VFDB
+chromosome	3719116	3720162	+	Virulence factor	VFG013612	NA	VFDB
+chromosome	3720177	3721112	+	Virulence factor	VFG013614	NA	VFDB
+chromosome	3732703	3733212	+	Virulence factor	VFG037969	NA	VFDB
+chromosome	3733407	3734423	+	Virulence factor	VFG045670	NA	VFDB
+chromosome	3735516	3736505	+	Virulence factor	VFG032200	NA	VFDB
+chromosome	3737267	3738799	+	Virulence factor	VFG030400	NA	VFDB
+chromosome	3745559	3746569	-	Virulence factor	Beta-channel forming cytolysin CytK2; VFG016222	NA	AMRFinderPlus; VFDB
+chromosome	3752015	3752500	-	Virulence factor	VFG001392	NA	VFDB
+chromosome	3756162	3756866	-	Virulence factor	VFG031728	NA	VFDB
+chromosome	3760310	3762037	+	Virulence factor	VFG043209	NA	VFDB
+chromosome	3762679	3763335	+	Virulence factor	VFG049919	NA	VFDB
+chromosome	3763577	3764239	+	Virulence factor	VFG049919	NA	VFDB
+chromosome	3766073	3767350	+	Virulence factor	VFG001381	NA	VFDB
+chromosome	3771967	3772530	+	Virulence factor	VFG043006	NA	VFDB
+chromosome	3784159	3785349	-	Virulence factor	VFG044396	NA	VFDB
+chromosome	3786862	3788709	+	Virulence factor	VFG015552	NA	VFDB
+chromosome	3788895	3789854	+	Virulence factor	VFG013614	NA	VFDB
+chromosome	3789914	3791380	+	Virulence factor	VFG037032	NA	VFDB
+chromosome	3794689	3795585	+	Virulence factor	VFG050070	NA	VFDB
+chromosome	3795631	3796389	-	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	3795703	3796410	+	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	3808883	3831085	Both	Biosynthetic gene cluster	Fatty acid	BGC 21	antiSMASH
+chromosome	3809569	3810426	-	Virulence factor	VFG032908	NA	VFDB
+chromosome	3813806	3816406	+	Virulence factor	VFG049189	NA	VFDB
+chromosome	3818883	3819815	+	Virulence factor	VFG053941	NA	VFDB
+chromosome	3819847	3821085	+	Virulence factor	VFG009246	NA	VFDB
+chromosome	3825236	3826891	+	Virulence factor	VFG032255	NA	VFDB
+chromosome	3828983	3830026	+	Virulence factor	VFG013573	NA	VFDB
+chromosome	3831012	3832454	-	Virulence factor	VFG043682	NA	VFDB
+chromosome	3832806	3834452	+	Virulence factor	VFG032255	NA	VFDB
+chromosome	3840133	3840278	-	De novo transcript	Non-coding DNT 	Coding probability = 15%	Popcorn
+chromosome	3841397	3871832	Both	Biosynthetic gene cluster	Saccharide S-layer glycan	BGC 22	antiSMASH
+chromosome	3847758	3849195	+	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	3853274	3854119	-	Virulence factor	VFG029561	NA	VFDB
+chromosome	3858302	3858450	-	De novo transcript	Non-coding DNT 	Coding probability = 35%	Popcorn
+chromosome	3858687	3859424	+	Virulence factor	VFG006052	NA	VFDB
+chromosome	3859433	3859978	+	Virulence factor	VFG007664	NA	VFDB
+chromosome	3859994	3860965	+	Virulence factor	VFG047031	NA	VFDB
+chromosome	3860978	3861832	+	Virulence factor	VFG007662	NA	VFDB
+chromosome	3861941	3862711	+	Virulence factor	VFG038841	NA	VFDB
+chromosome	3864520	3864753	+	De novo transcript	Coding DNT 	Coding probability = 95%	Popcorn
+chromosome	3869323	3870054	-	Virulence factor	VFG044434	NA	VFDB
+chromosome	3873717	3874028	-	De novo transcript	Non-coding DNT 	Coding probability = 22%	Popcorn
+chromosome	3874741	3876159	+	Virulence factor	VFG026700	NA	VFDB
+chromosome	3876156	3876743	+	Virulence factor	VFG052864	NA	VFDB
+chromosome	3876740	3877765	+	Virulence factor	VFG022641	NA	VFDB
+chromosome	3880348	3903854	Both	Biosynthetic gene cluster	Azole-containing-RiPP	BGC 23	antiSMASH
+chromosome	3880659	3900658	Both	Biosynthetic gene cluster	LAPs	BGC 24	BAGEL4
+chromosome	3891780	3892476	+	De novo transcript	Coding DNT 	Coding probability = 96%	Popcorn
+chromosome	3900475	3900715	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	3900959	3901168	+	Virulence factor	VFG045470	NA	VFDB
+chromosome	3904155	3905054	+	Virulence factor	VFG050113	NA	VFDB
+chromosome	3906649	3907867	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	3909578	3910063	-	Virulence factor	VFG011674	NA	VFDB
+chromosome	3916382	3918769	+	Virulence factor	M6 family metalloprotease immune inhibitor InhA1; VFG050065	NA	AMRFinderPlus; VFDB
+chromosome	3920548	3921531	+	Virulence factor	VFG030673	NA	VFDB
+chromosome	3921528	3922376	+	Virulence factor	VFG030632	NA	VFDB
+chromosome	3922383	3923183	+	Virulence factor	VFG030626	NA	VFDB
+chromosome	3925090	3927282	+	Virulence factor	VFG031255	NA	VFDB
+chromosome	3930583	3930777	+	De novo transcript	Non-coding DNT 	Coding probability = 36%	Popcorn
+chromosome	3935905	3936576	+	Virulence factor	VFG031738	NA	VFDB
+chromosome	3936580	3937980	+	Virulence factor	VFG032654	NA	VFDB
+chromosome	3942151	3942873	+	Virulence factor	VFG013798	NA	VFDB
+chromosome	3945603	3947128	+	De novo transcript	Coding DNT 	Coding probability = 99%	Popcorn
+chromosome	3947137	3947580	-	Virulence factor	VFG037983	NA	VFDB
+chromosome	3949532	3950275	+	Virulence factor	VFG038840	NA	VFDB
+chromosome	3954961	3956037	+	Virulence factor	VFG013190	NA	VFDB
+chromosome	3956057	3957058	+	Virulence factor	VFG030704	NA	VFDB
+chromosome	3957059	3958816	+	Virulence factor	VFG013568	NA	VFDB
+chromosome	3959648	3960745	+	Virulence factor	VFG053879	NA	VFDB
+chromosome	3963188	3965470	+	Virulence factor	VFG016355	NA	VFDB
+chromosome	3968443	3968624	-	De novo transcript	Non-coding DNT 	Coding probability = 15%	Popcorn
+chromosome	3970573	3971019	+	Virulence factor	VFG012207	NA	VFDB
+chromosome	3985154	3985852	+	Virulence factor	VFG050113	NA	VFDB
+chromosome	3986655	3987557	+	Virulence factor	VFG007914	NA	VFDB
+chromosome	3988451	3988626	-	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	3990907	3991461	+	Virulence factor	VFG044244	NA	VFDB
+chromosome	3991547	3991945	+	Virulence factor	VFG040867	NA	VFDB
+chromosome	3995599	3996774	-	Virulence factor	VFG014847	NA	VFDB
+chromosome	3996771	3998285	-	Virulence factor	VFG032815	NA	VFDB
+chromosome	4007582	4008001	+	Virulence factor	VFG012207	NA	VFDB
+chromosome	4009725	4010732	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	4013401	4013689	+	De novo transcript	Coding DNT 	Coding probability = 72%	Popcorn
+chromosome	4023190	4023771	+	Virulence factor	VFG009380	NA	VFDB
+chromosome	4027840	4028469	+	Virulence factor	VFG014106	NA	VFDB
+chromosome	4028442	4029161	+	Virulence factor	VFG014107	NA	VFDB
+chromosome	4029155	4029913	+	Virulence factor	VFG045297	NA	VFDB
+chromosome	4031821	4031930	+	De novo transcript	Non-coding DNT 	Coding probability = 7%	Popcorn
+chromosome	4036838	4038154	+	Virulence factor	VFG026398	NA	VFDB
+chromosome	4040573	4041184	+	Virulence factor	VFG015885	NA	VFDB
+chromosome	4055798	4056430	+	Virulence factor	VFG022956	NA	VFDB
+chromosome	4071072	4071947	-	De novo transcript	Non-coding DNT 	Coding probability = 9%	Popcorn
+chromosome	4071718	4071937	+	De novo transcript	Coding DNT 	Coding probability = 68%	Popcorn
+chromosome	4072093	4073358	-	Virulence factor	VFG014381	NA	VFDB
+chromosome	4074886	4075416	-	Virulence factor	VFG012274	NA	VFDB
+chromosome	4091225	4091941	+	Virulence factor	VFG031738	NA	VFDB
+chromosome	4118448	4129410	Both	Biosynthetic gene cluster	Quinone isoprenoid chain	BGC 25	antiSMASH
+chromosome	4118693	4118897	-	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	4120784	4121056	+	Virulence factor	VFG043551	NA	VFDB
+chromosome	4121177	4121746	+	Virulence factor	VFG041115	NA	VFDB
+chromosome	4124535	4124981	+	Virulence factor	VFG031491	NA	VFDB
+chromosome	4127636	4128748	+	Virulence factor	VFG044377	NA	VFDB
+chromosome	4128877	4129211	+	De novo transcript	Non-coding DNT 	Coding probability = 10%	Popcorn
+chromosome	4130520	4162703	Both	Biosynthetic gene cluster	Saccharide	BGC 26	antiSMASH
+chromosome	4143531	4144511	+	Virulence factor	VFG047443	NA	VFDB
+chromosome	4146385	4147233	+	Virulence factor	VFG008088	NA	VFDB
+chromosome	4147246	4147629	+	Virulence factor	VFG008118	NA	VFDB
+chromosome	4151516	4152703	+	Virulence factor	VFG001965	NA	VFDB
+chromosome	4169178	4170074	-	Antimicrobial resistance	Macrolide	Macrolide 2'-phosphotransferase MphL	AMRFinderPlus; RGI
+chromosome	4170110	4170626	-	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	4174976	4175219	+	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	4179837	4205010	Both	Biosynthetic gene cluster	Saccharide teichuronic acid	BGC 27	antiSMASH
+chromosome	4184724	4185449	+	Virulence factor	VFG000574	NA	VFDB
+chromosome	4188468	4189211	+	Virulence factor	VFG016405	NA	VFDB
+chromosome	4189198	4189818	+	Virulence factor	VFG016404	NA	VFDB
+chromosome	4189837	4190475	+	Virulence factor	VFG046630	NA	VFDB
+chromosome	4190532	4191968	+	Virulence factor	VFG053606	NA	VFDB
+chromosome	4193161	4193961	+	Virulence factor	VFG016398	NA	VFDB
+chromosome	4193958	4195010	+	Virulence factor	VFG005950	NA	VFDB
+chromosome	4196747	4196890	+	De novo transcript	Non-coding DNT 	Coding probability = 12%	Popcorn
+chromosome	4197069	4211871	+	De novo transcript	Coding DNT 	Coding probability = 100%	Popcorn
+chromosome	4212817	4213377	-	Virulence factor	VFG044244	NA	VFDB
+chromosome	4223418	4224767	+	Virulence factor	VFG044201	NA	VFDB
+chromosome	4225177	4226340	-	Virulence factor	VFG030109	NA	VFDB
+chromosome	4229418	4230773	+	Virulence factor	VFG049159	NA	VFDB
+chromosome	4235062	4236007	+	De novo transcript	Coding DNT 	Coding probability = 75%	Popcorn
+chromosome	4235146	4235428	-	De novo transcript	Non-coding DNT 	Coding probability = 43%	Popcorn
+chromosome	4237402	4238235	+	Virulence factor	VFG043406	NA	VFDB
+chromosome	4238255	4238932	+	Virulence factor	VFG043407	NA	VFDB
+chromosome	4239083	4239451	+	Virulence factor	VFG043408	NA	VFDB
+chromosome	4239581	4241584	+	Virulence factor	VFG043409	NA	VFDB
+chromosome	4241758	4243392	+	Virulence factor	VFG043410	NA	VFDB
+chromosome	4245586	4246368	-	Virulence factor	VFG043411	NA	VFDB
+chromosome	4247999	4249297	+	Virulence factor	VFG043412	NA	VFDB
+chromosome	4249339	4250202	+	Virulence factor	VFG043413	NA	VFDB
+chromosome	4250220	4251539	+	Virulence factor	VFG043414	NA	VFDB
+chromosome	4251562	4251930	+	Virulence factor	VFG043415	NA	VFDB
+chromosome	4252558	4252965	+	Virulence factor	VFG043416	NA	VFDB
+chromosome	4252985	4253398	+	Virulence factor	VFG043417	NA	VFDB
+chromosome	4253415	4253714	+	Virulence factor	VFG043418	NA	VFDB
+chromosome	4253737	4255314	+	Virulence factor	VFG043419	NA	VFDB
+chromosome	4255328	4256332	+	Virulence factor	VFG043420	NA	VFDB
+chromosome	4256319	4257008	+	Virulence factor	VFG043421	NA	VFDB
+chromosome	4257005	4258309	+	Virulence factor	VFG043422	NA	VFDB
+chromosome	4259960	4260538	+	Virulence factor	VFG043423	NA	VFDB
+chromosome	4260555	4261778	+	Virulence factor	VFG043424	NA	VFDB
+chromosome	4263082	4263990	+	Virulence factor	VFG043425	NA	VFDB
+chromosome	4265741	4266128	+	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	4271908	4272759	-	Virulence factor	VFG043427	NA	VFDB
+chromosome	4273865	4274089	+	Virulence factor	VFG043428	NA	VFDB
+chromosome	4274104	4275090	+	Virulence factor	VFG043429	NA	VFDB
+chromosome	4275101	4275460	+	Virulence factor	VFG043430	NA	VFDB
+chromosome	4275790	4276548	+	Virulence factor	VFG043431	NA	VFDB
+chromosome	4276582	4276857	+	Virulence factor	VFG043432	NA	VFDB
+chromosome	4276873	4277634	+	Virulence factor	VFG043433	NA	VFDB
+chromosome	4277645	4278691	+	Virulence factor	VFG043250	NA	VFDB
+chromosome	4278715	4280781	+	Virulence factor	VFG043434	NA	VFDB
+chromosome	4280796	4282106	+	Virulence factor	VFG043435	NA	VFDB
+chromosome	4282143	4282922	+	Virulence factor	VFG043436	NA	VFDB
+chromosome	4284529	4285239	+	Virulence factor	VFG015881	NA	VFDB
+chromosome	4295448	4296440	+	Virulence factor	VFG000344	NA	VFDB
+chromosome	4296418	4297443	+	Virulence factor	VFG013190	NA	VFDB
+chromosome	4297456	4299126	+	Virulence factor	VFG013568	NA	VFDB
+chromosome	4300264	4300412	-	De novo transcript	Coding DNT 	Coding probability = 97%	Popcorn
+chromosome	4306490	4306958	+	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+chromosome	4307942	4309771	-	Virulence factor	VFG020038	NA	VFDB
+chromosome	4318779	4319135	-	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+chromosome	4321054	4321764	-	Virulence factor	VFG038841	NA	VFDB
+chromosome	4339511	4339993	-	Virulence factor	VFG014912	NA	VFDB
+chromosome	4340244	4340915	+	Virulence factor	VFG001824	NA	VFDB
+chromosome	4342157	4343095	+	Virulence factor	VFG008680	NA	VFDB
+chromosome	4344244	4345389	+	Virulence factor	VFG005725	NA	VFDB
+chromosome	4346900	4347040	+	De novo transcript	Non-coding DNT 	Coding probability = 23%	Popcorn
+chromosome	4363490	4384473	Both	Biosynthetic gene cluster	Fatty acid	BGC 28	antiSMASH
+chromosome	4366334	4367596	+	Virulence factor	VFG044431	NA	VFDB
+chromosome	4370212	4371960	+	Virulence factor	VFG036965	NA	VFDB
+chromosome	4373490	4374473	-	Virulence factor	VFG053941	NA	VFDB
+chromosome	4374786	4375148	+	De novo transcript	Non-coding DNT 	Coding probability = 34%	Popcorn
+chromosome	4377853	4378770	+	Virulence factor	VFG044254	NA	VFDB
+chromosome	4383026	4383730	-	Virulence factor	VFG033055	NA	VFDB
+chromosome	4385270	4385911	+	Virulence factor	VFG043440	NA	VFDB
+chromosome	4387528	4388064	-	Virulence factor	VFG037116	NA	VFDB
+chromosome	4388155	4388913	-	Virulence factor	VFG038840	NA	VFDB
+chromosome	4397113	4398216	-	Virulence factor	VFG016292	NA	VFDB
+chromosome	4400189	4401403	+	Virulence factor	VFG047328	NA	VFDB
+chromosome	4403401	4404006	+	Virulence factor	VFG041082	NA	VFDB
+chromosome	4408977	4410605	+	Virulence factor	VFG032255	NA	VFDB
+chromosome	4411330	4412028	+	Virulence factor	VFG009863	NA	VFDB
+chromosome	4412018	4413094	+	Virulence factor	VFG022911	NA	VFDB
+chromosome	4417298	4418125	+	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
+chromosome	4422624	4423784	+	Virulence factor	Non-hemolytic enterotoxin NHE subunit A; VFG016269	NA	AMRFinderPlus; VFDB
+chromosome	4423822	4425030	+	Virulence factor	Non-hemolytic enterotoxin NHE subunit B; VFG016277	NA	AMRFinderPlus; VFDB
+chromosome	4425138	4426217	+	Virulence factor	Non-hemolytic enterotoxin NHE subunit C; VFG016285	NA	AMRFinderPlus; VFDB
+chromosome	4432644	4432903	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	4445579	4446214	-	Virulence factor	VFG041082	NA	VFDB
+chromosome	4460640	4461509	+	Virulence factor	VFG037474	NA	VFDB
+chromosome	4471889	4472662	+	Virulence factor	VFG013731	NA	VFDB
+chromosome	4472640	4473341	+	Virulence factor	VFG036556	NA	VFDB
+chromosome	4475320	4476108	-	Virulence factor	VFG037476	NA	VFDB
+chromosome	4477151	4500862	Both	Biosynthetic gene cluster	Saccharide	BGC 29	antiSMASH
+chromosome	4482320	4484041	+	Virulence factor	VFG026750	NA	VFDB
+chromosome	4484038	4485762	+	Virulence factor	VFG003507	NA	VFDB
+chromosome	4487798	4488945	-	De novo transcript	Coding DNT 	Coding probability = 75%	Popcorn
+chromosome	4489732	4490862	+	Virulence factor	VFG047102	NA	VFDB
+chromosome	4490855	4491421	+	Virulence factor	VFG048896	NA	VFDB
+chromosome	4494545	4495498	+	Virulence factor	VFG038250	NA	VFDB
+chromosome	4497163	4498455	+	Virulence factor	Enterotoxin EntFM; VFG006734	NA	AMRFinderPlus; VFDB
+chromosome	4498555	4499319	-	Virulence factor	VFG050118	NA	VFDB
+chromosome	4499556	4501316	+	Virulence factor	VFG013250	NA	VFDB
+chromosome	4501357	4502034	+	Virulence factor	VFG031731	NA	VFDB
+chromosome	4503332	4504051	+	Virulence factor	VFG030270	NA	VFDB
+chromosome	4506996	4538703	Both	Biosynthetic gene cluster	NI-siderophore petrobactin	BGC 30	antiSMASH
+chromosome	4516130	4517131	+	Virulence factor	VFG016389	NA	VFDB
+chromosome	4517716	4518537	+	Virulence factor	VFG033029	NA	VFDB
+chromosome	4519368	4520048	+	Virulence factor	VFG009423	NA	VFDB
+chromosome	4520996	4522804	+	Virulence factor	VFG049957	NA	VFDB
+chromosome	4522865	4524703	+	Virulence factor	VFG049963	NA	VFDB
+chromosome	4524690	4525928	+	Virulence factor	VFG049969	NA	VFDB
+chromosome	4525925	4526200	+	Virulence factor	VFG049974	NA	VFDB
+chromosome	4526224	4527207	+	Virulence factor	VFG049981	NA	VFDB
+chromosome	4527245	4528087	+	Virulence factor	VFG049987	NA	VFDB
+chromosome	4532406	4533371	-	Virulence factor	VFG010761	NA	VFDB
+chromosome	4540375	4541322	+	Virulence factor	VFG002177	NA	VFDB
+chromosome	4542727	4542877	+	De novo transcript	Non-coding DNT 	Coding probability = 16%	Popcorn
+chromosome	4549947	4550924	+	De novo transcript	Coding DNT 	Coding probability = 91%	Popcorn
+chromosome	4550987	4551430	+	Virulence factor	VFG006373	NA	VFDB
+chromosome	4559564	4560514	-	Virulence factor	VFG005232	NA	VFDB
+chromosome	4564455	4566116	+	Virulence factor	VFG006782	NA	VFDB
+chromosome	4566176	4566592	+	Antimicrobial resistance	Fosfomycin	Fosbx1 family fosfomycin resistance bacillithiol transferase	ResFinder; AMRFinderPlus; RGI
+chromosome	4576644	4577828	+	Virulence factor	VFG037201	NA	VFDB
+chromosome	4579958	4581265	-	Virulence factor	VFG038902	NA	VFDB
+chromosome	4590069	4590809	+	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanY)	RGI
+chromosome	4595929	4596105	-	De novo transcript	Non-coding DNT 	Coding probability = 47%	Popcorn
+chromosome	4599484	4600077	-	De novo transcript	Coding DNT 	Coding probability = 98%	Popcorn
+chromosome	4601279	4602454	+	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanT)	RGI
+chromosome	4601279	4602454	+	Virulence factor	VFG044274	NA	VFDB
+chromosome	4603181	4604068	-	Virulence factor	VFG010771	NA	VFDB
+chromosome	4614526	4614822	+	Virulence factor	VFG002405	NA	VFDB
+chromosome	4619220	4619471	+	Virulence factor	VFG002407	NA	VFDB
+chromosome	4619545	4620744	+	Virulence factor	VFG002408	NA	VFDB
+chromosome	4620784	4625289	+	Virulence factor	VFG018161	NA	VFDB
+chromosome	4629860	4633508	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	4630297	4630856	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
+chromosome	4631686	4633008	+	De novo transcript	Non-coding DNT 	Coding probability = 1%	Popcorn
+chromosome	4635384	4635562	+	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
+chromosome	4639239	4639771	+	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	4641298	4642498	+	De novo transcript	Coding DNT 	Coding probability = 75%	Popcorn
+chromosome	4645174	4645714	+	De novo transcript	Coding DNT 	Coding probability = 62%	Popcorn
+chromosome	4652203	4653189	-	Virulence factor	VFG007855	NA	VFDB
+chromosome	4653394	4653972	+	Virulence factor	VFG015240	NA	VFDB
+chromosome	4662753	4664049	+	De novo transcript	Coding DNT 	Coding probability = 60%	Popcorn
+chromosome	4664350	4668033	+	Virulence factor	VFG026753	NA	VFDB
+chromosome	4668023	4669498	+	Virulence factor	VFG024084	NA	VFDB
+chromosome	4669518	4670048	+	Virulence factor	VFG009622	NA	VFDB
+chromosome	4670066	4670755	+	Virulence factor	VFG009635	NA	VFDB
+chromosome	4670892	4671584	-	Virulence factor	VFG042734	NA	VFDB
+chromosome	4676112	4677281	+	Virulence factor	VFG026850	NA	VFDB
+chromosome	4677334	4677862	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
+chromosome	4701062	4701182	+	De novo transcript	Non-coding DNT 	Coding probability = 21%	Popcorn
+chromosome	4708233	4708438	-	De novo transcript	Non-coding DNT 	Coding probability = 44%	Popcorn
+chromosome	4716816	4718327	+	Virulence factor	VFG043806	NA	VFDB
+chromosome	4724209	4725006	-	Virulence factor	VFG011145	NA	VFDB
+chromosome	4727586	4728788	+	Virulence factor	VFG031961	NA	VFDB
+chromosome	4728975	4729670	+	Virulence factor	VFG011805	NA	VFDB
+chromosome	4731711	4732238	-	Virulence factor	VFG011816	NA	VFDB
+chromosome	4732853	4733563	+	Virulence factor	VFG050113	NA	VFDB
+chromosome	4743999	4744718	+	Virulence factor	VFG015608	NA	VFDB
+chromosome	4744760	4745416	-	Virulence factor	VFG016229	NA	VFDB
+chromosome	4751062	4752963	+	Virulence factor	VFG047104	NA	VFDB
+chromosome	4755126	4756091	+	Virulence factor	VFG044253	NA	VFDB
+chromosome	4762455	4763096	+	Virulence factor	VFG009892	NA	VFDB
+chromosome	4764197	4764614	-	De novo transcript	Non-coding DNT 	Coding probability = 15%	Popcorn
+chromosome	4764317	4765180	+	Virulence factor	VFG015518	NA	VFDB
+chromosome	4765476	4766513	+	Virulence factor	VFG030295	NA	VFDB
+chromosome	4767247	4768604	+	De novo transcript	Non-coding DNT 	Coding probability = 46%	Popcorn
+chromosome	4772065	4772961	+	Virulence factor	VFG048959	NA	VFDB
+chromosome	4775067	4775584	-	De novo transcript	Non-coding DNT 	Coding probability = 23%	Popcorn
+chromosome	4778978	4779925	+	Virulence factor	VFG030684	NA	VFDB
+chromosome	4781654	4783081	+	Virulence factor	VFG047663	NA	VFDB
+chromosome	4783525	4785342	+	Defense system	Pseudo-CoCoNut	CnuB	DefenseFinder
+chromosome	4785332	4787182	+	Defense system	Pseudo-CoCoNut	CnuC	DefenseFinder
+chromosome	4789049	4790404	+	Virulence factor	VFG038902	NA	VFDB
+chromosome	4794038	4795076	+	De novo transcript	Coding DNT 	Coding probability = 92%	Popcorn
+chromosome	4795563	4796873	+	Virulence factor	VFG044201	NA	VFDB
+chromosome	4805808	4806629	+	Defense system	PD-T4-6	PD-T4-6	PADLOC
+chromosome	4807444	4808079	+	Virulence factor	VFG046932	NA	VFDB
+chromosome	4812477	4812779	-	De novo transcript	Non-coding DNT 	Coding probability = 6%	Popcorn
+chromosome	4815807	4816658	+	Virulence factor	VFG032880	NA	VFDB
+chromosome	4819966	4820673	+	Virulence factor	VFG019276	NA	VFDB
+chromosome	4826346	4828983	-	De novo transcript	Coding DNT 	Coding probability = 67%	Popcorn
+chromosome	4826403	4876851	Both	Biosynthetic gene cluster	NRP-metallophore and NRPS bacillibactin	BGC 31	antiSMASH
+chromosome	4830488	4831396	+	Virulence factor	VFG053867	NA	VFDB
+chromosome	4842982	4843289	+	De novo transcript	Coding DNT 	Coding probability = 75%	Popcorn
+chromosome	4843465	4843845	+	Virulence factor	VFG050075	NA	VFDB
+chromosome	4846403	4847188	+	Virulence factor	VFG049995	NA	VFDB
+chromosome	4847214	4848413	+	Virulence factor	VFG050006	NA	VFDB
+chromosome	4848426	4850042	+	Virulence factor	VFG050017	NA	VFDB
+chromosome	4850067	4850960	+	Virulence factor	VFG050028	NA	VFDB
+chromosome	4850994	4858151	+	Virulence factor	VFG050155	NA	VFDB
+chromosome	4858148	4858372	+	Virulence factor	VFG026493	NA	VFDB
+chromosome	4861215	4861487	-	Virulence factor	VFG043551	NA	VFDB
+chromosome	4863090	4864283	-	Virulence factor	VFG023431	NA	VFDB
+chromosome	4872098	4872865	+	Virulence factor	VFG030679	NA	VFDB
+pBtic235	1	511	-	De novo transcript	Coding DNT 	Coding probability = 97%	Popcorn
+pBtic235	603	1134	+	De novo transcript	Non-coding DNT 	Coding probability = 14%	Popcorn
+pBtic235	45385	45657	-	Antidefense system	Thoeris anti-defense 2	AcrIIA7	DefenseFinder
+pBtic235	50081	50636	-	De novo transcript	Non-coding DNT 	Coding probability = 41%	Popcorn
+pBtic235	53380	60448	-	De novo transcript	Coding DNT 	Coding probability = 54%	Popcorn
+pBtic235	72961	74112	-	Antidefense system	Anti-CRISPR	AcrIIA21	DefenseFinder
+pBtic235	74241	74633	+	De novo transcript	Non-coding DNT 	Coding probability = 25%	Popcorn
+pBtic235	83183	83602	+	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+pBtic235	90995	92965	+	Virulence factor	VFG043491	NA	VFDB
+pBtic235	138503	139210	+	Virulence factor	VFG031738	NA	VFDB
+pBtic235	145370	146101	+	Antidefense system	Anti-Pycsar	Anti-Pycsar protein Apyc1	DefenseFinder
+pBtic235	163598	164032	+	Virulence factor	VFG045566	NA	VFDB
+pBtic235	164087	165052	+	Antidefense system	NADP NARP1	NADP NARP1 ADP-ribose phosphorylase	DefenseFinder
+pBtic235	165079	166614	+	Antidefense system	NADP NARP1	NADP NARP1 nicotinamide ADP-ribose transferase	DefenseFinder
+pBtic235	174906	175802	+	Virulence factor	VFG002177	NA	VFDB
+pBtic235	183950	184711	+	Antidefense system	Anti-CBASS	Anti-CBASS nuclease	DefenseFinder
+pBtic235	186630	187613	-	De novo transcript	Non-coding DNT 	Coding probability = 8%	Popcorn
+pBtic235	186962	187226	+	De novo transcript	Non-coding DNT 	Coding probability = 5%	Popcorn
+GIL01	177	308	-	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	356	532	+	Bacteriophage annotation	HTH DNA binding protein	NA	Pharokka
+GIL01	548	1051	+	Bacteriophage annotation	Single strand DNA binding protein	NA	Pharokka
+GIL01	1123	1347	+	Bacteriophage annotation	Hypothetical protein	DNA, RNA and nucleotide metabolism	Pharokka; Phynteny
+GIL01	1406	2143	+	Bacteriophage annotation	Genome terminal protein	NA	Pharokka
+GIL01	2049	4334	+	Bacteriophage annotation	DNA polymerase	NA	Pharokka
+GIL01	4350	4550	+	Bacteriophage annotation	Transcriptional repressor	NA	Pharokka
+GIL01	4564	4716	+	Bacteriophage annotation	Hypothetical protein	DNA, RNA and nucleotide metabolism	Pharokka; Phynteny
+GIL01	4709	4831	+	Bacteriophage annotation	Hypothetical protein	DNA, RNA and nucleotide metabolism	Pharokka; Phynteny
+GIL01	4950	5123	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	5092	5400	-	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	5387	6145	+	Bacteriophage annotation	Virion structural protein	NA	Pharokka
+GIL01	6202	6510	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	6491	7129	+	Bacteriophage annotation	Terminase large subunit	NA	Pharokka
+GIL01	7144	7284	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	7301	7441	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	7443	7697	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	7697	8767	+	Bacteriophage annotation	Minor head protein	NA	Pharokka
+GIL01	8809	9039	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL01	9043	9249	+	Bacteriophage annotation	Holin	NA	Pharokka
+GIL01	9230	9322	+	Bacteriophage annotation	Hypothetical protein	Connector	Pharokka; Phynteny
+GIL01	9329	9760	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL01	9757	9933	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL01	9930	10076	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL01	10088	10363	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL01	10367	10981	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL01	10981	11733	+	Bacteriophage annotation	Endolysin	NA	Pharokka
+GIL01	11681	12193	+	Bacteriophage annotation	Pentameric base spike protein	NA	Pharokka
+GIL01	12206	13120	+	Bacteriophage annotation	Major tail protein	NA	Pharokka
+GIL01	13124	14005	+	Bacteriophage annotation	Tail fiber protein	NA	Pharokka
+GIL01	14021	14818	+	Bacteriophage annotation	Endolysin	NA	Pharokka
+GIL01	14821	14931	+	Bacteriophage annotation	Hypothetical protein	Lysis	Pharokka; Phynteny
+GIL16	92	232	-	Bacteriophage annotation	Hypothetical protein	DNA, RNA and nucleotide metabolism	Pharokka; Phynteny
+GIL16	246	347	-	Bacteriophage annotation	Hypothetical protein	Integration and excision	Pharokka; Phynteny
+GIL16	355	531	+	Bacteriophage annotation	Excisionase and transcriptional regulator	NA	Pharokka
+GIL16	547	1047	+	Bacteriophage annotation	Single strand DNA binding protein	NA	Pharokka
+GIL16	1119	1343	+	Bacteriophage annotation	Hypothetical protein	DNA, RNA and nucleotide metabolism	Pharokka; Phynteny
+GIL16	1402	2139	+	Bacteriophage annotation	Genome terminal protein	NA	Pharokka
+GIL16	2087	4330	+	Bacteriophage annotation	DNA polymerase	NA	Pharokka
+GIL16	4347	4547	+	Bacteriophage annotation	Transcriptional repressor	NA	Pharokka
+GIL16	4561	4737	+	Bacteriophage annotation	Hypothetical protein	DNA, RNA and nucleotide metabolism	Pharokka; Phynteny
+GIL16	4820	5074	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	5071	5259	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	5243	5989	+	Bacteriophage annotation	Virion structural protein	NA	Pharokka
+GIL16	6046	6354	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	6335	6973	+	Bacteriophage annotation	Terminase large subunit	NA	Pharokka
+GIL16	6988	7128	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	7139	7243	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	7264	7404	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	7406	7675	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	7675	8745	+	Bacteriophage annotation	Minor head protein	NA	Pharokka
+GIL16	8787	9017	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL16	9021	9179	+	Bacteriophage annotation	Holin	NA	Pharokka
+GIL16	9213	9320	+	Bacteriophage annotation	Hypothetical protein	Lysis	Pharokka; Phynteny
+GIL16	9361	9684	+	Bacteriophage annotation	Hypothetical protein	Head and packaging	Pharokka; Phynteny
+GIL16	9681	9857	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL16	9854	10000	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL16	10012	10287	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL16	10291	10905	+	Bacteriophage annotation	Hypothetical protein	Tail	Pharokka; Phynteny
+GIL16	10909	11661	+	Bacteriophage annotation	Endolysin	NA	Pharokka
+GIL16	11609	12121	+	Bacteriophage annotation	Pentameric base spike protein	NA	Pharokka
+GIL16	12135	13028	+	Bacteriophage annotation	Collagen like minor tail	NA	Pharokka
+GIL16	13032	13913	+	Bacteriophage annotation	Tail fiber protein	NA	Pharokka
+GIL16	13855	14721	+	Bacteriophage annotation	Endolysin	NA	Pharokka
+GIL16	14750	14842	+	Bacteriophage annotation	Hypothetical protein	Lysis	Pharokka; Phynteny

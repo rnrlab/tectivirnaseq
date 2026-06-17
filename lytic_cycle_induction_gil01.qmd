@@ -1,0 +1,292 @@
+---
+title: GIL01 lytic cycle induction analysis
+---
+
+```{r}
+#| include: false
+
+library("DT")
+library("edgeR")
+library("DESeq2")
+library("ggplot2")
+library("plotly")
+library("heatmaply")
+library("pheatmap")
+library("dplyr")
+library("tidyr")
+library("clusterProfiler")
+library("RColorBrewer")
+library("org.Bthuringiensis.eg.db")
+```
+
+```{r}
+#| include: false
+
+source("rnaseq_functions.R")
+```
+
+# Load data
+
+In this section, we load the data necessary to begin the RNAseq analysis: counts and metadata. We also load genome annotation files to visualize the results.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: load_data
+#| code-fold: true
+#| warning: false
+
+counts <- readRDS(file = "lytic_cycle_induction_counts.rds")
+metadata <- readRDS(file = "lytic_cycle_induction_metadata.rds")
+annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
+```
+
+# Delete GIL16 genes
+
+Since there are no GIL16 genes in the GIL01 samples, we removed them before creating the dds object.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: delete_genes
+#| code-fold: true
+#| message: false
+#| warning: false
+
+counts <- counts[!grepl("^GIL16", rownames(counts)), , drop = FALSE]
+counts <- counts[, grepl("^GIL01", colnames(counts)), drop = FALSE]
+
+all_genes <- rownames(counts)
+```
+
+# Create dds object
+
+With the following code, we modified the metadata file and created the dds object using a design that took into account both time and replication to model gene expression.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dds
+#| code-fold: true
+#| message: false
+#| warning: false
+
+metadata <- metadata[grepl("^GIL01", metadata$Strain), ]
+metadata$Strain <- NULL
+
+counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
+
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time)
+
+dds <- DESeq(dds)
+```
+
+# Dimensionality reduction
+
+DESeq2 uses Variance Stabilizing Transformation (VST) to transform RNAseq counts so that the variance is approximately constant across different expression levels. This facilitates analyses like clustering or dimensionality reduction techniques, such as PCA and MDS.
+
+The results obtained are good and highly consistent between PCA and MDS. The first two dimensions explain more than 60% of the variability in gene expression (or separation between samples). As observed, 0 and 10 samples tend to cluster together, while 30 and 60 samples are better separated along the first dimension. In contrast, 60-mock samples differ from the others along the second dimension. 
+
+When examining the distribution of samples, replicate III tends to occupy upper positions along the second dimension for the 10, 30 and 60 samples. Additionally, along the first dimension, replicate I appears consistently shifted towards the positive side. This pattern suggests the presence of the batch effect described earlier. However, previous analyses indicate that this effect is not a major concern as long as expression is modeled with Replicate included as a covariate.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dimensionality_reduction
+#| message: false
+#| warning: false
+#| code-fold: true
+#| fig-width: 7
+#| fig-height: 5
+
+vsdata <- vst(dds, blind = TRUE)
+pca_df <- plotPCA(vsdata, intgroup = "Time", ntop = nrow(dds), returnData = TRUE)
+pca_df$Sample <- rownames(pca_df)
+
+percentVar <- round(100 * attr(pca_df, "percentVar"), 2)
+
+pca_df$hover <- paste0(
+  "Sample: ", pca_df$Sample, "<br>",
+  "PC1: ", round(pca_df$PC1, 2), "<br>",
+  "PC2: ", round(pca_df$PC2, 2)
+)
+
+p <- ggplot(pca_df, aes(x = PC1, y = PC2, color = Time, text = hover)) +
+  geom_point(size = 3) +
+  labs(
+    x = paste0("PC1 (", percentVar[1], "%)"),
+    y = paste0("PC2 (", percentVar[2], "%)"),    
+    color = "Time") +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
+
+dge <- DGEList(counts = counts(dds))
+dge <- calcNormFactors(dge)
+mds <- plotMDS(dge, top = nrow(dds), plot = FALSE)
+
+mds_df <- data.frame(
+  MDS1 = mds$x,
+  MDS2 = mds$y,
+  Sample = colnames(dge),
+  Time = colData(dds)$Time
+)
+
+percentVar <- round(100 * mds$var.explained, 2)
+
+mds_df$hover <- paste0(
+  "Sample: ", mds_df$Sample, "<br>",
+  "MDS1: ", round(mds_df$MDS1, 2), "<br>",
+  "MDS2: ", round(mds_df$MDS2, 2)
+)
+
+p <- ggplot(mds_df, aes(x = MDS1, y = MDS2, color = Time, text = hover)) +
+  geom_point(size = 3) +
+  labs(
+    x = paste0("MDS1 (", percentVar[1], "%)"),
+    y = paste0("MDS2 (", percentVar[2], "%)"),
+    color = "Group"
+  ) +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
+```
+
+Below this plot, we show two heatmaps with the 20 genes that contribute most to PC1 and PC2 in the PCA.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: genes_pca
+#| code-fold: true
+
+vs_mat <- assay(vsdata)
+topVarGenes <- head(order(rowVars(vs_mat), decreasing = TRUE), nrow(dds))
+pca <- prcomp(t(vs_mat[topVarGenes, ]))
+sample_pca <- as.data.frame(pca$x)
+sample_pca$Time <- colData(vsdata)$Time
+
+gene_loadings <- as.data.frame(pca$rotation)
+top_genes_PC1 <- head(gene_loadings[order(abs(gene_loadings$PC1), decreasing=TRUE), ], 20)
+top_genes_PC2 <- head(gene_loadings[order(abs(gene_loadings$PC2), decreasing=TRUE), ], 20)
+
+labels_PC1 <- mark_pBtic235_genes(rownames(top_genes_PC1), annotation)
+labels_PC2 <- mark_pBtic235_genes(rownames(top_genes_PC2), annotation)
+```
+
+## PC1
+
+In the case of PC1, we can observe a clear separation into three parts, similar to that observed in PCA: samples from time 0, 10 and 60-mock, 30-minute samples and 60-minute samples. According to these results, it appears that induction at 10 minutes does not produce significant changes in gene expression, and the non-induced samples (60-mock samples) are very similar to those from early induction. Regarding the 20 most variable genes, as expected, there are large changes in the expression of the GIL01 genes, but also of the prophage, with the latter's expression increasing particularly at 60 minutes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pheatmap_pc1
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 7
+
+pheatmap(vs_mat[rownames(top_genes_PC1), ], labels_row = labels_PC1, legend = FALSE)
+```
+
+## PC2
+
+In the case of PC2, we find a clear difference compared to PC1: 60-mock samples are associated with those from minute 60 and not with those from early induction. This could be interpreted as these genes explaining changes in expression associated with the passage of time, and not so much with the presence of GIL01. This is especially evident in the genes GBJ002_03168 to GBJ002_03171, which encode for arginine deiminase (arcA), ornithine carbamoyltransferase (argF), arginine-ornithine antiporter (arcD) and carbamate kinase (arcC), respectively. The opposite pattern appears to be observed for the genes GBJ002_03392 and GBJ002_03393, which encode for PTS trehalose transporter subunit IIBC (treB) and alpha,alpha-phosphotrehalase (treC), respectively.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: pheatmap_pc2
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 7
+
+pheatmap(vs_mat[rownames(top_genes_PC2), ], labels_row = labels_PC2, legend = FALSE)
+```
+
+# Heatmap
+
+Although the separation is somewhat blurred in some cases, we can observe that all the 0, 10 and 60-minute mock samples cluster with their respective groups. While in the dendrogram replicate III at minute 60 clusters with those at time 30, the color scale shows that the separation from the other 60-minute replicates is not as clear. In any case, this is not a cause for concern.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: heatmap
+#| code-fold: true
+#| warning: false
+#| fig-width: 10
+#| fig-height: 7
+
+sampleDists <- dist(t(assay(vsdata)))
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsdata$Sample)
+
+heatmaply(
+  sampleDistMatrix,
+  colors = viridis(n = 256, alpha = 1, begin = 1, end = 0, option = "viridis"),
+  Rowv = as.dendrogram(hclust(sampleDists)),
+  Colv = as.dendrogram(hclust(sampleDists)),
+  label_names = c("Row", "Column", "Value")
+)
+```
+
+# Boxplot and dispersion plot
+
+The boxplot of VST-transformed expression values illustrates the distribution of normalized expression levels across samples. All samples show very similar medians, interquartile ranges and overall dispersion, with no evidence of systematic shifts between experimental groups. This indicates that the variance-stabilizing transformation has effectively reduced heteroscedasticity and that the normalization procedure has removed global differences in expression distributions, supporting the suitability of the data for downstream analyses. If anything had to be pointed out, it seems that the samples from minute 60 show a greater number of outliers, especially in the induced ones.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: boxplot
+#| code-fold: true
+#| message: false
+#| fig-width: 10
+#| fig-height: 7
+
+op <- par(mar = c(10, 4, 4, 2))
+boxplot(assay(vsdata), las = 2)
+```
+
+```{r}
+#| include: false
+
+par(op)
+```
+
+The dispersion versus mean of normalized counts plot illustrates the mean–variance relationship assumed by the negative binomial model. Gene-wise dispersion estimates (black points) show higher variability at low expression levels and progressively lower dispersion as mean expression increases. The fitted dispersion trend (red line) captures this overall pattern well and the final dispersion estimates after shrinkage (blue points) are stabilized around this curve. The close agreement between observed and fitted dispersions, together with the lack of anomalous structure, suggests that the dispersion estimation is robust and that the model assumptions are appropriate for these data.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: dispersion
+#| code-fold: true
+#| message: false
+#| fig-width: 10
+#| fig-height: 7
+
+plotDispEsts(dds)
+```
+
+# Save results
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: save_results
+#| code-fold: true
+
+saveRDS(counts, file = "lytic_cycle_induction_gil01_counts.rds")
+saveRDS(metadata, file = "lytic_cycle_induction_gil01_metadata.rds")
+saveRDS(all_genes, file = "lytic_cycle_induction_gil01_all_genes.rds")
+```
