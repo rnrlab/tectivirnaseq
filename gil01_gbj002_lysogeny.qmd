@@ -29,7 +29,7 @@ metadata <- readRDS(file = "lysogeny_metadata.rds")
 all_genes <- readRDS(file = "lysogeny_all_genes.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
-dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Group)
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Strain)
 
 dds <- DESeq(dds)
 
@@ -45,7 +45,7 @@ In order to perform the GIL01 vs GBJ002 contrast, we established a log₂ fold-c
 #| label: contrast
 #| code-fold: true
 
-contrast <- results(dds, contrast = c("Group", "GIL01", "GBJ002"), lfcThreshold = log2(1.5))
+contrast <- results(dds, contrast = c("Strain", "GIL01", "GBJ002"), lfcThreshold = log2(1.5))
 contrast_df <- as.data.frame(contrast)
 
 contrast_df <- contrast_df %>%

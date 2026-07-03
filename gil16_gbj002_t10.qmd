@@ -30,7 +30,7 @@ annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
 counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
 
-dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time + Strain + Time:Strain)
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Strain * Time + Strain * MMC)
 dds <- DESeq(dds)
 dds <- dds[!grepl("^GIL", rownames(dds)), ]
 
@@ -48,7 +48,7 @@ In order to perform the GIL16 vs GBJ002 contrast at 10 minutes, we established a
 #| label: contrast
 #| code-fold: true
 
-contrast <- results(dds, contrast = list("Strain_GIL16_vs_GBJ002", "Time10.StrainGIL16"), lfcThreshold = log2(1.5))
+contrast <- results(dds, contrast = list(c("Strain_GIL16_vs_GBJ002", "StrainGIL16.Time10", "StrainGIL16.MMCTRUE")), lfcThreshold = log2(1.5))
 contrast_df <- as.data.frame(contrast)
 
 contrast_df <- contrast_df %>%
@@ -79,7 +79,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, no DE genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 49 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -146,7 +146,7 @@ A volcano plot displays each gene according to its LFC on the x-axis and the sta
 #| label: volcano_plot
 #| code-fold: true
 
-volcano_plot(contrast_df, limits = c(-8, 8))
+volcano_plot(contrast_df, limits = c(-6, 6))
 ```
 
 # Enrichment analysis

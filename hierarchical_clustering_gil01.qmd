@@ -29,7 +29,7 @@ source("rnaseq_functions.R")
 #| include: false
 
 counts <- readRDS(file = "gene_coexpression_counts.rds")
-metadata <- readRDS(file = "coexpression_metadata.rds")
+metadata <- readRDS(file = "gene_coexpression_metadata.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 ```
 
@@ -72,19 +72,22 @@ hc <- hclust(as.dist(1 - rhos@matrix), method = "average")
 hc_clusters <- cutree(hc, h = 0.25)
 cluster_sizes <- table(hc_clusters)
 big_ids <- as.numeric(names(cluster_sizes[cluster_sizes >= 20]))
+stable_ids <- c(21, 87, 145, 159, 161, 170, 265, 495)
+ids <- sort(c(big_ids, stable_ids))
 small_ids <- as.numeric(names(cluster_sizes[cluster_sizes < 20]))
+small_ids <- setdiff(small_ids, stable_ids)
 leaf_order <- hc$order
 clusters_in_order <- hc_clusters[leaf_order]
 clusters_left_to_right <- rle(clusters_in_order)$values
-which_big <- match(big_ids, clusters_left_to_right)
+which_big <- match(ids, clusters_left_to_right)
 which_big <- which_big[!is.na(which_big)]
 
 x_pos <- seq_along(leaf_order)
 centers <- tapply(x_pos, clusters_in_order, mean)
-centers_big <- centers[as.character(big_ids)]
+centers_big <- centers[as.character(ids)]
 
-genes_big <- names(hc_clusters)[hc_clusters %in% big_ids]
-clusters_big <- hc_clusters[hc_clusters %in% big_ids]
+genes_big <- names(hc_clusters)[hc_clusters %in% ids]
+clusters_big <- hc_clusters[hc_clusters %in% ids]
 
 cluster_gene_table <- data.frame(
   Cluster = clusters_big,
@@ -115,7 +118,7 @@ cluster_gene_table <- cluster_gene_table %>%
     by = c("Gene" = "Gene_ID")
   )
 
-big_labels <- unname(cluster_to_name[as.character(big_ids)])
+ids_labels <- unname(cluster_to_name[as.character(ids)])
 
 op <- par(col = "grey", xpd = NA, mar = par("mar") + c(1,0,0,0))
 plot(hc, labels = FALSE,
@@ -126,7 +129,7 @@ rect.hclust(hc, which = which_big, h = 0.25, border = which_big)
 y_min <- par("usr")[3]
 text(x = centers_big,
      y = y_min - 0.01 * diff(par("usr")[3:4]),
-     labels = big_labels,
+     labels = ids_labels,
      cex = 0.5,
      srt = 90,
      adj = 1,
@@ -148,7 +151,7 @@ par(op)
 #| label: clusters_stability
 #| code-fold: true
 
-clusters_ids <- sort(c(big_ids, small_ids))
+clusters_ids <- sort(c(ids, small_ids))
 
 clusters_list <- lapply(clusters_ids, function(id) {
   names(hc_clusters)[hc_clusters == id]
@@ -156,7 +159,7 @@ clusters_list <- lapply(clusters_ids, function(id) {
 
 names(clusters_list) <- clusters_ids
 
-clusters_stability <- compute_stability(clusters = clusters_ids, strain = "GIL01", frac = 0.80, B = 1000)
+clusters_stability <- compute_stability(clusters = clusters_ids, strain = "GIL01", frac = 0.80, B = 100)
 
 datatable(clusters_stability, rownames = FALSE,
   filter = "top", extensions = c("Buttons", "Scroller"), options = list(
@@ -181,20 +184,20 @@ After obtaining the dendrograms, we will represent how similar they are to each 
 #| code-fold: true
 #| warning: false
 
-labels_new <- unname(cluster_to_name[as.character(big_ids)])
+labels_new <- unname(cluster_to_name[as.character(ids)])
 
 members_list <- setNames(
-  lapply(big_ids, function(k) which(hc_clusters == k)),
+  lapply(ids, function(k) which(hc_clusters == k)),
   labels_new
 )
 
 avg_inter <- matrix(0,
-                    nrow = length(big_ids),
-                    ncol = length(big_ids),
+                    nrow = length(ids),
+                    ncol = length(ids),
                     dimnames = list(labels_new, labels_new))
 
-for (i in seq_len(length(big_ids))) {
-  for (j in i:length(big_ids)) {
+for (i in seq_len(length(ids))) {
+  for (j in i:length(ids)) {
     if (i != j) {
       m <- mean((1 - rhos@matrix)[members_list[[i]], members_list[[j]]])
       avg_inter[i, j] <- m

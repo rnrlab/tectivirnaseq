@@ -49,8 +49,8 @@ Once the counts are obtained, we upload them along with the metadata.
 
 counts <- read.csv("lysogeny_counts.tsv", sep = "\t", header = TRUE, row.names = 1, check.names = FALSE)
 
-metadata <- read.csv("metadata_lysogeny.tsv", sep = "\t", header = TRUE)
-metadata$Group <- factor(metadata$Group, levels = c("GBJ002", "GIL01", "GIL16"))
+metadata <- read.csv("lysogeny_metadata.tsv", sep = "\t", header = TRUE)
+metadata$Strain <- factor(metadata$Strain, levels = c("GBJ002", "GIL01", "GIL16"))
 
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 ```
@@ -84,11 +84,11 @@ Another source of noise are low-expression genes. Although DESeq2 has an interna
 #| message: false
 #| warning: false
 
-group_means <- sapply(levels(metadata$Group), function(g) {
-  rowMeans(counts[, metadata$Group == g, drop = FALSE])
+strain_means <- sapply(levels(metadata$Strain), function(g) {
+  rowMeans(counts[, metadata$Strain == g, drop = FALSE])
 })
 
-keep <- rowSums(group_means >= 10) >= 1
+keep <- rowSums(strain_means >= 10) >= 1
 
 full_counts <- counts
 counts <- counts[keep, ]
@@ -109,7 +109,7 @@ With the following code, we created the dds object. Since DESeq2 works with inte
 
 counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
 
-dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Group)
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Strain)
 
 dds <- DESeq(dds)
 
@@ -122,7 +122,7 @@ all_genes <- rownames(dds)
 
 DESeq2 uses Variance Stabilizing Transformation (VST) to transform RNAseq counts so that the variance is approximately constant across different expression levels. This facilitates analyses like clustering or dimensionality reduction methods, such as PCA and MDS.
 
-Both PCA and MDS show highly consistent results. The first dimension explains more than 70% of the variability (or separation between samples) and clearly distinguishes the three groups. Differences observed along the second dimension are minor and likely reflect variability between replicates rather than biologically meaningful separation.
+Both PCA and MDS show highly consistent results. The first dimension explains more than 70% of the variability (or separation between samples) and clearly distinguishes the three strains. Differences observed along the second dimension are minor and likely reflect variability between replicates rather than biologically meaningful separation.
 
 ```{r}
 #| echo: true
@@ -136,7 +136,7 @@ Both PCA and MDS show highly consistent results. The first dimension explains mo
 #| fig-height: 9
 
 vsdata <- vst(dds, blind = TRUE)
-pca_df <- plotPCA(vsdata, intgroup = "Group", ntop = nrow(dds), returnData = TRUE)
+pca_df <- plotPCA(vsdata, intgroup = "Strain", ntop = nrow(dds), returnData = TRUE)
 pca_df$Sample <- rownames(pca_df)
 
 percentVar <- round(100 * attr(pca_df, "percentVar"), 2)
@@ -147,12 +147,12 @@ pca_df$hover <- paste0(
   "PC2: ", round(pca_df$PC2, 2)
 )
 
-p <- ggplot(pca_df, aes(x = PC1, y = PC2, color = Group, text = hover)) +
+p <- ggplot(pca_df, aes(x = PC1, y = PC2, color = Strain, text = hover)) +
   geom_point(size = 3) +
   labs(
     x = paste0("PC1 (", percentVar[1], "%)"),
     y = paste0("PC2 (", percentVar[2], "%)"),    
-    color = "Group") +
+    color = "Strain") +
   theme_minimal()
 
 ggplotly(p, tooltip = "text")
@@ -165,7 +165,7 @@ mds_df <- data.frame(
   MDS1 = mds$x,
   MDS2 = mds$y,
   Sample = colnames(dge),
-  Group = colData(dds)$Group
+  Strain = colData(dds)$Strain
 )
 
 percentVar <- round(100 * mds$var.explained, 2)
@@ -176,12 +176,12 @@ mds_df$hover <- paste0(
   "MDS2: ", round(mds_df$MDS2, 2)
 )
 
-p <- ggplot(mds_df, aes(x = MDS1, y = MDS2, color = Group, text = hover)) +
+p <- ggplot(mds_df, aes(x = MDS1, y = MDS2, color = Strain, text = hover)) +
   geom_point(size = 3) +
   labs(
     x = paste0("MDS1 (", percentVar[1], "%)"),
     y = paste0("MDS2 (", percentVar[2], "%)"),
-    color = "Group"
+    color = "Strain"
   ) +
   theme_minimal()
 
@@ -201,7 +201,6 @@ vs_mat <- assay(vsdata)
 topVarGenes <- head(order(rowVars(vs_mat), decreasing = TRUE), nrow(dds))
 pca <- prcomp(t(vs_mat[topVarGenes, ]))
 sample_pca <- as.data.frame(pca$x)
-sample_pca$Group <- colData(vsdata)$Group
 
 gene_loadings <- as.data.frame(pca$rotation)
 top_genes_PC1 <- head(gene_loadings[order(abs(gene_loadings$PC1), decreasing=TRUE), ], 20)
@@ -272,7 +271,7 @@ heatmaply(
 
 # Boxplot and dispersion plot
 
-The boxplot of VST-transformed expression values illustrates the distribution of normalized expression levels across samples. All samples show very similar medians, interquartile ranges and overall dispersion, with no evidence of systematic shifts between experimental groups. This indicates that the variance-stabilizing transformation has effectively reduced heteroscedasticity and that the normalization procedure has removed global differences in expression distributions, supporting the suitability of the data for downstream analyses such as clustering or differential expression.
+The boxplot of VST-transformed expression values illustrates the distribution of normalized expression levels across samples. All samples show very similar medians, interquartile ranges and overall dispersion, with no evidence of systematic shifts between strains. This indicates that the variance-stabilizing transformation has effectively reduced heteroscedasticity and that the normalization procedure has removed global differences in expression distributions, supporting the suitability of the data for downstream analyses such as clustering or differential expression.
 
 ```{r}
 #| echo: true
@@ -520,11 +519,11 @@ set.seed(0)
 
 ## Explained variance per gene and factor
 
-First, we compared the proportion of gene expression variance explained by Group and by Replicate as a proxy for batch effects. To ensure comparability across all lysogeny samples, this analysis was restricted to the gene set shared across conditions, corresponding to genes from GBJ002 (including both chromosomal genes and those located on pBtic235).
+First, we compared the proportion of gene expression variance explained by Strain and by Replicate as a proxy for batch effects. To ensure comparability across all lysogeny samples, this analysis was restricted to the gene set shared across conditions, corresponding to genes from GBJ002 (including both chromosomal genes and those located on pBtic235).
 
-At the gene level, Group accounted for a substantially larger fraction of expression variability than Replicate. Specifically, the median proportion of variance explained by the Group was 74.68%, whereas Replicate accounted for a median of 5.08% across genes. Thus, biological effects explained approximately fifteen times more variance than batch effects at the gene level.
+At the gene level, Strain accounted for a substantially larger fraction of expression variability than Replicate. Specifically, the median proportion of variance explained by the Strain was 74.68%, whereas Replicate accounted for a median of 5.08% across genes. Thus, biological effects explained approximately fifteen times more variance than batch effects at the gene level.
 
-These results indicate that thre is no batch effect associated with Replicate and that the primary source of variability in the data is driven by Group, supporting the suitability of the dataset for downstream differential expression analyses, not being necessary to include Replicate as a covariate.
+These results indicate that thre is no batch effect associated with Replicate and that the primary source of variability in the data is driven by Strain, supporting the suitability of the dataset for downstream differential expression analyses, not being necessary to include Replicate as a covariate.
 
 ```{r}
 #| echo: true
@@ -541,7 +540,7 @@ metadata <- metadata %>%
 dds <- DESeqDataSetFromMatrix(
   countData = counts,
   colData   = metadata,
-  design    = ~ Replicate + Group
+  design    = ~ Replicate + Strain
 )
 
 dds <- DESeq(dds)
@@ -550,11 +549,11 @@ dds <- dds[!grepl("^GIL", rownames(dds)), ]
 expr_mat <- assay(vst(dds, blind = FALSE))
 
 var_explained <- apply(expr_mat, 1, function(gene_expr) {
-  model <- aov(gene_expr ~ Group + Replicate, data = metadata)
+  model <- aov(gene_expr ~ Strain + Replicate, data = metadata)
   ss <- summary(model)[[1]][["Sum Sq"]]
   total <- sum(ss)
   c(
-    Group     = ss[1] / total,
+    Strain     = ss[1] / total,
     Replicate = ss[2] / total
   )
 })
@@ -564,7 +563,7 @@ var_explained <- t(var_explained) %>% as.data.frame()
 var_long <- var_explained %>%
   mutate(Gene = rownames(var_explained)) %>%
   pivot_longer(
-    cols = c("Group", "Replicate"),
+    cols = c("Strain", "Replicate"),
     names_to = "Factor",
     values_to = "VarianceExplained"
   ) %>%
@@ -596,9 +595,9 @@ To assess batch effects at the transcriptome-wide level, we used permutational m
 
 ### Global batch test
 
-We first performed a global PERMANOVA including Group as the main biological factor and Replicate as a potential batch effect. In this model, biological structure clearly dominated the organization of the transcriptomic space. Group explained the vast majority of the variance (R² = 84.35%, p = 0.002), indicating strong transcriptional differences between the groups. In contrast, Replicate accounted for only a small fraction of the total variation (R² = 4.86%) and did not show statistical significance (p = 0.584). This indicates that, while replicate-to-replicate variability exists, it does not systematically structure the expression profiles nor introduce detectable batch effects at the global level.
+We first performed a global PERMANOVA including Strain as the main biological factor and Replicate as a potential batch effect. In this model, biological structure clearly dominated the organization of the transcriptomic space. Strain explained the vast majority of the variance (R² = 84.35%, p = 0.002), indicating strong transcriptional differences between the strains. In contrast, Replicate accounted for only a small fraction of the total variation (R² = 4.86%) and did not show statistical significance (p = 0.584). This indicates that, while replicate-to-replicate variability exists, it does not systematically structure the expression profiles nor introduce detectable batch effects at the global level.
 
-Overall, the PERMANOVA demonstrates that transcriptomic variation is overwhelmingly driven by Group, and that the variability associated with Replicate is minor, non‑significant and does not dominate the expression landscape.
+Overall, the PERMANOVA demonstrates that transcriptomic variation is overwhelmingly driven by Strain, and that the variability associated with Replicate is minor, non‑significant and does not dominate the expression landscape.
 
 ```{r}
 #| echo: true
@@ -608,7 +607,7 @@ Overall, the PERMANOVA demonstrates that transcriptomic variation is overwhelmin
 #| code-fold: true
 
 adonis_result <- adonis2(
-  t(expr_mat) ~ Group + Replicate,
+  t(expr_mat) ~ Strain + Replicate,
   data = metadata,
   permutations = 9999,
   by = "terms"
@@ -621,13 +620,13 @@ datatable(adonis_result, colnames = c("Term", "DF", "SS", "R²", "F statistic", 
 
 ### Batch effect within biological strata
 
-To further evaluate whether the effect of Replicate persists once biological structure is fully controlled, we performed a PERMANOVA in which permutations were restricted within Group. Under this design, samples were only compared to others from the same group, ensuring that any residual structure attributable to Replicate could be detected independently of differences between groups. This analysis specifically tests whether Replicate induces systematic within‑group shifts in expression profiles.
+To further evaluate whether the effect of Replicate persists once biological structure is fully controlled, we performed a PERMANOVA in which permutations were restricted within Strain. Under this design, samples were only compared to others from the same strain, ensuring that any residual structure attributable to Replicate could be detected independently of differences between strains. This analysis specifically tests whether Replicate induces systematic within‑strain shifts in expression profiles.
 
 Under this restricted model, Replicate explained only a very small fraction of the total transcriptomic variance (R² = 4.86%) and did not reach statistical significance (p = 0.611). The modest effect size, combined with a clearly non‑significant p‑value, indicates that Replicate does not introduce consistent transcriptomic differences among biologically matched samples.
 
-Importantly, the proportion of variance attributed to Replicate in the within‑group model was nearly identical to that observed in the global PERMANOVA. However, in both analyses Replicate remained non‑significant. This indicates that the small amount of variance associated with Replicate does not reflect a consistent or systematic batch effect, but rather random variation that does not meaningfully structure the transcriptomic space.
+Importantly, the proportion of variance attributed to Replicate in the within‑strain model was nearly identical to that observed in the global PERMANOVA. However, in both analyses Replicate remained non‑significant. This indicates that the small amount of variance associated with Replicate does not reflect a consistent or systematic batch effect, but rather random variation that does not meaningfully structure the transcriptomic space.
 
-Together, these results indicate that Replicate does not introduce a reproducible batch effect in the dataset. Its contribution to overall variation is minimal, unstable and statistically indistinguishable from random noise once biological differences between groups are controlled.
+Together, these results indicate that Replicate does not introduce a reproducible batch effect in the dataset. Its contribution to overall variation is minimal, unstable and statistically indistinguishable from random noise once biological differences between strains are controlled.
 
 ```{r}
 #| echo: true
@@ -641,7 +640,7 @@ adonis_batch_within <- adonis2(
   t(expr_mat) ~ Replicate,
   data = metadata,
   permutations = 9999,
-  strata = metadata$Group
+  strata = metadata$Strain
 )
 
 datatable(adonis_batch_within, colnames = c("Term", "DF", "SS", "R²", "F statistic", "Permutated p value")) %>%

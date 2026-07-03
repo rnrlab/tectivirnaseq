@@ -29,7 +29,7 @@ metadata <- readRDS(file = "lytic_cycle_induction_gil16_metadata.rds")
 all_genes <- readRDS(file = "lytic_cycle_induction_gil16_all_genes.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
-dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time)
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time + MMC)
 
 dds <- DESeq(dds)
 ```
@@ -43,7 +43,7 @@ In order to perform the times 30 vs 0 contrast, we established a log₂ fold-cha
 #| label: contrast
 #| code-fold: true
 
-contrast <- results(dds, contrast = c("Time", 30, 0), lfcThreshold = log2(1.5))
+contrast <- results(dds, contrast = list(c("Time_30_vs_0", "MMC_TRUE_vs_FALSE")), lfcThreshold = log2(1.5))
 contrast_df <- as.data.frame(contrast)
 
 contrast_df <- contrast_df %>%

@@ -79,7 +79,7 @@ metadata$Strain <- NULL
 
 counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
 
-dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time)
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time + MMC)
 
 dds <- DESeq(dds)
 ```
@@ -169,7 +169,6 @@ vs_mat <- assay(vsdata)
 topVarGenes <- head(order(rowVars(vs_mat), decreasing = TRUE), nrow(dds))
 pca <- prcomp(t(vs_mat[topVarGenes, ]))
 sample_pca <- as.data.frame(pca$x)
-sample_pca$Time <- colData(vsdata)$Time
 
 gene_loadings <- as.data.frame(pca$rotation)
 top_genes_PC1 <- head(gene_loadings[order(abs(gene_loadings$PC1), decreasing=TRUE), ], 20)

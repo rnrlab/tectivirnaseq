@@ -29,7 +29,7 @@ metadata <- readRDS(file = "lytic_cycle_induction_gil01_metadata.rds")
 all_genes <- readRDS(file = "lytic_cycle_induction_gil01_all_genes.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
-dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time)
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time + MMC)
 
 dds <- DESeq(dds)
 ```
@@ -43,7 +43,7 @@ In order to perform the times 30 vs 0 contrast, we established a log₂ fold-cha
 #| label: contrast
 #| code-fold: true
 
-contrast <- results(dds, contrast = c("Time", 30, 0), lfcThreshold = log2(1.5))
+contrast <- results(dds, contrast = list(c("Time_30_vs_0", "MMC_TRUE_vs_FALSE")), lfcThreshold = log2(1.5))
 contrast_df <- as.data.frame(contrast)
 
 contrast_df <- contrast_df %>%
@@ -132,7 +132,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. This time, there are a large number of DE chromosomal genes, both upregulated and downregulated, as well as upregulated pBtic235 genes plus a downregulated one. In other words, pBtic235 induction begins to be observed at 30 minutes. Regarding GIL01, almost all genes were upregulated and with LFC between 2.27 and 6.01. Interestingly, genes expressed from the tandem promoters P1-P2 reached greater statistical significance (adjusted p-value \< 10^-19^) than those expressed from the promoter P3 (adjusted p-value \> 10\^-^13^). Only GIL01-DNT_01 was not DE.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. This time, there are a large number of DE chromosomal genes, both upregulated and downregulated, as well as upregulated pBtic235 genes plus a downregulated one. In other words, pBtic235 induction begins to be observed at 30 minutes. Regarding GIL01, almost all genes were upregulated and with LFC between 2.27 and 6.01. Interestingly, genes expressed from the tandem promoters P1-P2 reached greater statistical significance (adjusted p-value \< 10^-19^) than those expressed from the promoter P3 (adjusted p-value \> 10-^13^). Only GIL01-DNT_01 was not DE.
 
 ```{r}
 #| echo: true

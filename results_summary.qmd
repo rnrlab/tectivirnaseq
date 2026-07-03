@@ -23,7 +23,7 @@ library("UpSetR")
 source("rnaseq_functions.R")
 ```
 
-This page compiles the results of all the performed contrasts: in lysogeny, intra-lysogen time-course and inter-lysogen time-course.
+This page compiles the results of all the performed contrasts: in lysogeny, intra-strain time-course and inter-strain time-course.
 
 # Load data
 
@@ -470,43 +470,43 @@ datatable(lysogeny_enrichments, rownames = FALSE, colnames = c("Group", "Contras
             deferRender = TRUE))
 ```
 
-# Intra-lysogen time-course summaries
+# Intra-strain time-course summaries
 
-This section presents the results of the intra-lysogen time-course contrasts. The two bar charts show the total number of DE genes and the number of enrichments in each contrast per lysogen. In addition, the enrichments in the COG and KEGG categories are represented in two bubble plots to facilitate comparison between contrasts. Finally, the interactive table compiles all the results from the **Enrichment summary** tables for each contrast.
+This section presents the results of the intra-strain time-course contrasts. The two bar charts show the total number of DE genes and the number of enrichments in each contrast per strain. In addition, the enrichments in the COG and KEGG categories are represented in two bubble plots to facilitate comparison between contrasts. Finally, the interactive table compiles all the results from the **Enrichment summary** tables for each contrast.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: intra_lysogen_time_course_summaries
+#| label: intra_strain_time_course_summaries
 #| code-fold: true
 
-intra_lysogen_time_course_contrasts <- combine_summaries(type = "contrast", group = "time")
-intra_lysogen_time_course_enrichments <- combine_summaries(type = "enrichment", group = "time")
+intra_strain_time_course_contrasts <- combine_summaries(type = "contrast", group = "time")
+intra_strain_time_course_enrichments <- combine_summaries(type = "enrichment", group = "time")
 ```
 
 ## Barplots
 
-This plot shows the number of DE genes, both upregulated and downregulated, in each contrast per lysogen. As we can see, there doesn't appear to be a difference in the number of DE genes according to the lysogen. This is because three independent models (i.e. three DESeq2 objects) were constructed for each set of contrasts, reflecting that the contrasts with fewer DE genes are those from early time points (0 and 10 minutes), while those performed with late time points (60 or 60-mock) show a large number of DE genes.
+This plot shows the number of DE genes, both upregulated and downregulated, in each contrast per strain. As we can see, there doesn't appear to be a difference in the number of DE genes according to the strain. This is because three independent models (i.e. three DESeq2 objects) were constructed for each set of contrasts, reflecting that the contrasts with fewer DE genes are those from early time points (0 and 10 minutes), while those performed with late time points (60 or 60-mock) show a large number of DE genes.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: intra_lysogen_time_course_cs
+#| label: intra_strain_time_course_cs
 #| code-fold: true
 #| fig-width: 10
 #| fig-height: 8
 
-intra_lysogen_time_course_contrasts_size <- intra_lysogen_time_course_contrasts %>%
+intra_strain_time_course_contrasts_size <- intra_strain_time_course_contrasts %>%
   select(Group, Contrast, DE, Size) %>%
   mutate(
-    Group = factor(Group, levels = levels(intra_lysogen_time_course_contrasts$Group)),
-    Contrast = factor(Contrast, levels = levels(intra_lysogen_time_course_contrasts$Contrast)),
-    DE = factor(DE, levels = levels(intra_lysogen_time_course_contrasts$DE))
+    Group = factor(Group, levels = levels(intra_strain_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(intra_strain_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(intra_strain_time_course_contrasts$DE))
   )
 
-ggplot(intra_lysogen_time_course_contrasts_size, aes(x = Contrast, y = Size, fill = DE)) +
+ggplot(intra_strain_time_course_contrasts_size, aes(x = Contrast, y = Size, fill = DE)) +
   geom_col(position = position_dodge(width = 0.8),
            width = 0.75, alpha = 0.7) +
   geom_text(
@@ -529,13 +529,13 @@ This plot shows the number of enrichments found in each category. Most enrichmen
 #| echo: true
 #| eval: true
 #| error: true
-#| label: intra_lysogen_time_course_ce
+#| label: intra_strain_time_course_ce
 #| code-fold: true
 #| warning: false
 #| fig-width: 16
 #| fig-height: 10
 
-intra_lysogen_time_course_contrasts_enrichments <- intra_lysogen_time_course_contrasts %>%
+intra_strain_time_course_contrasts_enrichments <- intra_strain_time_course_contrasts %>%
   pivot_longer(
     cols = !c(Group, Contrast, DE, Size),
     names_to = "Category",
@@ -543,13 +543,13 @@ intra_lysogen_time_course_contrasts_enrichments <- intra_lysogen_time_course_con
   ) %>%
   filter(Category != "Size") %>%
   mutate(
-    Group = factor(Group, levels = levels(intra_lysogen_time_course_contrasts$Group)),
-    Contrast = factor(Contrast, levels = levels(intra_lysogen_time_course_contrasts$Contrast)),
-    DE = factor(DE, levels = levels(intra_lysogen_time_course_contrasts$DE)),
-    Category = factor(Category, levels = colnames(intra_lysogen_time_course_contrasts)[4:ncol(intra_lysogen_time_course_contrasts)][colnames(intra_lysogen_time_course_contrasts)[4:ncol(intra_lysogen_time_course_contrasts)] != "Size"])
+    Group = factor(Group, levels = levels(intra_strain_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(intra_strain_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(intra_strain_time_course_contrasts$DE)),
+    Category = factor(Category, levels = colnames(intra_strain_time_course_contrasts)[4:ncol(intra_strain_time_course_contrasts)][colnames(intra_strain_time_course_contrasts)[4:ncol(intra_strain_time_course_contrasts)] != "Size"])
   )
 
-ggplot(intra_lysogen_time_course_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) +
+ggplot(intra_strain_time_course_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) +
   geom_col(position = position_dodge(width = 0.8), width = 0.75, alpha = 0.7) +
   geom_text(
     aes(label = ifelse(Count == 0, NA, Count)),
@@ -953,16 +953,16 @@ datatable(intra_de_genes, container = sketch, rownames = FALSE,
 
 ## Enrichments summary
 
-This table contains a summary of the enrichments for each category, contrast and lysogen. The subcategory was used for KEGG and the description for GO. Although you can scroll, I recommend exporting using the Excel button and viewing the table in full screen.
+This table contains a summary of the enrichments for each category, contrast and strain. The subcategory was used for KEGG and the description for GO. Although you can scroll, I recommend exporting using the Excel button and viewing the table in full screen.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: intra_lysogen_time_course_es
+#| label: intra_strain_time_course_es
 #| code-fold: true
 
-datatable(intra_lysogen_time_course_enrichments, rownames = FALSE, colnames = c("Lysogen", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+datatable(intra_strain_time_course_enrichments, rownames = FALSE, colnames = c("Strain", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             autoWidth = TRUE,
             dom = "Brftip",
@@ -974,43 +974,43 @@ datatable(intra_lysogen_time_course_enrichments, rownames = FALSE, colnames = c(
             deferRender = TRUE))
 ```
 
-# Inter-lysogen time-course summaries
+# Inter-strain time-course summaries
 
-This section presents the results of the inter-lysogen time-course contrasts. The two bar charts show the total number of DE genes and the number of enrichments in each contrast per lysogen. In addition, the enrichments in the COG and KEGG categories are represented in two bubble plots to facilitate comparison between contrasts. Finally, the interactive table compiles all the results from the **Enrichment summary** tables for each contrast.
+This section presents the results of the inter-strain time-course contrasts. The two bar charts show the total number of DE genes and the number of enrichments in each contrast per strain. In addition, the enrichments in the COG and KEGG categories are represented in two bubble plots to facilitate comparison between contrasts. Finally, the interactive table compiles all the results from the **Enrichment summary** tables for each contrast.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: inter_lysogen_time_course_summaries
+#| label: inter_strain_time_course_summaries
 #| code-fold: true
 
-inter_lysogen_time_course_contrasts <- combine_summaries(type = "contrast", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
-inter_lysogen_time_course_enrichments <- combine_summaries(type = "enrichment", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
+inter_strain_time_course_contrasts <- combine_summaries(type = "contrast", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
+inter_strain_time_course_enrichments <- combine_summaries(type = "enrichment", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
 ```
 
 ## Barplots
 
-This plot shows the number of DE genes, both upregulated and downregulated, in each time per lysogens contrasts. As we can see, the highest number of DE genes are obtained at late time points, and especially in the contrasts of GBJ002 vs GIL01 and GIL16. This is because a combined model was used for all contrasts (i.e. a single DESeq2 object), reflecting that, considering both time and lysogen, the greatest transcriptional changes are found at late time points.
+This plot shows the number of DE genes, both upregulated and downregulated, in each time per strains contrasts. As we can see, the highest number of DE genes are obtained at late time points, and especially in the contrasts of GBJ002 vs GIL01 and GIL16. This is because a combined model was used for all contrasts (i.e. a single DESeq2 object), reflecting that, considering both time and strain, the greatest transcriptional changes are found at late time points.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: inter_lysogen_time_course_cs
+#| label: inter_strain_time_course_cs
 #| code-fold: true
 #| fig-width: 10
 #| fig-height: 8
 
-inter_lysogen_time_course_contrasts_size <- inter_lysogen_time_course_contrasts %>%
+inter_strain_time_course_contrasts_size <- inter_strain_time_course_contrasts %>%
   select(Group, Contrast, DE, Size) %>%
   mutate(
-    Group = factor(Group, levels = levels(inter_lysogen_time_course_contrasts$Group)),
-    Contrast = factor(Contrast, levels = levels(inter_lysogen_time_course_contrasts$Contrast)),
-    DE = factor(DE, levels = levels(inter_lysogen_time_course_contrasts$DE))
+    Group = factor(Group, levels = levels(inter_strain_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(inter_strain_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(inter_strain_time_course_contrasts$DE))
   )
 
-ggplot(inter_lysogen_time_course_contrasts_size, aes(x = Group, y = Size, fill = DE)) +
+ggplot(inter_strain_time_course_contrasts_size, aes(x = Group, y = Size, fill = DE)) +
   geom_col(position = position_dodge(width = 0.8),
            width = 0.75, alpha = 0.7) +
   geom_text(
@@ -1027,19 +1027,19 @@ ggplot(inter_lysogen_time_course_contrasts_size, aes(x = Group, y = Size, fill =
   labs(x = "Time", y = "DE genes", fill = "DE")
 ```
 
-This plot shows the number of enrichments found in each category. Most enrichments, as in the previous plot, are found at late times in the contrasts of GBJ002 vs GIL01 and GIL16. In contrast, the differences between both lysogens with tectivirus, although they exist, are minimal and are only found at the 30 and 60-mock times.
+This plot shows the number of enrichments found in each category. Most enrichments, as in the previous plot, are found at late times in the contrasts of GBJ002 vs GIL01 and GIL16. In contrast, the differences between both strains with tectivirus, although they exist, are minimal and are only found at the 30 and 60-mock times.
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: inter_lysogen_time_course_ce
+#| label: inter_strain_time_course_ce
 #| code-fold: true
 #| warning: false
 #| fig-width: 16
 #| fig-height: 10
 
-inter_lysogen_time_course_contrasts_enrichments <- inter_lysogen_time_course_contrasts %>%
+inter_strain_time_course_contrasts_enrichments <- inter_strain_time_course_contrasts %>%
   pivot_longer(
     cols = !c(Group, Contrast, DE, Size),
     names_to = "Category",
@@ -1047,13 +1047,13 @@ inter_lysogen_time_course_contrasts_enrichments <- inter_lysogen_time_course_con
   ) %>%
   filter(Category != "Size") %>%
   mutate(
-    Group = factor(Group, levels = levels(inter_lysogen_time_course_contrasts$Group)),
-    Contrast = factor(Contrast, levels = levels(inter_lysogen_time_course_contrasts$Contrast)),
-    DE = factor(DE, levels = levels(inter_lysogen_time_course_contrasts$DE)),
-    Category = factor(Category, levels = colnames(inter_lysogen_time_course_contrasts)[4:ncol(inter_lysogen_time_course_contrasts)][colnames(inter_lysogen_time_course_contrasts)[4:ncol(inter_lysogen_time_course_contrasts)] != "Size"])
+    Group = factor(Group, levels = levels(inter_strain_time_course_contrasts$Group)),
+    Contrast = factor(Contrast, levels = levels(inter_strain_time_course_contrasts$Contrast)),
+    DE = factor(DE, levels = levels(inter_strain_time_course_contrasts$DE)),
+    Category = factor(Category, levels = colnames(inter_strain_time_course_contrasts)[4:ncol(inter_strain_time_course_contrasts)][colnames(inter_strain_time_course_contrasts)[4:ncol(inter_strain_time_course_contrasts)] != "Size"])
   )
 
-ggplot(inter_lysogen_time_course_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) +
+ggplot(inter_strain_time_course_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) +
   geom_col(position = position_dodge(width = 0.8), width = 0.75, alpha = 0.7) +
   geom_text(
     aes(label = ifelse(Count == 0, NA, Count)),
@@ -1402,10 +1402,10 @@ This table contains a summary of the enrichments for each category, contrast and
 #| echo: true
 #| eval: true
 #| error: true
-#| label: inter_lysogen_time_course_es
+#| label: inter_strain_time_course_es
 #| code-fold: true
 
-datatable(inter_lysogen_time_course_enrichments, rownames = FALSE, colnames = c("Time", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+datatable(inter_strain_time_course_enrichments, rownames = FALSE, colnames = c("Time", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             autoWidth = TRUE,
             dom = "Brftip",

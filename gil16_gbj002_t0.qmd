@@ -30,7 +30,7 @@ annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
 counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
 
-dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time + Strain + Time:Strain)
+dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Strain * Time + Strain * MMC)
 dds <- DESeq(dds)
 dds <- dds[!grepl("^GIL", rownames(dds)), ]
 
@@ -98,7 +98,6 @@ datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjuste
             buttons = c("copy", "csv", "excel"),
             fixedColumns = list(leftColumns = 2, rightColumns = 2),
             scrollX = TRUE,
-            scrollY = 400,
             scroller = TRUE,
             deferRender = TRUE)) %>%
   formatRound(columns = c("Mean_normalized_counts", "LFC"), digits = 2) %>%
