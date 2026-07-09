@@ -22,7 +22,7 @@ library("org.Bthuringiensis.eg.db")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 ```{r}
@@ -35,7 +35,7 @@ annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
 # Obtain rho proportionality
 
-Correlation shows how two variables vary together. In the case of RNAseq data, these correlations are inevitably relative, since we don't have the total number of reads, but rather a proportion of the total. Although algorithms like WGCNA employ Pearson correlation, this can lead to spurious associations, and more recent advances, especially in metagenomics, suggest the use of compositionally-aware methods. One such method is the rho (ρ) statistic, which can be used instead of correlation as the basis for familiar analyses and visualization methods, including coexpression networks and clustered heatmaps. In this case, we used rho proportionality to measure coexpression among GBJ002 (chromosome and pBtic235) and GIL16 genes and GIL16 samples at times 0, 10, 30 and 60, excluding 60-mock samples, since they are not induced by MMC and may introduce noise.
+Correlation shows how two variables vary together. In the case of RNAseq data, these correlations are inevitably relative, since we don't have the total number of reads, but rather a proportion of the total. Although algorithms like WGCNA employ Pearson correlation, this can lead to spurious associations, and more recent advances, especially in metagenomics, suggest the use of compositionally-aware methods. One such method is the rho (ρ) statistic, which can be used instead of correlation as the basis for familiar analyses and visualization methods, including coexpression networks and clustered heatmaps. In this case, we used rho proportionality to measure coexpression among GBJ002 (chromosome and pBtic235) and GIL16 genes and GIL16 samples at time points 0, 10, 30 and 60, excluding 60-mock samples, since they are not induced by MMC and may introduce noise.
 
 ```{r}
 #| echo: true
@@ -159,7 +159,7 @@ clusters_list <- lapply(clusters_ids, function(id) {
 
 names(clusters_list) <- clusters_ids
 
-clusters_stability <- compute_stability(clusters = clusters_ids, strain = "GIL16", frac = 0.80, B = 100)
+clusters_stability <- compute_stability(clusters = clusters_ids, strain = "GIL16", frac = 0.80, B = 1000)
 
 datatable(clusters_stability, rownames = FALSE,
   filter = "top", extensions = c("Buttons", "Scroller"), options = list(
@@ -276,7 +276,7 @@ datatable(cluster_gene_table, rownames = FALSE,
 #| warning: false
 
 expression_plots <- clusters_expression(expression_matrix = rhos@logratio,
-                                        metadata = metadata, times = c(0, 10, 30, 60),
+                                        metadata = metadata, time_points = c(0, 10, 30, 60),
                                         de_genes = c("gil16_t10_t0", "gil16_t30_t0", "gil16_t60_t0", "gil16_t60_t60-mock", "gil16_t60-mock_t0"),
                                         which_contrast = 3)
 ```

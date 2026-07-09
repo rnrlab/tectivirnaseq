@@ -1,5 +1,5 @@
 ---
-title: GIL16 vs GBJ002 contrast
+title: Strains GIL16 vs GBJ002
 ---
 
 ```{r}
@@ -18,7 +18,7 @@ library("DT")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 ```{r}
@@ -39,7 +39,7 @@ all_genes <- rownames(dds)
 
 To analyze differential expression across strains and time points, we performed all statistical modeling within a single DESeq2 dataset rather than creating separate DESeq2 objects for each time point. Because the experimental design includes strong temporal dynamics associated with phage induction, library composition changes substantially across conditions. Analyzing all samples together allows DESeq2 to estimate size factors and dispersion parameters using the full dataset, thereby borrowing statistical strength across conditions and ensuring a consistent normalization framework. Importantly, replicate effects (treated as a batch factor in the model) are captured globally; splitting the dataset by time would force DESeq2 to re‑estimate normalization and dispersion independently for each subset, disrupting the shared technical structure of the experiment and potentially introducing artificial differences. Using a unified DESeq2 object therefore provides a coherent, statistically robust foundation that preserves biological comparability, controls technical variation and enables accurate strain‑level contrasts at each time point.
 
-In order to perform the GIL16 vs GBJ002 contrast at 10 minutes, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
+In order to perform the GIL16 vs GBJ002 strains contrast at 10 minutes, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
 
 ```{r}
 #| echo: true
@@ -56,7 +56,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, COG_category, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -68,7 +68,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
-    COG_category,
+    Classification,
     Association,
     Type,
     Subtype,
@@ -146,7 +146,7 @@ A volcano plot displays each gene according to its LFC on the x-axis and the sta
 #| label: volcano_plot
 #| code-fold: true
 
-volcano_plot(contrast_df, limits = c(-6, 6))
+volcano_plot(contrast_df)
 ```
 
 # Enrichment analysis
@@ -431,5 +431,6 @@ datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)",
 #| label: save_results
 #| code-fold: true
 
-create_summary(contrast_name = "GIL16 vs GBJ002", rds_name = "gil16_gbj002_t10")
+create_summary(contrast_name = "Strains GIL16 vs GBJ002", rds_name = "gil16_gbj002_t10")
 ```
+

@@ -20,7 +20,7 @@ library("UpSetR")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 This page compiles the results of all the performed contrasts: in lysogeny, intra-strain time-course and inter-strain time-course.
@@ -52,8 +52,8 @@ This section presents the results of the lysogeny contrasts. The two bar charts 
 #| label: lysogeny_summaries
 #| code-fold: true
 
-lysogeny_contrasts <- combine_summaries(type = "contrast", group = "lysogen", filter = "Lysogeny")
-lysogeny_enrichments <- combine_summaries(type = "enrichment", group = "lysogen", filter = "Lysogeny")
+lysogeny_contrasts <- combine_summaries(type = "contrast", group = "strains", filter = "Lysogeny")
+lysogeny_enrichments <- combine_summaries(type = "enrichment", group = "strains", filter = "Lysogeny")
 ```
 
 ## Barplots
@@ -412,7 +412,7 @@ ggplot() +
 #| label: lysogeny_de_genes
 #| code-fold: true
 
-lysogeny_de_genes <- create_de_genes_table(group = "lysogen", filter = "Lysogeny")
+lysogeny_de_genes <- create_de_genes_table(group = "strains", filter = "Lysogeny")
 
 colnames(lysogeny_de_genes) <- c("Gene ID", "Gene symbol", "Description", "GIL01 vs GBJ002", "GIL16 vs GBJ002", "GIL16 vs GIL01")
 
@@ -481,8 +481,8 @@ This section presents the results of the intra-strain time-course contrasts. The
 #| label: intra_strain_time_course_summaries
 #| code-fold: true
 
-intra_strain_time_course_contrasts <- combine_summaries(type = "contrast", group = "time")
-intra_strain_time_course_enrichments <- combine_summaries(type = "enrichment", group = "time")
+intra_strain_time_course_contrasts <- combine_summaries(type = "contrast", group = "time_points")
+intra_strain_time_course_enrichments <- combine_summaries(type = "enrichment", group = "time_points")
 ```
 
 ## Barplots
@@ -581,51 +581,51 @@ ggplot(intra_strain_time_course_contrasts_enrichments, aes(x = Category, y = Cou
 #| fig-height: 6
 
 upset_contrasts(group = "GBJ002", de_genes = "UP", order = c(
-  "Times 10 vs 0",
-  "Times 30 vs 0",
-  "Times 60 vs 0",
-  "Times 60 vs 60-mock",
-  "Times 60-mock vs 0"
+  "Time points 10 vs 0",
+  "Time points 30 vs 0",
+  "Time points 60 vs 0",
+  "Time points 60 vs 60-mock",
+  "Time points 60-mock vs 0"
 ))
 
 upset_contrasts(group = "GBJ002", de_genes = "DOWN", order = c(
-  "Times 10 vs 0",
-  "Times 30 vs 0",
-  "Times 60 vs 0",
-  "Times 60 vs 60-mock",
-  "Times 60-mock vs 0"
+  "Time points 10 vs 0",
+  "Time points 30 vs 0",
+  "Time points 60 vs 0",
+  "Time points 60 vs 60-mock",
+  "Time points 60-mock vs 0"
 ))
 
 upset_contrasts(group = "GIL01", de_genes = "UP", order = c(
-  "Times 10 vs 0",
-  "Times 30 vs 0",
-  "Times 60 vs 0",
-  "Times 60 vs 60-mock",
-  "Times 60-mock vs 0"
+  "Time points 10 vs 0",
+  "Time points 30 vs 0",
+  "Time points 60 vs 0",
+  "Time points 60 vs 60-mock",
+  "Time points 60-mock vs 0"
 ))
 
 upset_contrasts(group = "GIL01", de_genes = "DOWN", order = c(
-  "Times 10 vs 0",
-  "Times 30 vs 0",
-  "Times 60 vs 0",
-  "Times 60 vs 60-mock",
-  "Times 60-mock vs 0"
+  "Time points 10 vs 0",
+  "Time points 30 vs 0",
+  "Time points 60 vs 0",
+  "Time points 60 vs 60-mock",
+  "Time points 60-mock vs 0"
 ))
 
 upset_contrasts(group = "GIL16", de_genes = "UP", order = c(
-  "Times 10 vs 0",
-  "Times 30 vs 0",
-  "Times 60 vs 0",
-  "Times 60 vs 60-mock",
-  "Times 60-mock vs 0"
+  "Time points 10 vs 0",
+  "Time points 30 vs 0",
+  "Time points 60 vs 0",
+  "Time points 60 vs 60-mock",
+  "Time points 60-mock vs 0"
 ))
 
 upset_contrasts(group = "GIL16", de_genes = "DOWN", order = c(
-  "Times 10 vs 0",
-  "Times 30 vs 0",
-  "Times 60 vs 0",
-  "Times 60 vs 60-mock",
-  "Times 60-mock vs 0"
+  "Time points 10 vs 0",
+  "Time points 30 vs 0",
+  "Time points 60 vs 0",
+  "Time points 60 vs 60-mock",
+  "Time points 60-mock vs 0"
 ))
 ```
 
@@ -741,11 +741,11 @@ ggplot() +
   ) +
   scale_shape_manual(
     values = c(
-      "Time 10 vs 0"       = 21,
-      "Time 30 vs 0"       = 22,
-      "Time 60 vs 0"       = 23,
-      "Time 60 vs 60-mock" = 24,
-      "Time 60-mock vs 0"  = 25
+      "Time points 10 vs 0"       = 21,
+      "Time points 30 vs 0"       = 22,
+      "Time points 60 vs 0"       = 23,
+      "Time points 60 vs 60-mock" = 24,
+      "Time points 60-mock vs 0"  = 25
     )
   ) +
   labs(
@@ -874,11 +874,11 @@ ggplot() +
   ) +
   scale_shape_manual(
     values = c(
-      "Time 10 vs 0"       = 21,
-      "Time 30 vs 0"       = 22,
-      "Time 60 vs 0"       = 23,
-      "Time 60 vs 60-mock" = 24,
-      "Time 60-mock vs 0"  = 25
+      "Time points 10 vs 0"       = 21,
+      "Time points 30 vs 0"       = 22,
+      "Time points 60 vs 0"       = 23,
+      "Time points 60 vs 60-mock" = 24,
+      "Time points 60-mock vs 0"  = 25
     )
   ) +
   labs(
@@ -908,7 +908,7 @@ ggplot() +
 #| label: intra_de_genes
 #| code-fold: true
 
-intra_de_genes <- create_de_genes_table(group = "time")
+intra_de_genes <- create_de_genes_table(group = "time_points")
 
 colnames(intra_de_genes)[1:2] <- c("Gene ID", "Gene symbol")
 
@@ -985,8 +985,8 @@ This section presents the results of the inter-strain time-course contrasts. The
 #| label: inter_strain_time_course_summaries
 #| code-fold: true
 
-inter_strain_time_course_contrasts <- combine_summaries(type = "contrast", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
-inter_strain_time_course_enrichments <- combine_summaries(type = "enrichment", group = "lysogen", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
+inter_strain_time_course_contrasts <- combine_summaries(type = "contrast", group = "strains", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
+inter_strain_time_course_enrichments <- combine_summaries(type = "enrichment", group = "strains", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
 ```
 
 ## Barplots
@@ -1024,7 +1024,7 @@ ggplot(inter_strain_time_course_contrasts_size, aes(x = Group, y = Size, fill = 
   ylim(0, 700) +
   theme_minimal(base_size = 14) +
   theme(strip.text = element_text(face = "bold")) +
-  labs(x = "Time", y = "DE genes", fill = "DE")
+  labs(x = "Time points", y = "DE genes", fill = "DE")
 ```
 
 This plot shows the number of enrichments found in each category. Most enrichments, as in the previous plot, are found at late times in the contrasts of GBJ002 vs GIL01 and GIL16. In contrast, the differences between both strains with tectivirus, although they exist, are minimal and are only found at the 30 and 60-mock times.
@@ -1085,27 +1085,27 @@ ggplot(inter_strain_time_course_contrasts_enrichments, aes(x = Category, y = Cou
 #| fig-height: 6
 
 upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "UP", order = c(
-  "Time 30 - GIL01 vs GBJ002",
-  "Time 30 - GIL16 vs GBJ002",
-  "Time 30 - GIL16 vs GIL01",
-  "Time 60 - GIL01 vs GBJ002",
-  "Time 60 - GIL16 vs GBJ002",
-  "Time 60 - GIL16 vs GIL01",
-  "Time 60-mock - GIL01 vs GBJ002",
-  "Time 60-mock - GIL16 vs GBJ002",
-  "Time 60-mock - GIL16 vs GIL01"
+  "Time point 30 - GIL01 vs GBJ002",
+  "Time point 30 - GIL16 vs GBJ002",
+  "Time point 30 - GIL16 vs GIL01",
+  "Time point 60 - GIL01 vs GBJ002",
+  "Time point 60 - GIL16 vs GBJ002",
+  "Time point 60 - GIL16 vs GIL01",
+  "Time point 60-mock - GIL01 vs GBJ002",
+  "Time point 60-mock - GIL16 vs GBJ002",
+  "Time point 60-mock - GIL16 vs GIL01"
 ))
 
 upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "DOWN", order = c(
-  "Time 30 - GIL01 vs GBJ002",
-  "Time 30 - GIL16 vs GBJ002",
-  "Time 30 - GIL16 vs GIL01",
-  "Time 60 - GIL01 vs GBJ002",
-  "Time 60 - GIL16 vs GBJ002",
-  "Time 60 - GIL16 vs GIL01",
-  "Time 60-mock - GIL01 vs GBJ002",
-  "Time 60-mock - GIL16 vs GBJ002",
-  "Time 60-mock - GIL16 vs GIL01"
+  "Time point 30 - GIL01 vs GBJ002",
+  "Time point 30 - GIL16 vs GBJ002",
+  "Time point 30 - GIL16 vs GIL01",
+  "Time point 60 - GIL01 vs GBJ002",
+  "Time point 60 - GIL16 vs GBJ002",
+  "Time point 60 - GIL16 vs GIL01",
+  "Time point 60-mock - GIL01 vs GBJ002",
+  "Time point 60-mock - GIL16 vs GBJ002",
+  "Time point 60-mock - GIL16 vs GIL01"
 ))
 ```
 
@@ -1350,7 +1350,7 @@ ggplot() +
 #| label: inter_de_genes
 #| code-fold: true
 
-inter_de_genes <- create_de_genes_table(group = "lysogen", filter = c("t0", "t30", "t60", "t60-mock"))
+inter_de_genes <- create_de_genes_table(group = "strains", filter = c("t0", "t30", "t60", "t60-mock"))
 
 colnames(inter_de_genes)[1:2] <- c("Gene ID", "Gene symbol")
 
@@ -1361,7 +1361,7 @@ clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
 lfc_cols <- colnames(inter_de_genes)[4:ncol(inter_de_genes)]
 groups <- sub(" - .*", "", lfc_cols)
 group_levels <- c("t0", "t30", "t60", "t60-mock")
-group_labels <- c("Time 0", "Time 30", "Time 60", "Time 60-mock")
+group_labels <- c("Time point 0", "Time point 30", "Time point 60", "Time point 60-mock")
 group_counts <- sapply(group_levels, function(g) sum(groups == g))
 second_row <- c(colnames(inter_de_genes)[1:3], sub(".* - ", "", lfc_cols))
 
@@ -1405,7 +1405,7 @@ This table contains a summary of the enrichments for each category, contrast and
 #| label: inter_strain_time_course_es
 #| code-fold: true
 
-datatable(inter_strain_time_course_enrichments, rownames = FALSE, colnames = c("Time", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
+datatable(inter_strain_time_course_enrichments, rownames = FALSE, colnames = c("Time point", "Contrast", "DE genes", "DE number", "COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)"),
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             autoWidth = TRUE,
             dom = "Brftip",
@@ -1416,3 +1416,4 @@ datatable(inter_strain_time_course_enrichments, rownames = FALSE, colnames = c("
             scroller = TRUE,
             deferRender = TRUE))
 ```
+

@@ -26,7 +26,7 @@ library("org.Bthuringiensis.eg.db")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 # Load counts
@@ -695,3 +695,4 @@ saveRDS(metadata, file = "lytic_cycle_induction_metadata.rds")
 saveRDS(gene_coexpression_counts, file = "gene_coexpression_counts.rds")
 saveRDS(metadata %>% filter(!grepl("mock", Sample)) %>% dplyr::select(-MMC) %>% droplevels(), file = "gene_coexpression_metadata.rds")
 ```
+

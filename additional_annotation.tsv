@@ -194,6 +194,7 @@ chromosome	821474	822385	-	Virulence factor	VFG007914	NA	VFDB
 chromosome	828097	828806	-	De novo transcript	Non-coding DNT 	Coding probability = 11%	Popcorn
 chromosome	832957	834720	-	Virulence factor	VFG013250	NA	VFDB
 chromosome	834720	836471	-	Virulence factor	VFG013250	NA	VFDB
+chromosome	836733	863330	Both	Prophage region	Low quality prophage region A	Completeness = 15.43%	PHASTEST; CheckV
 chromosome	838827	859051	Both	Biosynthetic gene cluster	UviB	BGC 4	BAGEL4
 chromosome	841381	842154	-	Virulence factor	VFG013732	NA	VFDB
 chromosome	843373	844956	+	Virulence factor	VFG049857	NA	VFDB
@@ -222,7 +223,7 @@ chromosome	914232	915212	-	Virulence factor	Phosphatidylinositol diacylglycerol-
 chromosome	946588	947301	-	Virulence factor	VFG038840	NA	VFDB
 chromosome	952184	953716	-	Virulence factor	VFG052947	NA	VFDB
 chromosome	953834	954910	-	Virulence factor	VFG052853	NA	VFDB
-chromosome	955885	1008492	Both	Prophage region	Complete prophage	Completeness = 100%	PHASTEST; CheckV
+chromosome	955885	1008492	Both	Prophage region	Complete quality prophage region B	Completeness = 100%	PHASTEST; CheckV
 chromosome	990067	991049	-	De novo transcript	Non-coding DNT 	Coding probability = 4%	Popcorn
 chromosome	990489	990762	+	De novo transcript	Coding DNT 	Coding probability = 51%	Popcorn
 chromosome	991450	991813	-	De novo transcript	Non-coding DNT 	Coding probability = 27%	Popcorn
@@ -643,6 +644,7 @@ chromosome	2845791	2847518	+	Virulence factor	VFG032254	NA	VFDB
 chromosome	2858833	2860107	+	Virulence factor	VFG047328	NA	VFDB
 chromosome	2859349	2859656	-	De novo transcript	Non-coding DNT 	Coding probability = 40%	Popcorn
 chromosome	2868047	2869216	+	Antimicrobial resistance	Glycopeptides	Glycopeptide resistance gene cluster (vanT)	RGI
+chromosome	2870202	2903389	Both	Prophage region	Low quality prophage region C	Completeness = 23.35%	PHASTEST; CheckV
 chromosome	2880889	2881332	+	Virulence factor	VFG039386	NA	VFDB
 chromosome	2887267	2888901	+	Virulence factor	VFG019134	NA	VFDB
 chromosome	2897812	2898519	+	Defense system	RosmerTA	RmrT	DefenseFinder; PADLOC
@@ -1080,6 +1082,7 @@ chromosome	4614526	4614822	+	Virulence factor	VFG002405	NA	VFDB
 chromosome	4619220	4619471	+	Virulence factor	VFG002407	NA	VFDB
 chromosome	4619545	4620744	+	Virulence factor	VFG002408	NA	VFDB
 chromosome	4620784	4625289	+	Virulence factor	VFG018161	NA	VFDB
+chromosome	4628024	4648862	Both	Prophage region	Low quality prophage region D	Completeness = 20.52%	VirSorter2; CheckV
 chromosome	4629860	4633508	-	De novo transcript	Non-coding DNT 	Coding probability = 2%	Popcorn
 chromosome	4630297	4630856	+	De novo transcript	Non-coding DNT 	Coding probability = 3%	Popcorn
 chromosome	4631686	4633008	+	De novo transcript	Non-coding DNT 	Coding probability = 1%	Popcorn

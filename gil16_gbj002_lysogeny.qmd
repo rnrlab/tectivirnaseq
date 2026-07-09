@@ -1,5 +1,5 @@
 ---
-title: GIL16 vs GBJ002 contrast
+title: Strains GIL16 vs GBJ002
 ---
 
 ```{r}
@@ -18,7 +18,7 @@ library("DT")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 ```{r}
@@ -26,17 +26,18 @@ source("rnaseq_functions.R")
 
 counts <- readRDS(file = "lysogeny_counts.rds")
 metadata <- readRDS(file = "lysogeny_metadata.rds")
-all_genes <- readRDS(file = "lysogeny_all_genes.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
+counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
+
 dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Strain)
-
 dds <- DESeq(dds)
-
 dds <- dds[!grepl("^GIL", rownames(dds)), ]
+
+all_genes <- rownames(dds)
 ```
 
-In order to perform the GIL16 vs GBJ002 contrast, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
+In order to perform the GIL16 vs GBJ002 strains contrast, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
 
 ```{r}
 #| echo: true
@@ -53,7 +54,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, COG_category, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -65,7 +66,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
-    COG_category,
+    Classification,
     Association,
     Type,
     Subtype,
@@ -436,5 +437,6 @@ datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)",
 #| label: save_results
 #| code-fold: true
 
-create_summary(contrast_name = "GIL16 vs GBJ002", rds_name = "gil16_gbj002_lysogeny")
+create_summary(contrast_name = "Strains GIL16 vs GBJ002", rds_name = "gil16_gbj002_lysogeny")
 ```
+

@@ -1,5 +1,5 @@
 ---
-title: Times 30 vs 0 contrast
+title: Time points 30 vs 0 contrast
 ---
 
 ```{r}
@@ -18,7 +18,7 @@ library("DT")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 ```{r}
@@ -26,15 +26,14 @@ source("rnaseq_functions.R")
 
 counts <- readRDS(file = "lytic_cycle_induction_gbj002_counts.rds")
 metadata <- readRDS(file = "lytic_cycle_induction_gbj002_metadata.rds")
-all_genes <- readRDS(file = "lytic_cycle_induction_gbj002_all_genes.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
 dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Replicate + Time + MMC)
-
 dds <- DESeq(dds)
+all_genes <- rownames(dds)
 ```
 
-In order to perform the times 30 vs 0 contrast, we established a log₂ fold-change (LFC) threshold of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
+In order to perform the time 30 vs 0 contrast, we established a log₂ fold-change (LFC) threshold of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
 
 ```{r}
 #| echo: true
@@ -51,7 +50,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, COG_category, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -63,7 +62,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
-    COG_category,
+    Classification,
     Association,
     Type,
     Subtype,
@@ -141,7 +140,7 @@ A volcano plot displays each gene according to its LFC on the x-axis and the sta
 #| label: volcano_plot
 #| code-fold: true
 
-volcano_plot(contrast_df, limits = c(-6, 6))
+volcano_plot(contrast_df)
 ```
 
 # Enrichment analysis
@@ -430,5 +429,6 @@ datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)",
 #| label: save_results
 #| code-fold: true
 
-create_summary(contrast_name = "Times 30 vs 0", rds_name = "gbj002_t30_t0")
+create_summary(contrast_name = "Time points 30 vs 0", rds_name = "gbj002_t30_t0")
 ```
+

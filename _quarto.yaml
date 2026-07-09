@@ -51,7 +51,7 @@ project:
       - results_summary.qmd
 
 website:
-  title: "RNAseq analysis"
+  title: "TectiviRNAseq"
   navbar:
     background: dark
     pinned: true
@@ -66,7 +66,7 @@ website:
           - text: Lytic cycle induction
             href: lytic_cycle_induction.qmd
           - text: "---"
-          - text: Per lysogen lytic cycle induction analysis
+          - text: Per strain lytic cycle induction analysis
           - text: GBJ002
             href: lytic_cycle_induction_gbj002.qmd
           - text: GIL01
@@ -74,92 +74,92 @@ website:
           - text: GIL16
             href: lytic_cycle_induction_gil16.qmd
 
-      - text: Inter-lysogen contrasts
+      - text: Inter-strain contrasts
         menu:
           - text: "Lysogeny contrasts"
-          - text: "GIL01 vs GBJ002"
+          - text: "Strains GIL01 vs GBJ002"
             href: gil01_gbj002_lysogeny.qmd
-          - text: "GIL16 vs GBJ002"
+          - text: "Strains GIL16 vs GBJ002"
             href: gil16_gbj002_lysogeny.qmd
-          - text: "GIL16 vs GIL01"
+          - text: "Strains GIL16 vs GIL01"
             href: gil16_gil01_lysogeny.qmd
           - text: "---"
-          - text: Time 0 contrasts
-          - text: "GIL01 vs GBJ002"
+          - text: Time point 0 contrasts
+          - text: "Strains GIL01 vs GBJ002"
             href: gil01_gbj002_t0.qmd
-          - text: "GIL16 vs GBJ002"
+          - text: "Strains GIL16 vs GBJ002"
             href: gil16_gbj002_t0.qmd
-          - text: "GIL16 vs GIL01"
+          - text: "Strains GIL16 vs GIL01"
             href: gil16_gil01_t0.qmd
           - text: "---"
-          - text: Time 10 contrasts
-          - text: "GIL01 vs GBJ002"
+          - text: Time point 10 contrasts
+          - text: "Strains GIL01 vs GBJ002"
             href: gil01_gbj002_t10.qmd
-          - text: "GIL16 vs GBJ002"
+          - text: "Strains GIL16 vs GBJ002"
             href: gil16_gbj002_t10.qmd
-          - text: "GIL16 vs GIL01"
+          - text: "Strains GIL16 vs GIL01"
             href: gil16_gil01_t10.qmd
           - text: "---"
-          - text: Time 30 contrasts
-          - text: "GIL01 vs GBJ002"
+          - text: Time point 30 contrasts
+          - text: "Strains GIL01 vs GBJ002"
             href: gil01_gbj002_t30.qmd
-          - text: "GIL16 vs GBJ002"
+          - text: "Strains GIL16 vs GBJ002"
             href: gil16_gbj002_t30.qmd
-          - text: "GIL16 vs GIL01"
+          - text: "Strains GIL16 vs GIL01"
             href: gil16_gil01_t30.qmd
           - text: "---"
-          - text: Time 60 contrasts
-          - text: "GIL01 vs GBJ002"
+          - text: Time point 60 contrasts
+          - text: "Strains GIL01 vs GBJ002"
             href: gil01_gbj002_t60.qmd
-          - text: "GIL16 vs GBJ002"
+          - text: "Strains GIL16 vs GBJ002"
             href: gil16_gbj002_t60.qmd
-          - text: "GIL16 vs GIL01"
+          - text: "Strains GIL16 vs GIL01"
             href: gil16_gil01_t60.qmd
           - text: "---"
-          - text: Time 60-mock contrasts
-          - text: "GIL01 vs GBJ002"
+          - text: Time point 60-mock contrasts
+          - text: "Strains GIL01 vs GBJ002"
             href: gil01_gbj002_t60-mock.qmd
-          - text: "GIL16 vs GBJ002"
+          - text: "Strains GIL16 vs GBJ002"
             href: gil16_gbj002_t60-mock.qmd
-          - text: "GIL16 vs GIL01"
+          - text: "Strains GIL16 vs GIL01"
             href: gil16_gil01_t60-mock.qmd
 
-      - text: Intra-lysogen contrasts
+      - text: Intra-strain contrasts
         menu:
           - text: GBJ002 contrasts
-          - text: "Times 10 vs 0"
+          - text: "Time points 10 vs 0"
             href: gbj002_t10_t0.qmd
-          - text: "Times 30 vs 0"
+          - text: "Time points 30 vs 0"
             href: gbj002_t30_t0.qmd
-          - text: "Times 60 vs 0"
+          - text: "Time points 60 vs 0"
             href: gbj002_t60_t0.qmd
-          - text: "Times 60 vs 60-mock"
+          - text: "Time points 60 vs 60-mock"
             href: gbj002_t60_t60-mock.qmd
-          - text: "Times 60-mock vs 0"
+          - text: "Time points 60-mock vs 0"
             href: gbj002_t60-mock_t0.qmd
           - text: "---"
           - text: GIL01 contrasts
-          - text: "Times 10 vs 0"
+          - text: "Time points 10 vs 0"
             href: gil01_t10_t0.qmd
-          - text: "Times 30 vs 0"
+          - text: "Time points 30 vs 0"
             href: gil01_t30_t0.qmd
-          - text: "Times 60 vs 0"
+          - text: "Time points 60 vs 0"
             href: gil01_t60_t0.qmd
-          - text: "Times 60 vs 60-mock"
+          - text: "Time points 60 vs 60-mock"
             href: gil01_t60_t60-mock.qmd
-          - text: "Times 60-mock vs 0"
+          - text: "Time points 60-mock vs 0"
             href: gil01_t60-mock_t0.qmd
           - text: "---"
           - text: GIL16 contrasts
-          - text: "Times 10 vs 0"
+          - text: "Time points 10 vs 0"
             href: gil16_t10_t0.qmd
-          - text: "Times 30 vs 0"
+          - text: "Time points 30 vs 0"
             href: gil16_t30_t0.qmd
-          - text: "Times 60 vs 0"
+          - text: "Time points 60 vs 0"
             href: gil16_t60_t0.qmd
-          - text: "Times 60 vs 60-mock"
+          - text: "Time points 60 vs 60-mock"
             href: gil16_t60_t60-mock.qmd
-          - text: "Times 60-mock vs 0"
+          - text: "Time points 60-mock vs 0"
             href: gil16_t60-mock_t0.qmd
 
       - text: Gene coexpression analysis

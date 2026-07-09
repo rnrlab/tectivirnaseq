@@ -1,0 +1,66 @@
+﻿ID	Gene_symbol	Gene_number	Description	Homologue	E value	Identity	Coverage
+GIL01_33		33	Hypothetical protein	GIL16_33	1,19E-07	83,333	42
+GIL01_01	gp1	1	Cycle regulator protein	GIL16_01	3,84E-39	98,276	100
+GIL01_02	gp2	2	Single strand DNA binding protein	GIL16_02	2,98E-106	85,03	100
+GIL01_03	gp3	3	Hypothetical protein	GIL16_03	3,56E-50	97,297	100
+GIL01_04	gp4	4	Genome terminal protein	GIL16_04	8,24E-162	91,429	100
+GIL01_05	gp5	5	DNA polymerase	GIL16_05	0,00E+00	97,721	98
+GIL01_06	gp6	6	LexA-like repressor	GIL16_06	1,14E-48	100	100
+GIL01_07	gp7	7	Cycle regulator protein	GIL16_07	1,71E-11	53,191	88
+GIL01_08	gp8		Hypothetical protein	GIL16_10	0,64	38,462	33
+GIL01_09	gp9		Hypothetical protein	GIL16_27	0,36	32	44
+GIL01_34			Hypothetical protein	GIL16_36	5,20	57,143	7
+GIL01_11	gp11	11	Assembly protein	GIL16_10	6,37E-122	80,328	98
+GIL01_13	gp13	13	Hypothetical protein	GIL16_12	1,05E-58	74,51	100
+GIL01_14	gp14	14	DNA packaging/ATPase protein	GIL16_13	1,46E-130	78,302	100
+GIL01_15	gp15	15	Special vertex protein	GIL16_14	1,04E-29	100	100
+GIL01_16	gp16	16	DNA packaging protein	GIL16_16	1,19E-29	91,304	100
+GIL01_17	gp17	17	Minor capsid protein	GIL16_17	6,00E-40	65,169	100
+GIL01_18	gp18	18	Major capsid protein	GIL16_18	0,00E+00	92,135	100
+GIL01_19	gp19	19	DNA packaging protein	GIL16_19	4,99E-53	96,053	100
+GIL01_20	gp20	20	Spike stabilizer protein	GIL16_20	6,20E-05	26,984	93
+GIL01_35			Hypothetical protein	GIL16_28	3,20E-02	53,846	43
+GIL01_21	gp21	21	Hypothetical protein	GIL16_22	4,23E-75	98,131	75
+GIL01_22	gp22	22	"	Special vertex/DNA delivery protein"	GIL16_23	2,90E-38	100	100
+GIL01_23	gp23	23	Hypothetical protein	GIL16_24	6,44E-32	100	100
+GIL01_24	gp24	24	Pentameric base spike protein	GIL16_25	5,07E-67	96,703	100
+GIL01_25	gp25	25	Membrane structural component protein	GIL16_26	1,15E-148	94,608	100
+GIL01_26	gp26	26	N-acetylmuramidase	GIL16_27	0,00E+00	96	100
+GIL01_27	gp27	27	Hypothetical protein	GIL16_28	1,86E-125	95,882	100
+GIL01_28	gp28	28	Trimeric spike protein	GIL16_29	3,43E-161	72,368	100
+GIL01_29	gp29	29	Spike protein	GIL16_30	0,00E+00	93,515	100
+GIL01_30	gp30	30	N-acetylmuramoyl-L-alanine amidase	GIL16_31	8,73E-16	37,143	26
+GIL01_36			Hypothetical protein				
+GIL16_33		33	Hypothetical protein	GIL01_33	1,28E-07	83,333	39
+GIL16_34			Hypothetical protein	GIL01_05	1,70E+00	66,667	18
+GIL16_01	gp1	1	Cycle regulator protein	GIL01_01	3,86E-39	98,276	100
+GIL16_02	gp2	2	Single strand DNA binding protein	GIL01_02	2,97E-106	85,03	100
+GIL16_03	gp3	3	Hypothetical protein	GIL01_03	3,58E-50	97,297	100
+GIL16_04	gp4	4	Genome terminal protein	GIL01_04	1,28E-161	91,429	100
+GIL16_05	gp5	5	DNA polymerase	GIL01_05	0,00E+00	97,721	99
+GIL16_06	gp6	6	LexA-like repressor	GIL01_06	1,15E-48	100	100
+GIL16_07	gp7	7	Cycle regulator protein	GIL01_07	1,99E-11	53,191	81
+GIL16_08	gp8		Hypothetical protein	GIL01_14	4,40	33,333	26
+GIL16_35			Hypothetical protein	GIL01_33	0,70	37,037	40
+GIL16_10	gp10	11	Assembly protein	GIL01_11	4,65E-129	80,738	98
+GIL16_12	gp12	13	Hypothetical protein	GIL01_13	1,06E-58	74,51	100
+GIL16_13	gp13	14	DNA packaging/ATPase protein	GIL01_14	1,46E-130	78,302	100
+GIL16_14	gp14	15	Special vertex protein	GIL01_15	1,05E-29	100	100
+GIL16_15	gp15		Hypothetical protein				
+GIL16_16	gp16	16	DNA packaging protein	GIL01_16	1,20E-29	91,304	100
+GIL16_17	gp17	17	Minor capsid protein	GIL01_17	6,39E-40	65,169	100
+GIL16_18	gp18	18	Major capsid protein	GIL01_18	0,00E+00	92,135	100
+GIL16_19	gp19	19	DNA packaging protein	GIL01_19	5,02E-53	96,053	100
+GIL16_20	gp20	20	Spike stabilizer protein	GIL01_20	4,77E-05	26,984	94
+GIL16_21	gp21		Hypothetical protein	GIL01_14	0,13	47,059	49
+GIL16_22	gp22	21	Hypothetical protein	GIL01_21	3,18E-75	98,131	100
+GIL16_23	gp23	22	"	Special vertex/DNA delivery protein"	GIL01_22	2,92E-38	100	100
+GIL16_24	gp24	23	Hypothetical protein	GIL01_23	6,48E-32	100	100
+GIL16_25	gp25	24	Pentameric base spike protein	GIL01_24	5,10E-67	96,703	100
+GIL16_26	gp26	25	Membrane structural component protein	GIL01_25	1,15E-148	94,608	100
+GIL16_27	gp27	26	N-acetylmuramidase	GIL01_26	0,00E+00	96	100
+GIL16_28	gp28	27	Hypothetical protein	GIL01_27	1,87E-125	95,882	100
+GIL16_29	gp29	28	Trimeric spike protein	GIL01_28	2,69E-156	72,368	100
+GIL16_30	gp30	29	Spike protein	GIL01_29	0,00E+00	93,515	100
+GIL16_31	gp31	30	Hypothetical protein	GIL01_30	9,55E-16	37,143	24
+GIL16_36			Hypothetical protein	GIL01_11	0,64	45,455	37

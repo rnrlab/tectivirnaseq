@@ -26,7 +26,7 @@ library("org.Bthuringiensis.eg.db")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 # Load counts
@@ -90,8 +90,8 @@ strain_means <- sapply(levels(metadata$Strain), function(g) {
 
 keep <- rowSums(strain_means >= 10) >= 1
 
-full_counts <- counts
 counts <- counts[keep, ]
+lysogeny_counts <- counts
 ```
 
 # Create dds object and delete phages genes
@@ -301,212 +301,6 @@ The dispersion versus mean of normalized counts plot illustrates the mean–vari
 plotDispEsts(dds)
 ```
 
-# Phages genes expression
-
-In this section, since the phages genes expression cannot be directly compared, we examined their expression using boxplots. The data are presented in **CPM** (counts per million), which indicates how many counts per million come from a given gene. Although this method does not normalize for gene length, we chose to use it because the results showed lower variance and the scale was very similar to that of **TPM** (transcripts per million).
-
-```{r}
-#| echo: true
-#| eval: true
-#| error: true
-#| label: cpm
-#| code-fold: true
-
-cpm_df <- as.data.frame(cpm(full_counts[keep, ]))
-```
-
-## GIL01
-
-In GIL01, we found that the most highly expressed gene is GIL01_18, which corresponds to the major capsid protein gene. It is also worth highlighting a de novo transcript identified by StringTie on the negative strand (GIL01-DNT_01), which shows expression levels similar to genome terminal protein (GIL01_04) and DNA polymerase (GIL01_05) genes.
-
-```{r}
-#| echo: true
-#| eval: true
-#| error: true
-#| label: gil01
-#| code-fold: true
-
-gil01_long_cpm <- cpm_df %>%
-  tibble::rownames_to_column("Gene_ID") %>%
-  dplyr::filter(grepl("^GIL01", Gene_ID)) %>%
-  tidyr::pivot_longer(
-    cols = starts_with("GIL01_"),
-    names_to = "Sample",
-    values_to = "CPM"
-  ) %>%
-  dplyr::mutate(CPM_log2 = log2(CPM + 1))
-
-gil01_annotation <- annotation %>%
-  dplyr::filter(grepl("^GIL01", Gene_ID)) %>%
-  dplyr::mutate(
-    Gene_number = as.numeric(sub(".*_(\\d+)$", "\\1", Gene_ID)),
-    Color = dplyr::case_when(
-      Strand == "+" & !is.na(Gene_number) & Gene_number >= 1 & Gene_number <= 8  ~ "red",
-      Strand == "+" & !is.na(Gene_number) & Gene_number >= 9 & Gene_number <= 30 ~ "darkred",
-      Strand == "+" & !is.na(Gene_number) & Gene_number >= 33 & Gene_number <= 36 ~ "grey",
-      Strand == "-" ~ "blue",
-      TRUE ~ "black"
-    )
-  )
-
-gil01_long_cpm <- gil01_long_cpm %>%
-  dplyr::left_join(
-    gil01_annotation %>%
-      dplyr::select(Gene_ID, Color, Gene_symbol, Description, Subtype),
-    by = "Gene_ID"
-  ) %>%
-  dplyr::mutate(
-    Gene_symbol = ifelse(is.na(Gene_symbol), "", Gene_symbol),
-    Description = ifelse(is.na(Description), "", Description),
-    Subtype = ifelse(is.na(Subtype), "-", Subtype),
-    Gene_ID = factor(
-      Gene_ID,
-      levels = gil01_annotation$Gene_ID[
-        gil01_annotation$Gene_ID %in% Gene_ID
-      ]
-    )
-  )
-
-p <- ggplot(gil01_long_cpm, aes(
-  x = Gene_ID,
-  y = CPM_log2,
-  text = paste(
-    "Gene ID:", Gene_ID,
-    ifelse(
-      Gene_symbol != "",
-      paste0("<br>Gene symbol: ", Gene_symbol),
-      ""
-    ),
-    ifelse(
-      Description != "",
-      paste0("<br>Description: ", Description),
-      ""
-    ),
-    ifelse(
-      Description == "Hypothetical protein",
-      paste0("<br>Phynteny annotation: ", Subtype),
-      ""
-    ),
-    "<br>Sample:", Sample,
-    "<br>Gene expression:", round(CPM_log2, 2)
-  )
-)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_jitter(
-    width = 0.25,
-    size = 1.5,
-    alpha = 0.7,
-    aes(color = Color)
-  ) +
-  theme_minimal() +
-  xlab(NULL) +
-  ylab("Gene expression") +
-  scale_y_continuous(limits = c(0, 12)) +
-  scale_color_identity() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "none"
-  )
-
-ggplotly(p, tooltip = "text")
-```
-
-## GIL16
-
-In the case of GIL16, the results are similar. Again, the major capsid protein gene (GIL16_18) is the most highly expressed. Although there is greater variation between samples in this case, GIL16-DNT_01 exhibits expression levels similar to genome terminal protein (GIL16_04) and DNA polymerase (GIL16_05) genes.
-
-```{r}
-#| echo: true
-#| eval: true
-#| error: true
-#| label: gil16
-#| code-fold: true
-
-gil16_long_cpm <- cpm_df %>%
-  tibble::rownames_to_column("Gene_ID") %>%
-  dplyr::filter(grepl("^GIL16", Gene_ID)) %>%
-  tidyr::pivot_longer(
-    cols = starts_with("GIL16_"),
-    names_to = "Sample",
-    values_to = "CPM"
-  ) %>%
-  dplyr::mutate(CPM_log2 = log2(CPM + 1))
-
-gil16_annotation <- annotation %>%
-  dplyr::filter(grepl("^GIL16", Gene_ID)) %>%
-  dplyr::mutate(
-    Gene_number = as.numeric(sub(".*_(\\d+)$", "\\1", Gene_ID)),
-    Color = dplyr::case_when(
-      Strand == "+" & !is.na(Gene_number) & Gene_number >= 1 & Gene_number <= 8  ~ "red",
-      Strand == "+" & !is.na(Gene_number) & Gene_number >= 9 & Gene_number <= 30 ~ "darkred",
-      Strand == "+" & !is.na(Gene_number) & Gene_number >= 33 & Gene_number <= 36 ~ "grey",
-      Strand == "-" ~ "blue",
-      TRUE ~ "black"
-    )
-  )
-
-gil16_long_cpm <- gil16_long_cpm %>%
-  dplyr::left_join(
-    gil16_annotation %>%
-      dplyr::select(Gene_ID, Color, Gene_symbol, Description, Subtype),
-    by = "Gene_ID"
-  ) %>%
-  dplyr::mutate(
-    Gene_symbol = ifelse(is.na(Gene_symbol), "", Gene_symbol),
-    Description = ifelse(is.na(Description), "", Description),
-    Subtype = ifelse(is.na(Subtype), "-", Subtype),
-    Gene_ID = factor(
-      Gene_ID,
-      levels = gil16_annotation$Gene_ID[
-        gil16_annotation$Gene_ID %in% Gene_ID
-      ]
-    )
-  )
-
-p <- ggplot(gil16_long_cpm, aes(
-  x = Gene_ID,
-  y = CPM_log2,
-  text = paste(
-    "Gene ID:", Gene_ID,
-    ifelse(
-      Gene_symbol != "",
-      paste0("<br>Gene symbol: ", Gene_symbol),
-      ""
-    ),
-    ifelse(
-      Description != "",
-      paste0("<br>Description: ", Description),
-      ""
-    ),
-    ifelse(
-      Description == "Hypothetical protein",
-      paste0("<br>Phynteny annotation: ", Subtype),
-      ""
-    ),
-    "<br>Sample:", Sample,
-    "<br>Gene expression:", round(CPM_log2, 2)
-  )
-)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_jitter(
-    width = 0.25,
-    size = 1.5,
-    alpha = 0.7,
-    aes(color = Color)
-  ) +
-  theme_minimal() +
-  xlab(NULL) +
-  ylab("Gene expression") +
-  scale_y_continuous(limits = c(0, 12)) +
-  scale_color_identity() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "none"
-  )
-
-ggplotly(p, tooltip = "text")
-```
-
 # Check batch effect
 
 In this section, we evaluated the presence and magnitude of a potential batch effect associated with experimental replication.
@@ -657,7 +451,8 @@ datatable(adonis_batch_within, colnames = c("Term", "DF", "SS", "R²", "F statis
 #| label: save_results
 #| code-fold: true
 
-saveRDS(counts, file = "lysogeny_counts.rds")
+saveRDS(lysogeny_counts, file = "lysogeny_counts.rds")
 saveRDS(metadata, file = "lysogeny_metadata.rds")
 saveRDS(all_genes, file = "lysogeny_all_genes.rds")
 ```
+

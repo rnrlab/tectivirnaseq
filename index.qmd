@@ -1,5 +1,5 @@
 ---
-title: Main menu
+title: "*Bacillus thuringiensis*–*Betatectivirus* dual RNAseq analysis"
 ---
 
 ```{r}
@@ -26,7 +26,7 @@ library("org.Bthuringiensis.eg.db")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 On this page, we will show the general RNAseq analysis using DESeq2 of *Bacillus thuringiensis* GBJ002 strain vs lysogens of GIL01 and GIL16 tectiviruses. The different sections show the code used to obtain the results shown.
@@ -323,7 +323,7 @@ saf <- read.csv("GBJ002-GIL01-GIL16.saf", sep = "\t", header = TRUE)
 bakta <- read.csv("annotation.tsv", sep = "\t", header = TRUE)
 cog_annotation <- read.csv("cog_annotation.tsv", sep = "\t", header = TRUE)
 additional_annotation <- read.csv("additional_annotation.tsv", sep = "\t", header = TRUE)
-phages_annotation <- read.csv("phages_annotation.tsv", sep = "\t", header = TRUE)
+tectivirus_annotation <- read.csv("tectivirus_annotation.tsv", sep = "\t", header = TRUE)
 
 annotation <- saf %>%
   rename(Gene_ID = GeneID, Element = Chr) %>%
@@ -338,7 +338,7 @@ annotation <- saf %>%
   mutate(
     Gene_symbol = Gene,
     Description = Product,
-    COG_category = COG,
+    Classification = COG,
     Association = NA_character_,
     Type = NA_character_,
     Subtype = NA_character_,
@@ -390,23 +390,28 @@ for (i in seq_len(nrow(annotation_strand))) {
   }
 }
 
-idx <- match(annotation$Gene_ID, phages_annotation$ID)
+idx <- match(annotation$Gene_ID, tectivirus_annotation$ID)
 
 annotation$Description <- dplyr::coalesce(
-  phages_annotation$Description[idx],
+  tectivirus_annotation$Description[idx],
   annotation$Description
 )
 
 annotation$Gene_symbol <- dplyr::coalesce(
-  phages_annotation$Gene_ID[idx],
+  tectivirus_annotation$Gene_symbol[idx],
   annotation$Gene_symbol
+)
+
+annotation$Classification <- dplyr::coalesce(
+  as.character(tectivirus_annotation$Gene_number[idx]),
+  annotation$Classification
 )
 
 annotation$Element <- factor(annotation$Element, levels = c("chromosome", "pBtic235", "GIL01", "GIL16"))
 annotation$Strand <- factor(annotation$Strand, levels = c("+", "-"))
 
 datatable(annotation, colnames = c("Gene ID", "Element", "Start", "End", "Strand",
-                                   "Gene symbol", "Description", "COG category", "Association", "Type",
+                                   "Gene symbol", "Description", "COG category / Homologue", "Association", "Type",
                                    "Subtype", "Source"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",

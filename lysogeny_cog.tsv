@@ -1,8 +1,0 @@
-Contrast	Direction	COG	DE	No_DE	Total	Ratio	p
-GIL01 vs GBJ002	UP	Defense mechanisms (V)	5	82	87	0.057471264	0.020226012
-GIL01 vs GBJ002	UP	Nucleotide transport and metabolism (F)	5	105	110	0.045454545	0.02910445
-GIL16 vs GBJ002	UP	Translation, ribosomal structure and biogenesis (J)	96	198	294	0.326530612	1.84E-19
-GIL16 vs GBJ002	UP	Nucleotide transport and metabolism (F)	26	84	110	0.236363636	0.014261294
-GIL16 vs GBJ002	UP	Energy production and conversion (C)	34	131	165	0.206060606	0.022945849
-GIL16 vs GIL01	UP	Translation, ribosomal structure and biogenesis (J)	65	229	294	0.221088435	7.03E-16
-GIL16 vs GIL01	DOWN	Transcription (K)	19	249	268	0.070895522	0.021316133

@@ -17,7 +17,7 @@ library("igraph")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 ```{r}
@@ -842,3 +842,4 @@ objs <- list(
 
 saveRDS(objs, file = "gil16_network.rds")
 ```
+

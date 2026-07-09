@@ -22,7 +22,7 @@ library("org.Bthuringiensis.eg.db")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 # Load data
@@ -287,5 +287,5 @@ plotDispEsts(dds)
 
 saveRDS(counts, file = "lytic_cycle_induction_gil01_counts.rds")
 saveRDS(metadata, file = "lytic_cycle_induction_gil01_metadata.rds")
-saveRDS(all_genes, file = "lytic_cycle_induction_gil01_all_genes.rds")
 ```
+

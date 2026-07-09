@@ -1,10 +1,11 @@
 ---
-title: GIL16 vs GIL01 contrast
+title: Strains GIL16 vs GIL01
 ---
 
 ```{r}
 #| include: false
 
+library("edgeR")
 library("DESeq2")
 library("clusterProfiler")
 library("org.Bthuringiensis.eg.db")
@@ -18,25 +19,27 @@ library("DT")
 ```{r}
 #| include: false
 
-source("rnaseq_functions.R")
+source("tectivirnaseq_functions.R")
 ```
 
 ```{r}
 #| include: false
 
 counts <- readRDS(file = "lysogeny_counts.rds")
+full_counts <- counts
 metadata <- readRDS(file = "lysogeny_metadata.rds")
-all_genes <- readRDS(file = "lysogeny_all_genes.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 
+counts[] <- lapply(counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
+
 dds <- DESeqDataSetFromMatrix(countData = counts, colData = metadata, design = ~ Strain)
-
 dds <- DESeq(dds)
-
 dds <- dds[!grepl("^GIL", rownames(dds)), ]
+
+all_genes <- rownames(dds)
 ```
 
-In order to perform the GIL16 vs GIL01 contrast, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
+In order to perform the GIL16 vs GIL01 strains contrast, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively. The default value is 0, but when performing the other contrasts we obtained too many differentially expressed (DE) genes. This violates one of DESeq2's key assumptions, which is that most genes are not differentially expressed.
 
 ```{r}
 #| echo: true
@@ -53,7 +56,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, COG_category, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -65,7 +68,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
-    COG_category,
+    Classification,
     Association,
     Type,
     Subtype,
@@ -143,7 +146,7 @@ A volcano plot displays each gene according to its LFC on the x-axis and the sta
 #| label: volcano_plot
 #| code-fold: true
 
-volcano_plot(contrast_df, limits = c(-6, 6))
+volcano_plot(contrast_df)
 ```
 
 # Enrichment analysis
@@ -427,6 +430,308 @@ datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)",
             deferRender = TRUE))
 ```
 
+# Tectivirus genes expression
+
+In this section, we modified the tectivirus genes names so that homologous genes could have their expression compared using DESeq2. Besides, we examined their expression using boxplots. The data are presented in **CPM** (counts per million), which indicates how many counts per million come from a given gene.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: tectivirus_genes
+#| code-fold: true
+#| warning: false
+#| message: false
+
+tectivirus <- combine_tectivirus_genes()
+
+tectivirus_counts <- tectivirus$tectivirus_counts
+tectivirus_annotation <- tectivirus$tectivirus_annotation
+
+tectivirus_counts[] <- lapply(tectivirus_counts, function(x) if(is.numeric(x)) ifelse(x %% 1 == 0.5, ceiling(x), round(x)) else x)
+
+dds_tectivirus <- DESeqDataSetFromMatrix(countData = tectivirus_counts, colData = metadata, design = ~ Strain)
+dds_tectivirus <- DESeq(dds_tectivirus)
+dds_tectivirus <- dds_tectivirus[grepl("^(g|dnt)", rownames(dds_tectivirus)), ]
+```
+
+In order to perform the GIL16 vs GIL01 strains contrast, we established a log₂ fold-change (LFC) of ±0.585. This value reflects an increase or decrease in expression of 50%, depending on whether it is positive or negative, respectively.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: contrast_tectivirus_genes
+#| code-fold: true
+
+contrast_tectivirus <- results(dds_tectivirus, contrast = c("Strain", "GIL16", "GIL01"), lfcThreshold = log2(1.5))
+contrast_tectivirus_df <- as.data.frame(contrast_tectivirus)
+
+contrast_tectivirus_df <- contrast_tectivirus_df %>%
+  { x <- .; x$Gene_symbol <- rownames(x); x } %>%
+  left_join(
+    tectivirus_annotation,
+    by = "Gene_symbol"
+  ) %>%
+  rename(
+    Mean_normalized_counts = baseMean,
+    LFC = log2FoldChange,
+    Adjusted_p_value = padj
+  ) %>%
+  dplyr::select(
+    Gene_symbol,
+    Description,
+    Type,
+    Subtype,
+    Source,
+    Mean_normalized_counts,
+    LFC,
+    Adjusted_p_value
+  )
+```
+
+As can be seen in the `summary()` results, 5 upregulated and 1 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: tectivirus_results
+#| code-fold: true
+
+summary(contrast_tectivirus, alpha = 0.05)
+
+datatable(contrast_tectivirus_df[!is.na(contrast_tectivirus_df$Adjusted_p_value) & contrast_tectivirus_df$Adjusted_p_value < 0.05, ],
+          colnames = c("Gene symbol", "Description", "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
+          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
+            dom = "Brftip",
+            buttons = c("copy", "csv", "excel"),
+            fixedColumns = list(leftColumns = 2, rightColumns = 2),
+            scrollX = TRUE,
+            scroller = TRUE,
+            deferRender = TRUE)) %>%
+  formatRound(columns = c("Mean_normalized_counts", "LFC"), digits = 2) %>%
+  formatSignif(columns = "Adjusted_p_value", digits = 3)
+```
+
+## Volcano plot
+
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: volcano_plot_tectivirus
+#| code-fold: true
+
+volcano_plot(contrast_tectivirus_df, phages = TRUE)
+```
+
+## Boxplots
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: cpm
+#| code-fold: true
+
+cpm_df <- as.data.frame(cpm(full_counts))
+```
+
+### GIL01
+
+In GIL01, we found that the most highly expressed gene is GIL01_18, which corresponds to the major capsid protein gene. It is also worth highlighting a de novo transcript identified by StringTie on the negative strand (GIL01-DNT_01), which shows expression levels similar to genome terminal protein (GIL01_04) and DNA polymerase (GIL01_05) genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil01
+#| code-fold: true
+
+gil01_long_cpm <- cpm_df %>%
+  tibble::rownames_to_column("Gene_ID") %>%
+  dplyr::filter(grepl("^GIL01", Gene_ID)) %>%
+  tidyr::pivot_longer(
+    cols = starts_with("GIL01_"),
+    names_to = "Sample",
+    values_to = "CPM"
+  ) %>%
+  dplyr::mutate(CPM_log2 = log2(CPM + 1))
+
+gil01_annotation <- annotation %>%
+  dplyr::filter(grepl("^GIL01", Gene_ID)) %>%
+  dplyr::mutate(
+    Gene_number = as.numeric(sub(".*_(\\d+)$", "\\1", Gene_ID)),
+    Color = dplyr::case_when(
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 1 & Gene_number <= 8  ~ "red",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 9 & Gene_number <= 30 ~ "darkred",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 33 & Gene_number <= 36 ~ "grey",
+      Strand == "-" ~ "blue",
+      TRUE ~ "black"
+    )
+  )
+
+gil01_long_cpm <- gil01_long_cpm %>%
+  dplyr::left_join(
+    gil01_annotation %>%
+      dplyr::select(Gene_ID, Color, Gene_symbol, Description, Subtype),
+    by = "Gene_ID"
+  ) %>%
+  dplyr::mutate(
+    Gene_symbol = ifelse(is.na(Gene_symbol), "", Gene_symbol),
+    Description = ifelse(is.na(Description), "", Description),
+    Subtype = ifelse(is.na(Subtype), "-", Subtype),
+    Gene_ID = factor(
+      Gene_ID,
+      levels = gil01_annotation$Gene_ID[
+        gil01_annotation$Gene_ID %in% Gene_ID
+      ]
+    )
+  )
+
+p <- ggplot(gil01_long_cpm, aes(
+  x = Gene_ID,
+  y = CPM_log2,
+  text = paste(
+    "Gene ID:", Gene_ID,
+    ifelse(
+      Gene_symbol != "",
+      paste0("<br>Gene symbol: ", Gene_symbol),
+      ""
+    ),
+    ifelse(
+      Description != "",
+      paste0("<br>Description: ", Description),
+      ""
+    ),
+    ifelse(
+      Description == "Hypothetical protein",
+      paste0("<br>Phynteny annotation: ", Subtype),
+      ""
+    ),
+    "<br>Sample:", Sample,
+    "<br>Gene expression:", round(CPM_log2, 2)
+  )
+)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(
+    width = 0.25,
+    size = 1.5,
+    alpha = 0.7,
+    aes(color = Color)
+  ) +
+  theme_minimal() +
+  xlab(NULL) +
+  ylab("Gene expression") +
+  scale_y_continuous(limits = c(0, ceiling(max(gil01_long_cpm$CPM_log2, na.rm = TRUE)))) +
+  scale_color_identity() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+ggplotly(p, tooltip = "text")
+```
+
+### GIL16
+
+In the case of GIL16, the results are similar. Again, the major capsid protein gene (GIL16_18) is the most highly expressed. Although there is greater variation between samples in this case, GIL16-DNT_01 exhibits expression levels similar to genome terminal protein (GIL16_04) and DNA polymerase (GIL16_05) genes.
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: gil16
+#| code-fold: true
+
+gil16_long_cpm <- cpm_df %>%
+  tibble::rownames_to_column("Gene_ID") %>%
+  dplyr::filter(grepl("^GIL16", Gene_ID)) %>%
+  tidyr::pivot_longer(
+    cols = starts_with("GIL16_"),
+    names_to = "Sample",
+    values_to = "CPM"
+  ) %>%
+  dplyr::mutate(CPM_log2 = log2(CPM + 1))
+
+gil16_annotation <- annotation %>%
+  dplyr::filter(grepl("^GIL16", Gene_ID)) %>%
+  dplyr::mutate(
+    Gene_number = as.numeric(sub(".*_(\\d+)$", "\\1", Gene_ID)),
+    Color = dplyr::case_when(
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 1 & Gene_number <= 8  ~ "red",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 9 & Gene_number <= 30 ~ "darkred",
+      Strand == "+" & !is.na(Gene_number) & Gene_number >= 33 & Gene_number <= 36 ~ "grey",
+      Strand == "-" ~ "blue",
+      TRUE ~ "black"
+    )
+  )
+
+gil16_long_cpm <- gil16_long_cpm %>%
+  dplyr::left_join(
+    gil16_annotation %>%
+      dplyr::select(Gene_ID, Color, Gene_symbol, Description, Subtype),
+    by = "Gene_ID"
+  ) %>%
+  dplyr::mutate(
+    Gene_symbol = ifelse(is.na(Gene_symbol), "", Gene_symbol),
+    Description = ifelse(is.na(Description), "", Description),
+    Subtype = ifelse(is.na(Subtype), "-", Subtype),
+    Gene_ID = factor(
+      Gene_ID,
+      levels = gil16_annotation$Gene_ID[
+        gil16_annotation$Gene_ID %in% Gene_ID
+      ]
+    )
+  )
+
+p <- ggplot(gil16_long_cpm, aes(
+  x = Gene_ID,
+  y = CPM_log2,
+  text = paste(
+    "Gene ID:", Gene_ID,
+    ifelse(
+      Gene_symbol != "",
+      paste0("<br>Gene symbol: ", Gene_symbol),
+      ""
+    ),
+    ifelse(
+      Description != "",
+      paste0("<br>Description: ", Description),
+      ""
+    ),
+    ifelse(
+      Description == "Hypothetical protein",
+      paste0("<br>Phynteny annotation: ", Subtype),
+      ""
+    ),
+    "<br>Sample:", Sample,
+    "<br>Gene expression:", round(CPM_log2, 2)
+  )
+)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(
+    width = 0.25,
+    size = 1.5,
+    alpha = 0.7,
+    aes(color = Color)
+  ) +
+  theme_minimal() +
+  xlab(NULL) +
+  ylab("Gene expression") +
+  scale_y_continuous(limits = c(0, ceiling(max(gil16_long_cpm$CPM_log2, na.rm = TRUE)))) +
+  scale_color_identity() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+ggplotly(p, tooltip = "text")
+```
+
 # Save results
 
 ```{r}
@@ -436,5 +741,6 @@ datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)",
 #| label: save_results
 #| code-fold: true
 
-create_summary(contrast_name = "GIL16 vs GIL01", rds_name = "gil16_gil01_lysogeny")
+create_summary(contrast_name = "Strains GIL16 vs GIL01", rds_name = "gil16_gil01_lysogeny")
 ```
+
