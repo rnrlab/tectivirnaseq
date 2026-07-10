@@ -436,4 +436,3 @@ datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)",
 
 create_summary(contrast_name = "Time points 60 vs 60-mock", rds_name = "gil01_t60_t60-mock")
 ```
-

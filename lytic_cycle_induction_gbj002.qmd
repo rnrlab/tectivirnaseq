@@ -294,4 +294,3 @@ plotDispEsts(dds)
 saveRDS(counts, file = "lytic_cycle_induction_gbj002_counts.rds")
 saveRDS(metadata, file = "lytic_cycle_induction_gbj002_metadata.rds")
 ```
-

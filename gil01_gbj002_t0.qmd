@@ -432,4 +432,3 @@ datatable(es_de, colnames = c("DE genes", "DE number", "COG", "KEGG", "GO (BP)",
 
 create_summary(contrast_name = "Strains GIL01 vs GBJ002", rds_name = "gil01_gbj002_t0")
 ```
-

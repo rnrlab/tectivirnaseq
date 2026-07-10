@@ -482,4 +482,3 @@ This heatmap reflects the gene ratio on GIL01 clusters within GIL16 clusters. Ag
 
 gil16_gil01_heatmaps$heatmap_columns
 ```
-

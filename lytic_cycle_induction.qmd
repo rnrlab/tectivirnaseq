@@ -695,4 +695,3 @@ saveRDS(metadata, file = "lytic_cycle_induction_metadata.rds")
 saveRDS(gene_coexpression_counts, file = "gene_coexpression_counts.rds")
 saveRDS(metadata %>% filter(!grepl("mock", Sample)) %>% dplyr::select(-MMC) %>% droplevels(), file = "gene_coexpression_metadata.rds")
 ```
-

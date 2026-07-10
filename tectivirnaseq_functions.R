@@ -84,10 +84,10 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
     pivot_longer(cols = -Sample, names_to = "Gene", values_to = "CLR")
 
   meta_df <- metadata %>%
-    dplyr::select(Sample, Time_points) %>%
+    dplyr::select(Sample, Time_point) %>%
     filter(Sample %in% rownames(expression_matrix)) %>%
-    mutate(Time_points = as.numeric(as.character(Time_points))) %>%
-    filter(Time_points %in% time_points)
+    mutate(Time_point = as.numeric(as.character(Time_point))) %>%
+    filter(Time_point %in% time_points)
 
   clu_map <- cluster_gene_table %>%
     dplyr::select(Gene, Cluster) %>%
@@ -96,7 +96,7 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
   dat <- logratio_long %>%
     left_join(meta_df, by = "Sample") %>%
     left_join(clu_map, by = "Gene") %>%
-    filter(!is.na(Cluster), !is.na(Time_points))
+    filter(!is.na(Cluster), !is.na(Time_point))
 
   if (!is.null(clusters)) {
     dat <- dat %>% filter(Cluster %in% clusters)
@@ -107,11 +107,11 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
   dat <- dat %>% mutate(Cluster = factor(Cluster, levels = order))
 
   dat_gene <- dat %>%
-    group_by(Gene, Cluster, Time_points) %>%
+    group_by(Gene, Cluster, Time_point) %>%
     summarise(gene_mean_CLR = mean(CLR), .groups = "drop")
 
   summary_dat <- dat_gene %>%
-    group_by(Cluster, Time_points) %>%
+    group_by(Cluster, Time_point) %>%
     summarise(
       mean_CLR = mean(gene_mean_CLR),
       sd_CLR   = sd(gene_mean_CLR),
@@ -153,7 +153,7 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
       de_score = unique(de_score),
       y_max = max(mean_CLR + ci95),
       y_min = min(mean_CLR - ci95),
-      y_at_x = mean_CLR[Time_points == ((min(time_points) + max(time_points)) / 2)][1],
+      y_at_x = mean_CLR[Time_point == ((min(time_points) + max(time_points)) / 2)][1],
       .groups = "drop"
     ) %>%
     mutate(
@@ -172,18 +172,18 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
   label_clusters_all <- summary_dat %>%
     filter(abs(de_score) > 0.5) %>%
     group_by(Cluster) %>%
-    filter(Time_points == max(Time_points)) %>%
+    filter(Time_point == max(Time_point)) %>%
     ungroup()
   
   all_clusters <- ggplot(summary_dat,
-                         aes(Time_points, mean_CLR, group = Cluster, colour = de_score, fill = de_score)) +
+                         aes(Time_point, mean_CLR, group = Cluster, colour = de_score, fill = de_score)) +
     geom_ribbon(aes(ymin = mean_CLR - ci95, ymax = mean_CLR + ci95),
                 alpha = 0.15, colour = NA) +
     geom_line(linewidth = 0.8) +
     geom_point(size = 1.8) +
     geom_text(
       data = label_clusters_all,
-      aes(Time_points, mean_CLR, label = Cluster, colour = de_score),
+      aes(Time_point, mean_CLR, label = Cluster, colour = de_score),
       hjust = -0.1,
       size = 3,
       show.legend = FALSE
@@ -211,7 +211,7 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
 
   if (!is.null(cluster_colors)) {
     facet_clusters <- ggplot(summary_dat,
-                             aes(Time_points, mean_CLR, group = Cluster,
+                             aes(Time_point, mean_CLR, group = Cluster,
                                  colour = de_score, fill = de_score)) +
       geom_ribbon(aes(ymin = mean_CLR - ci95, ymax = mean_CLR + ci95),
                   alpha = 0.5, colour = NA) +
@@ -259,7 +259,7 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
             axis.title = element_text(face = "bold"),
             axis.title.y = element_text(face = "bold"))
   } else {
-    facet_clusters <- ggplot(summary_dat, aes(Time_points, mean_CLR, group = Cluster)) +
+    facet_clusters <- ggplot(summary_dat, aes(Time_point, mean_CLR, group = Cluster)) +
       geom_ribbon(aes(ymin = mean_CLR - ci95, ymax = mean_CLR + ci95),
                   fill = "steelblue", alpha = 0.18, colour = NA) +
       geom_line(colour = "steelblue4", linewidth = 0.8) +
@@ -1071,25 +1071,25 @@ create_summary <- function(contrast_name = "contrast", rds_name = "result"){
   attr(contrast_summary, "group") <- group
   saveRDS(contrast_summary, file = paste0(prefix, "_contrast_summary.rds"))
 
-  if(exists("contrast_phages", inherits = TRUE)){
+  if(exists("contrast_tectivirus", inherits = TRUE)){
 
-    contrast_phages_summary <- data.frame(
+    contrast_tectivirus_summary <- data.frame(
       Size = c(
-        sum(contrast_phages$Adjusted_p_value < 0.05 &
-              contrast_phages$LFC > log2(1.5), na.rm = TRUE),
-        sum(contrast_phages$Adjusted_p_value < 0.05 &
-              contrast_phages$LFC < -log2(1.5), na.rm = TRUE)
+        sum(contrast_tectivirus$Adjusted_p_value < 0.05 &
+              contrast_tectivirus$LFC > log2(1.5), na.rm = TRUE),
+        sum(contrast_tectivirus$Adjusted_p_value < 0.05 &
+              contrast_tectivirus$LFC < -log2(1.5), na.rm = TRUE)
       ),
       row.names = c("UP", "DOWN"),
       check.names = FALSE
     )
 
-    attr(contrast_phages_summary, "contrast") <- contrast_name
-    attr(contrast_phages_summary, "group") <- group
+    attr(contrast_tectivirus_summary, "contrast") <- contrast_name
+    attr(contrast_tectivirus_summary, "group") <- group
 
     saveRDS(
-      contrast_phages_summary,
-      file = paste0(prefix, "_contrast_phages_summary.rds")
+      contrast_tectivirus_summary,
+      file = paste0(prefix, "_contrast_tectivirus_summary.rds")
     )
   }
 
@@ -1134,50 +1134,50 @@ create_summary <- function(contrast_name = "contrast", rds_name = "result"){
   attr(de_genes,"group") <- group
   saveRDS(de_genes, file = paste0(prefix, "_de_genes.rds"))
 
-  if(exists("contrast_phages_df", inherits = TRUE) &&
-    exists("contrast_phages", inherits = TRUE)){
+  if(exists("contrast_tectivirus_df", inherits = TRUE) &&
+    exists("contrast_tectivirus", inherits = TRUE)){
 
-    contrast_phages_df_obj <- get("contrast_phages_df", inherits = TRUE)
-    contrast_phages_obj <- get("contrast_phages", inherits = TRUE)
+    contrast_tectivirus_df_obj <- get("contrast_tectivirus_df", inherits = TRUE)
+    contrast_tectivirus_obj <- get("contrast_tectivirus", inherits = TRUE)
 
-    up_phages <- rownames(
-      contrast_phages_obj[
-        contrast_phages_obj$Adjusted_p_value < 0.05 &
-          contrast_phages_obj$LFC > log2(1.5),
+    up_tectivirus <- rownames(
+      contrast_tectivirus_obj[
+        contrast_tectivirus_obj$padj < 0.05 &
+          contrast_tectivirus_obj$log2FoldChange > log2(1.5),
       ]
     )
 
-    down_phages <- rownames(
-      contrast_phages_obj[
-        contrast_phages_obj$Adjusted_p_value < 0.05 &
-          contrast_phages_obj$LFC < -log2(1.5),
+    down_tectivirus <- rownames(
+      contrast_tectivirus_obj[
+        contrast_tectivirus_obj$padj < 0.05 &
+          contrast_tectivirus_obj$log2FoldChange < -log2(1.5),
       ]
     )
 
-    up_phages_df <- contrast_phages_df_obj[
-      contrast_phages_df_obj$Gene_symbol %in% up_phages,
+    up_tectivirus_df <- contrast_tectivirus_df_obj[
+      contrast_tectivirus_df_obj$Gene_symbol %in% up_tectivirus,
       c("Gene_symbol", "LFC")
     ]
 
-    down_phages_df <- contrast_phages_df_obj[
-      contrast_phages_df_obj$Gene_symbol %in% down_phages,
+    down_tectivirus_df <- contrast_tectivirus_df_obj[
+      contrast_tectivirus_df_obj$Gene_symbol %in% down_tectivirus,
       c("Gene_symbol", "LFC")
     ]
 
-    colnames(up_phages_df)[1] <- "Gene_ID"
-    colnames(down_phages_df)[1] <- "Gene_ID"
+    colnames(up_tectivirus_df)[1] <- "Gene_ID"
+    colnames(down_tectivirus_df)[1] <- "Gene_ID"
 
-    de_phages_genes <- list(
-      up_genes = up_phages_df,
-      down_genes = down_phages_df
+    de_tectivirus_genes <- list(
+      up_genes = up_tectivirus_df,
+      down_genes = down_tectivirus_df
     )
 
-    attr(de_phages_genes, "contrast") <- contrast_name
-    attr(de_phages_genes, "group") <- group
+    attr(de_tectivirus_genes, "contrast") <- contrast_name
+    attr(de_tectivirus_genes, "group") <- group
 
     saveRDS(
-      de_phages_genes,
-      file = paste0(prefix, "_de_phages_genes.rds")
+      de_tectivirus_genes,
+      file = paste0(prefix, "_de_tectivirus_genes.rds")
     )
   }
 
@@ -1715,7 +1715,7 @@ networks_attributes_differences <- function(data, names, gene_order, ranking_att
 load_summaries <- function(path = "."){
   files <- list.files(
     path,
-    pattern = ".*_(contrast|enrichment)_summary\\.rds$|.*_de_genes\\.rds$",
+    pattern = ".*_(contrast|enrichment)_summary\\.rds$|.*_de_genes\\.rds$|.*_de_tectivirus_genes\\.rds$",
     full.names = TRUE
   )
   out <- list()
@@ -1726,6 +1726,183 @@ load_summaries <- function(path = "."){
     out[[name]] <- obj
   }
   invisible(out)
+}
+
+build_functional_enrichments <- function(
+  dir = ".",
+  envir = .GlobalEnv,
+  overwrite = TRUE
+){
+
+  cog_files <- list.files(
+    path = dir,
+    pattern = "_cog\\.rds$",
+    full.names = TRUE
+  )
+
+  kegg_files <- list.files(
+    path = dir,
+    pattern = "_kegg\\.rds$",
+    full.names = TRUE
+  )
+
+  append_obj <- function(lst, obj){
+
+    if(is.null(obj)) return(lst)
+
+    if(!is.data.frame(obj)) return(lst)
+
+    if(nrow(obj) == 0) return(lst)
+
+    lst[[length(lst) + 1]] <- obj
+    lst
+  }
+
+  lysogeny_cog_list <- list()
+  intra_cog_list <- list()
+  inter_cog_list <- list()
+
+  for(f in cog_files){
+
+    obj <- readRDS(f)
+    grp <- attr(obj, "group")
+
+    if(identical(grp, "Lysogeny")){
+
+      lysogeny_cog_list <- append_obj(
+        lysogeny_cog_list,
+        obj
+      )
+
+    } else if(grp %in% c(
+      "GBJ002",
+      "GIL01",
+      "GIL16"
+    )){
+
+      intra_cog_list <- append_obj(
+        intra_cog_list,
+        obj
+      )
+
+    } else if(grp %in% c(
+      "t0",
+      "t10",
+      "t30",
+      "t60",
+      "t60-mock"
+    )){
+
+      inter_cog_list <- append_obj(
+        inter_cog_list,
+        obj
+      )
+    }
+  }
+
+  lysogeny_kegg_list <- list()
+  intra_kegg_list <- list()
+  inter_kegg_list <- list()
+
+  for(f in kegg_files){
+
+    obj <- readRDS(f)
+    grp <- attr(obj, "group")
+
+    if(identical(grp, "Lysogeny")){
+
+      lysogeny_kegg_list <- append_obj(
+        lysogeny_kegg_list,
+        obj
+      )
+
+    } else if(grp %in% c(
+      "GBJ002",
+      "GIL01",
+      "GIL16"
+    )){
+
+      intra_kegg_list <- append_obj(
+        intra_kegg_list,
+        obj
+      )
+
+    } else if(grp %in% c(
+      "t0",
+      "t10",
+      "t30",
+      "t60",
+      "t60-mock"
+    )){
+
+      inter_kegg_list <- append_obj(
+        inter_kegg_list,
+        obj
+      )
+    }
+  }
+
+  lysogeny_cog <- if(length(lysogeny_cog_list)){
+    do.call(rbind, lysogeny_cog_list)
+  } else {
+    data.frame()
+  }
+
+  intra_cog <- if(length(intra_cog_list)){
+    do.call(rbind, intra_cog_list)
+  } else {
+    data.frame()
+  }
+
+  inter_cog <- if(length(inter_cog_list)){
+    do.call(rbind, inter_cog_list)
+  } else {
+    data.frame()
+  }
+
+  lysogeny_kegg <- if(length(lysogeny_kegg_list)){
+    do.call(rbind, lysogeny_kegg_list)
+  } else {
+    data.frame()
+  }
+
+  intra_kegg <- if(length(intra_kegg_list)){
+    do.call(rbind, intra_kegg_list)
+  } else {
+    data.frame()
+  }
+
+  inter_kegg <- if(length(inter_kegg_list)){
+    do.call(rbind, inter_kegg_list)
+  } else {
+    data.frame()
+  }
+
+  if(overwrite || !exists("lysogeny_cog", envir = envir, inherits = FALSE)){
+    assign("lysogeny_cog", lysogeny_cog, envir = envir)
+  }
+
+  if(overwrite || !exists("intra_cog", envir = envir, inherits = FALSE)){
+    assign("intra_cog", intra_cog, envir = envir)
+  }
+
+  if(overwrite || !exists("inter_cog", envir = envir, inherits = FALSE)){
+    assign("inter_cog", inter_cog, envir = envir)
+  }
+
+  if(overwrite || !exists("lysogeny_kegg", envir = envir, inherits = FALSE)){
+    assign("lysogeny_kegg", lysogeny_kegg, envir = envir)
+  }
+
+  if(overwrite || !exists("intra_kegg", envir = envir, inherits = FALSE)){
+    assign("intra_kegg", intra_kegg, envir = envir)
+  }
+
+  if(overwrite || !exists("inter_kegg", envir = envir, inherits = FALSE)){
+    assign("inter_kegg", inter_kegg, envir = envir)
+  }
+
+  invisible(NULL)
 }
 
 combine_summaries <- function(type = c("contrast", "enrichment"), group = c("strains", "time_points"), filter = FALSE){
@@ -1802,6 +1979,9 @@ combine_summaries <- function(type = c("contrast", "enrichment"), group = c("str
   
   valid_levels <- intersect(desired_order, unique(as.character(out$Contrast)))
   out$Contrast <- factor(out$Contrast, levels = valid_levels)
+
+  out <- out[order(out$Group, out$Contrast, out$DE), ]
+  rownames(out) <- NULL
   
   out
 }
@@ -1835,7 +2015,8 @@ venn_contrasts <- function(group, de_genes = c("UP", "DOWN"), label_alpha) {
   
   ggVennDiagram(gene_sets, label_alpha = label_alpha) +
     scale_fill_gradient(low = "grey90", high = high_color, name = ifelse(de_genes == "UP", "UP genes", "DOWN genes")) +
-    theme(legend.title = element_text(face = "bold"))
+    coord_cartesian(clip = "off") +
+    theme(legend.title = element_text(face = "bold"), plot.margin = margin(30, 90, 30, 90))
 }
 
 upset_contrasts <- function(group, de_genes = c("UP", "DOWN"), order = NULL) {
@@ -1863,7 +2044,7 @@ upset_contrasts <- function(group, de_genes = c("UP", "DOWN"), order = NULL) {
   } else {
     set_names <- vapply(objects, function(x) {
       grp <- attr(x, "group")
-      grp_label <- sub("^t", "Time_points ", grp)
+      grp_label <- sub("^t", "Time point ", grp)
       contrast <- attr(x, "contrast")
       paste(grp_label, contrast, sep = " - ")
     }, character(1))
@@ -2007,6 +2188,102 @@ create_de_genes_table <- function(group = c("strains", "time_points"), filter = 
   final_df
 }
 
+create_de_tectivirus_genes_table <- function(){
+
+  counts <- readRDS(file = "lysogeny_counts.rds")
+  
+  valid_vals <- c(
+    "Lysogeny",
+    "t0",
+    "t10",
+    "t30",
+    "t60",
+    "t60-mock"
+  )
+
+  tectivirus_annotation <- combine_tectivirus_genes()$tectivirus_annotation
+
+  objs <- ls(.GlobalEnv, pattern = "_de_tectivirus_genes$")
+
+  obj_groups <- sapply(
+    objs,
+    function(nm) attr(get(nm, envir = .GlobalEnv), "group")
+  )
+
+  selected <- objs[obj_groups %in% valid_vals]
+
+  if(length(selected) == 0) return(NULL)
+
+  dfs <- list()
+
+  for(nm in selected){
+
+    obj <- get(nm, envir = .GlobalEnv)
+    grp <- attr(obj, "group")
+
+    df_up <- obj$up_genes
+    df_down <- obj$down_genes
+
+    df <- rbind(df_up, df_down)
+
+    if(nrow(df) == 0) next
+
+    colnames(df) <- c("Gene_symbol", "LFC")
+    df$Group <- grp
+
+    dfs[[nm]] <- df
+  }
+
+  if(length(dfs) == 0) return(NULL)
+
+  long_df <- do.call(rbind, dfs)
+
+  wide_df <- reshape(
+    long_df,
+    timevar = "Group",
+    idvar = "Gene_symbol",
+    direction = "wide"
+  )
+
+  colnames(wide_df) <- sub("^LFC\\.", "", colnames(wide_df))
+
+  final_df <- merge(
+    tectivirus_annotation[, c("Gene_symbol", "Description")],
+    wide_df,
+    by = "Gene_symbol",
+    all.x = TRUE
+  )
+
+  order_idx <- match(
+    final_df$Gene_symbol,
+    tectivirus_annotation$Gene_symbol
+  )
+
+  final_df <- final_df[order(order_idx), ]
+
+  lfc_cols <- intersect(valid_vals, colnames(final_df))
+
+  keep <- rowSums(!is.na(final_df[, lfc_cols, drop = FALSE])) > 0
+
+  final_df <- final_df[keep, ]
+
+  missing_cols <- setdiff(valid_vals, colnames(final_df))
+
+  for(col in missing_cols){
+    final_df[[col]] <- NA_real_
+  }
+
+  final_df <- final_df[, c(
+    "Gene_symbol",
+    "Description",
+    valid_vals
+  )]
+
+  rownames(final_df) <- NULL
+
+  final_df
+}
+
 # Other functions
 
 mark_pBtic235_genes <- function(genes, annotation) {
@@ -2020,14 +2297,14 @@ mark_pBtic235_genes <- function(genes, annotation) {
   })
 }
 
-volcano_plot <- function(contrast_df, limits = NULL, phages = FALSE) {
+volcano_plot <- function(contrast_df, limits = NULL, tectivirus = FALSE) {
 
   if (is.null(limits)) {
     max_lfc <- ceiling(max(abs(contrast_df$LFC), na.rm = TRUE))
     limits <- c(-max_lfc, max_lfc)
   }
 
-  if (phages) {
+  if (tectivirus) {
     contrast_df$Gene_ID <- contrast_df$Gene_symbol
   }
 
@@ -2049,7 +2326,7 @@ volcano_plot <- function(contrast_df, limits = NULL, phages = FALSE) {
       )
     )
 
-  if (!phages) {
+  if (!tectivirus) {
     contrast_df <- contrast_df %>%
       dplyr::left_join(
         annotation %>% dplyr::select(Gene_ID, Element),
@@ -2072,7 +2349,7 @@ volcano_plot <- function(contrast_df, limits = NULL, phages = FALSE) {
 
   contrast_df <- contrast_df %>%
     dplyr::mutate(
-      hover_text = if (phages) {
+      hover_text = if (tectivirus) {
         paste0(
           ifelse(!is.na(Name_display), Name_display, ""),
           "<br>LFC: ", round(LFC, 2),
@@ -2088,7 +2365,7 @@ volcano_plot <- function(contrast_df, limits = NULL, phages = FALSE) {
       }
     )
 
-  if (phages) {
+  if (tectivirus) {
 
     p <- ggplot(
       data = contrast_df,
@@ -2237,21 +2514,25 @@ combine_tectivirus_genes <- function() {
       Source
     )
 
-  dnt_annotation <- annotation %>%
-    dplyr::filter(grepl("^GIL01-DNT_", Gene_ID)) %>%
-    dplyr::slice(1) %>%
+  tectivirus_annotation <- homology_map %>%
+    dplyr::left_join(
+      annotation %>%
+        dplyr::select(
+          Gene_ID,
+          Description,
+          Type,
+          Subtype,
+          Source
+        ),
+      by = c("Gene_ID_GIL01" = "Gene_ID")
+    ) %>%
     dplyr::transmute(
-      Gene_symbol = "dnt",
+      Gene_symbol = gene_name,
       Description,
       Type,
       Subtype,
       Source
     )
-
-  tectivirus_annotation <- dplyr::bind_rows(
-    tectivirus_annotation,
-    dnt_annotation
-  )
 
   tectivirus_counts <- do.call(
     rbind,

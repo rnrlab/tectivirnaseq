@@ -37,6 +37,7 @@ In this code chunk, we load the RDS objects and the annotation file.
 #| code-fold: true
 
 load_summaries()
+build_functional_enrichments()
 
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 ```
@@ -67,7 +68,7 @@ This plot shows the number of DE genes, both upregulated and downregulated, in e
 #| label: lysogeny_cs
 #| code-fold: true
 #| warning: false
-#| fig-width: 10
+#| fig-width: 12
 #| fig-height: 6
 
 lysogeny_contrasts_size <- lysogeny_contrasts %>%
@@ -88,7 +89,7 @@ ggplot(lysogeny_contrasts_size, aes(x = Contrast, y = Size, fill = DE)) +
   scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
   ylim(0, 600) +
   theme_minimal(base_size = 14) +
-  labs(x = "Contrast", y = "DE genes", fill = "DE")
+  labs(x = NULL, y = "DE genes", fill = "DE")
 ```
 
 This plot shows the number of enrichments found in each category. Most enrichments are found in the MF and CC categories of GO, while the fewest are found in the EC numbers. Again, the GIL01 vs GBJ002 contrast has the fewest enrichments, while the GIL16 vs GBJ002 contrast has the most.
@@ -129,7 +130,7 @@ ggplot(lysogeny_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) 
   scale_y_continuous(limits = c(0, 40), expand = expansion(mult = c(0, 0.05))) +
   theme_minimal(base_size = 14) +
   theme(strip.text = element_text(face = "bold")) +
-  labs(x = "Enrichment category", y = "Enrichments", fill = "DE")
+  labs(x = NULL, y = "Enrichments", fill = "DE")
 ```
 
 ## Venn diagrams
@@ -141,8 +142,8 @@ ggplot(lysogeny_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) 
 #| label: venn_lysogeny
 #| code-fold: true
 #| warning: false
-#| fig-width: 10
-#| fig-height: 6
+#| fig-width: 8
+#| fig-height: 5
 
 venn_contrasts(group = "Lysogeny", de_genes = "UP", label_alpha = 0)
 venn_contrasts(group = "Lysogeny", de_genes = "DOWN", label_alpha = 0.25)
@@ -159,7 +160,6 @@ venn_contrasts(group = "Lysogeny", de_genes = "DOWN", label_alpha = 0.25)
 #| fig-width: 10
 #| fig-height: 6
 
-lysogeny_cog <- read.csv("lysogeny_cog.tsv", sep = "\t", header = TRUE)
 cog_names <- read.csv("cog_name.tsv", sep = "\t", header = TRUE)
 
 lysogeny_cog <- lysogeny_cog %>%
@@ -182,9 +182,7 @@ ordered_categories <- lysogeny_cog %>%
   pull(COG)
 
 lysogeny_cog$COG <- factor(lysogeny_cog$COG, levels = ordered_categories)
-
-group_order <- lysogeny_cog$Group[!duplicated(lysogeny_cog$Group)]
-lysogeny_cog$Group <- factor(lysogeny_cog$Group, levels = group_order)
+lysogeny_cog$Group <- factor(lysogeny_cog$Group, levels = c("Strains GIL01 vs GBJ002", "Strains GIL16 vs GBJ002", "Strains GIL16 vs GIL01"))
 
 lysogeny_cog <- lysogeny_cog %>%
   mutate(
@@ -254,9 +252,9 @@ ggplot() +
   ) +
   scale_shape_manual(
     values = c(
-      "GIL01 vs GBJ002" = 21,
-      "GIL16 vs GBJ002" = 22,
-      "GIL16 vs GIL01" = 23
+      "Strains GIL01 vs GBJ002" = 21,
+      "Strains GIL16 vs GBJ002" = 22,
+      "Strains GIL16 vs GIL01" = 23
     )
   ) +
   labs(
@@ -286,7 +284,6 @@ ggplot() +
 #| fig-width: 10
 #| fig-height: 6
 
-lysogeny_kegg <- read.csv("lysogeny_kegg.tsv", sep = "\t", header = TRUE)
 btn_pathways <- read.csv("btn_pathways.tsv", sep = "\t", header = TRUE)
 
 lysogeny_kegg <- lysogeny_kegg %>%
@@ -307,9 +304,7 @@ ordered_categories <- lysogeny_kegg %>%
   pull(KEGG)
 
 lysogeny_kegg$KEGG <- factor(lysogeny_kegg$KEGG, levels = ordered_categories)
-
-group_order <- lysogeny_kegg$Group[!duplicated(lysogeny_kegg$Group)]
-lysogeny_kegg$Group <- factor(lysogeny_kegg$Group, levels = group_order)
+lysogeny_kegg$Group <- factor(lysogeny_kegg$Group, levels = c("Strains GIL01 vs GBJ002", "Strains GIL16 vs GBJ002", "Strains GIL16 vs GIL01"))
 
 lysogeny_kegg <- lysogeny_kegg %>%
   mutate(
@@ -380,9 +375,9 @@ ggplot() +
   ) +
   scale_shape_manual(
     values = c(
-      "GIL01 vs GBJ002" = 21,
-      "GIL16 vs GBJ002" = 22,
-      "GIL16 vs GIL01" = 23
+      "Strains GIL01 vs GBJ002" = 21,
+      "Strains GIL16 vs GBJ002" = 22,
+      "Strains GIL16 vs GIL01" = 23
     )
   ) +
   labs(
@@ -495,7 +490,7 @@ This plot shows the number of DE genes, both upregulated and downregulated, in e
 #| error: true
 #| label: intra_strain_time_course_cs
 #| code-fold: true
-#| fig-width: 10
+#| fig-width: 12
 #| fig-height: 8
 
 intra_strain_time_course_contrasts_size <- intra_strain_time_course_contrasts %>%
@@ -565,7 +560,7 @@ ggplot(intra_strain_time_course_contrasts_enrichments, aes(x = Category, y = Cou
     strip.text = element_text(face = "bold"),
     axis.text.x = element_text(angle = 90, vjust = 0.5)
   ) +
-  labs(x = "Enrichment category", y = "Enrichments", fill = "DE")
+  labs(x = NULL, y = "Enrichments", fill = "DE")
 ```
 
 ## Upset plots
@@ -640,8 +635,6 @@ upset_contrasts(group = "GIL16", de_genes = "DOWN", order = c(
 #| fig-width: 14
 #| fig-height: 6
 
-intra_cog <- read.csv("intra_cog.tsv", sep = "\t", header = TRUE)
-
 intra_cog <- intra_cog %>%
   rename(Number = DE) %>%
   mutate(
@@ -662,9 +655,7 @@ ordered_categories <- intra_cog %>%
   pull(COG)
 
 intra_cog$COG <- factor(intra_cog$COG, levels = ordered_categories)
-
-group_order <- intra_cog$Group[!duplicated(intra_cog$Group)]
-intra_cog$Group <- factor(intra_cog$Group, levels = group_order)
+intra_cog$Group <- factor(intra_cog$Group, levels = c("Time points 10 vs 0", "Time points 30 vs 0", "Time points 60 vs 0", "Time points 60 vs 60-mock", "Time points 60-mock vs 0"))
 
 intra_cog <- intra_cog %>%
   mutate(
@@ -677,7 +668,7 @@ intra_cog <- intra_cog %>%
   )
 
 line_data <- intra_cog %>%
-  distinct(COG, DE, Lysogen)
+  distinct(COG, DE, Strain)
 
 ggplot() +
   geom_hline(
@@ -724,7 +715,7 @@ ggplot() +
       shape = Group
     )
   ) +
-  facet_wrap(~ Lysogen) +
+  facet_wrap(~ Strain) +
   scale_x_continuous(
     limits = c(0, 1),
     breaks = c(0, 0.25, 0.5, 0.75, 1),
@@ -775,8 +766,6 @@ ggplot() +
 #| fig-width: 14
 #| fig-height: 6
 
-intra_kegg <- read.csv("intra_kegg.tsv", sep = "\t", header = TRUE)
-
 intra_kegg <- intra_kegg %>%
   rename(Number = DE) %>%
   mutate(
@@ -795,9 +784,7 @@ ordered_categories <- intra_kegg %>%
   pull(KEGG)
 
 intra_kegg$KEGG <- factor(intra_kegg$KEGG, levels = ordered_categories)
-
-group_order <- intra_kegg$Group[!duplicated(intra_kegg$Group)]
-intra_kegg$Group <- factor(intra_kegg$Group, levels = group_order)
+intra_kegg$Group <- factor(intra_kegg$Group, levels = c("Time points 10 vs 0", "Time points 30 vs 0", "Time points 60 vs 0", "Time points 60 vs 60-mock", "Time points 60-mock vs 0"))
 
 intra_kegg <- intra_kegg %>%
   mutate(
@@ -810,7 +797,7 @@ intra_kegg <- intra_kegg %>%
   )
 
 line_data <- intra_kegg %>%
-  distinct(KEGG, DE, Lysogen)
+  distinct(KEGG, DE, Strain)
 
 ggplot() +
   geom_hline(
@@ -857,7 +844,7 @@ ggplot() +
       shape = Group
     )
   ) +
-  facet_wrap(~ Lysogen) +
+  facet_wrap(~ Strain) +
   scale_x_continuous(
     limits = c(0, 1),
     breaks = c(0, 0.25, 0.5, 0.75, 1),
@@ -1020,11 +1007,12 @@ ggplot(inter_strain_time_course_contrasts_size, aes(x = Group, y = Size, fill = 
     size = 4
   ) +
   scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
+  scale_x_discrete(labels = c(0, 10, 30, 60, "60-mock")) +
   facet_wrap(~ Contrast, ncol = 1) +
   ylim(0, 700) +
   theme_minimal(base_size = 14) +
   theme(strip.text = element_text(face = "bold")) +
-  labs(x = "Time points", y = "DE genes", fill = "DE")
+  labs(x = "Time points (min)", y = "DE genes", fill = "DE")
 ```
 
 This plot shows the number of enrichments found in each category. Most enrichments, as in the previous plot, are found at late times in the contrasts of GBJ002 vs GIL01 and GIL16. In contrast, the differences between both strains with tectivirus, although they exist, are minimal and are only found at the 30 and 60-mock times.
@@ -1062,14 +1050,20 @@ ggplot(inter_strain_time_course_contrasts_enrichments, aes(x = Category, y = Cou
   ) +
   scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
   scale_x_discrete(labels = c("COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)")) +
-  facet_grid(Contrast ~ Group) +
+  facet_grid(Contrast ~ Group,
+    labeller = labeller(Group =
+      c("t0" = "Time point 0",
+        "t10" = "Time point 10",
+        "t30" = "Time point 30",
+        "t60" = "Time point 60",
+        "t60-mock" = "Time point 60-mock"))) +
   scale_y_continuous(limits = c(0, 60), expand = expansion(mult = c(0, 0.05))) +
   theme_minimal(base_size = 14) +
   theme(
     strip.text = element_text(face = "bold"),
     axis.text.x = element_text(angle = 90, vjust = 0.5)
   ) +
-  labs(x = "Enrichment category", y = "Enrichments", fill = "DE")
+  labs(x = NULL, y = "Enrichments", fill = "DE")
 ```
 
 ## Upset plots
@@ -1085,27 +1079,27 @@ ggplot(inter_strain_time_course_contrasts_enrichments, aes(x = Category, y = Cou
 #| fig-height: 6
 
 upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "UP", order = c(
-  "Time point 30 - GIL01 vs GBJ002",
-  "Time point 30 - GIL16 vs GBJ002",
-  "Time point 30 - GIL16 vs GIL01",
-  "Time point 60 - GIL01 vs GBJ002",
-  "Time point 60 - GIL16 vs GBJ002",
-  "Time point 60 - GIL16 vs GIL01",
-  "Time point 60-mock - GIL01 vs GBJ002",
-  "Time point 60-mock - GIL16 vs GBJ002",
-  "Time point 60-mock - GIL16 vs GIL01"
+  "Time point 30 - Strains GIL01 vs GBJ002",
+  "Time point 30 - Strains GIL16 vs GBJ002",
+  "Time point 30 - Strains GIL16 vs GIL01",
+  "Time point 60 - Strains GIL01 vs GBJ002",
+  "Time point 60 - Strains GIL16 vs GBJ002",
+  "Time point 60 - Strains GIL16 vs GIL01",
+  "Time point 60-mock - Strains GIL01 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GIL01"
 ))
 
 upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "DOWN", order = c(
-  "Time point 30 - GIL01 vs GBJ002",
-  "Time point 30 - GIL16 vs GBJ002",
-  "Time point 30 - GIL16 vs GIL01",
-  "Time point 60 - GIL01 vs GBJ002",
-  "Time point 60 - GIL16 vs GBJ002",
-  "Time point 60 - GIL16 vs GIL01",
-  "Time point 60-mock - GIL01 vs GBJ002",
-  "Time point 60-mock - GIL16 vs GBJ002",
-  "Time point 60-mock - GIL16 vs GIL01"
+  "Time point 30 - Strains GIL01 vs GBJ002",
+  "Time point 30 - Strains GIL16 vs GBJ002",
+  "Time point 30 - Strains GIL16 vs GIL01",
+  "Time point 60 - Strains GIL01 vs GBJ002",
+  "Time point 60 - Strains GIL16 vs GBJ002",
+  "Time point 60 - Strains GIL16 vs GIL01",
+  "Time point 60-mock - Strains GIL01 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GIL01"
 ))
 ```
 
@@ -1120,13 +1114,11 @@ upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "DOWN", order = 
 #| fig-width: 10
 #| fig-height: 6
 
-inter_cog <- read.csv("inter_cog.tsv", sep = "\t", header = TRUE)
-
 inter_cog <- inter_cog %>%
   rename(Number = DE) %>%
   mutate(
     DE = Direction,
-    Group = paste0(gsub(" ", "_", Contrast), "_", Time),
+    Group = paste0("Time point ", Time_point, " - ", Contrast),
     COG_letter = str_extract(COG, "\\(([A-Z])\\)") %>% str_remove_all("[\\(\\)]"),
     minus_log10_p = -log10(p)
   )
@@ -1142,9 +1134,13 @@ ordered_categories <- inter_cog %>%
   pull(COG)
 
 inter_cog$COG <- factor(inter_cog$COG, levels = ordered_categories)
-
-group_order <- inter_cog$Group[!duplicated(inter_cog$Group)]
-inter_cog$Group <- factor(inter_cog$Group, levels = group_order)
+inter_cog$Group <- factor(inter_cog$Group, levels = c(
+  "Time point 30 - Strains GIL16 vs GBJ002",
+  "Time point 30 - Strains GIL16 vs GIL01",
+  "Time point 60 - Strains GIL01 vs GBJ002",
+  "Time point 60 - Strains GIL16 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GIL01"))
 
 inter_cog <- inter_cog %>%
   mutate(
@@ -1236,13 +1232,11 @@ ggplot() +
 #| fig-width: 10
 #| fig-height: 6
 
-inter_kegg <- read.csv("inter_kegg.tsv", sep = "\t", header = TRUE)
-
 inter_kegg <- inter_kegg %>%
   rename(Number = DE) %>%
   mutate(
     DE = Direction,
-    Group = paste0(gsub(" ", "_", Contrast), "_", Time),
+    Group = paste0("Time point ", Time_point, " - ", Contrast),
     minus_log10_p = -log10(p)
   )
 
@@ -1256,9 +1250,15 @@ ordered_categories <- inter_kegg %>%
   pull(KEGG)
 
 inter_kegg$KEGG <- factor(inter_kegg$KEGG, levels = ordered_categories)
-
-group_order <- inter_kegg$Group[!duplicated(inter_kegg$Group)]
-inter_kegg$Group <- factor(inter_kegg$Group, levels = group_order)
+inter_kegg$Group <- factor(inter_kegg$Group, levels = c(
+  "Time point 10 - Strains GIL16 vs GBJ002",
+  "Time point 30 - Strains GIL01 vs GBJ002",
+  "Time point 30 - Strains GIL16 vs GBJ002",
+  "Time point 30 - Strains GIL16 vs GIL01",
+  "Time point 60 - Strains GIL01 vs GBJ002",
+  "Time point 60 - Strains GIL16 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GBJ002",
+  "Time point 60-mock - Strains GIL16 vs GIL01"))
 
 inter_kegg <- inter_kegg %>%
   mutate(
@@ -1322,7 +1322,7 @@ ggplot() +
   scale_fill_viridis_c(limits = c(0, 31)) +
   scale_colour_viridis_c(limits = c(0, 31), guide = "none") +
   scale_size_continuous(limits = c(1, 50), breaks = c(0, 5, 10, 20, 30)) +
-  scale_shape_manual(values = c(12, 21, 22, 23, 8, 24, 25)) +
+  scale_shape_manual(values = c(4, 21, 22, 23, 24, 8, 25, 10)) +
   labs(
     x = "Gene ratio",
     y = "KEGG subcategories",
@@ -1392,6 +1392,75 @@ datatable(inter_de_genes, container = sketch, rownames = FALSE,
   formatRound(columns = 4:ncol(inter_de_genes), digits = 2) %>%
   formatStyle(columns = 4:ncol(inter_de_genes), backgroundColor = styleInterval(brks, clrs)) %>%
   formatStyle(columns = c(1, 2, 4:ncol(inter_de_genes)), `text-align` = "center")
+
+tectivirus_de_table <- create_de_tectivirus_genes_table()
+
+colnames(tectivirus_de_table) <- c("Gene symbol", "Description", "Lysogeny", "Time point 0", "Time point 10", "Time point 30", "Time point 60", "Time point 60-mock")
+
+max_abs <- ceiling(
+  max(
+    abs(tectivirus_de_table[, 3:ncol(tectivirus_de_table)]),
+    na.rm = TRUE
+  )
+)
+
+brks <- seq(-max_abs, max_abs, length.out = 50)
+
+clrs <- colorRampPalette(
+  c("#5A8AC6", "white", "#F8696B")
+)(length(brks) + 1)
+
+sketch <- withTags(
+  table(
+    class = "display",
+    thead(
+      tr(
+        th(
+          colspan = 2,
+          style = "text-align: center; font-weight: bold;",
+          "Gene annotation"
+        ),
+        th(
+          colspan = 6,
+          style = "text-align: center; font-weight: bold;",
+          "Strains GIL16 vs GIL01 contrasts"
+        )
+      ),
+      tr(
+        lapply(
+          colnames(tectivirus_de_table),
+          function(x) th(style = "text-align: center;", x)
+        )
+      )
+    )
+  )
+)
+
+datatable(
+  tectivirus_de_table,
+  container = sketch,
+  rownames = FALSE,
+  filter = "top",
+  extensions = c("Buttons", "FixedColumns", "Scroller"),
+  options = list(
+    dom = "Brftip",
+    buttons = c("copy", "csv", "excel"),
+    fixedColumns = list(leftColumns = 1),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE
+  )
+) %>%
+  formatRound(columns = 3:ncol(tectivirus_de_table), digits = 2) %>%
+  formatStyle(
+    columns = 3:ncol(tectivirus_de_table),
+    backgroundColor = styleInterval(brks, clrs)
+  ) %>%
+  formatStyle(
+    columns = c(1, 3:ncol(tectivirus_de_table)),
+    `text-align` = "center"
+  )
 ```
 
 ## Enrichments summary
@@ -1416,4 +1485,3 @@ datatable(inter_strain_time_course_enrichments, rownames = FALSE, colnames = c("
             scroller = TRUE,
             deferRender = TRUE))
 ```
-

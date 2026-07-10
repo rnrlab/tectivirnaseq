@@ -477,4 +477,3 @@ datatable(na_diff_neg$sum_summary, rownames = FALSE,
             deferRender = TRUE)) %>%
           formatRound(columns = c("sum_pair", "sum_regarding_gbj002", "sum_regarding_gil01", "sum_regarding_gil16"), digits = 3)
 ```
-

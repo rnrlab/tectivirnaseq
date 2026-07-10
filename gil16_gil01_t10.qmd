@@ -519,7 +519,7 @@ A volcano plot displays each gene according to its LFC on the x-axis and the sta
 #| label: volcano_plot_tectivirus
 #| code-fold: true
 
-volcano_plot(contrast_tectivirus_df, phages = TRUE)
+volcano_plot(contrast_tectivirus_df, tectivirus = TRUE)
 ```
 
 ## Boxplots
@@ -549,7 +549,7 @@ gil01_long_cpm <- cpm_df %>%
   tibble::rownames_to_column("Gene_ID") %>%
   dplyr::filter(grepl("^GIL01", Gene_ID)) %>%
   tidyr::pivot_longer(
-    cols = starts_with("GIL01_t10"),
+    cols = matches("^GIL01_t10_(I|II|III)$"),
     names_to = "Sample",
     values_to = "CPM"
   ) %>%
@@ -645,7 +645,7 @@ gil16_long_cpm <- cpm_df %>%
   tibble::rownames_to_column("Gene_ID") %>%
   dplyr::filter(grepl("^GIL16", Gene_ID)) %>%
   tidyr::pivot_longer(
-    cols = starts_with("GIL16_t10"),
+    cols = matches("^GIL16_t10_(I|II|III)$"),
     names_to = "Sample",
     values_to = "CPM"
   ) %>%
@@ -737,4 +737,3 @@ ggplotly(p, tooltip = "text")
 
 create_summary(contrast_name = "Strains GIL16 vs GIL01", rds_name = "gil16_gil01_t10")
 ```
-
