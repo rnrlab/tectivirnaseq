@@ -1351,6 +1351,7 @@ ggplot() +
 #| error: true
 #| label: inter_de_genes
 #| code-fold: true
+#| warning: false
 
 inter_de_genes <- create_de_genes_table(group = "strains", filter = c("t0", "t30", "t60", "t60-mock"))
 
@@ -1395,6 +1396,7 @@ datatable(inter_de_genes, container = sketch, rownames = FALSE,
   formatStyle(columns = 4:ncol(inter_de_genes), backgroundColor = styleInterval(brks, clrs)) %>%
   formatStyle(columns = c(1, 2, 4:ncol(inter_de_genes)), `text-align` = "center")
 
+counts <- lysogeny_counts
 tectivirus_de_table <- create_de_tectivirus_genes_table()
 
 colnames(tectivirus_de_table) <- c("Gene symbol", "Description", "Lysogeny", "Time point 0", "Time point 10", "Time point 30", "Time point 60", "Time point 60-mock")
