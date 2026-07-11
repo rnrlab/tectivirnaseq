@@ -162,6 +162,27 @@ clusters_design <- read.csv("clusters_design.tsv", header = TRUE, sep = "\t")
 clusters_legend <- read.csv("clusters_legend.tsv", header = TRUE, sep = "\t")
 
 genes_clusters <- cluster_gene_table[, c(1, 13:15)]
+
+genes_clusters <- genes_clusters |>
+  dplyr::mutate(
+    dplyr::across(
+      ends_with("_clusters"),
+      \(x) {
+        cluster_num <- as.numeric(
+          stringr::str_extract(x, "(?<=_C)\\d+")
+        )
+
+        x[
+          !is.na(cluster_num) &
+          cluster_num <= 19 &
+          x != "GIL16_C019"
+        ] <- NA
+
+        x
+      }
+    )
+  )
+
 genes_clusters <- genes_clusters[rowSums(is.na(genes_clusters[, 2:4])) < 3, ]
 genes_clusters <- genes_clusters[rowSums(is.na(genes_clusters)) < ncol(genes_clusters), ]
 genes_clusters$GBJ002_clusters_copy <- genes_clusters$GBJ002_clusters

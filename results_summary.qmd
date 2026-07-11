@@ -27,7 +27,7 @@ This page compiles the results of all the performed contrasts: in lysogeny, intr
 
 # Load data
 
-In this code chunk, we load the RDS objects and the annotation file.
+In this code chunk, we load the RDS objects, the counts and the annotation file.
 
 ```{r}
 #| echo: true
@@ -39,6 +39,8 @@ In this code chunk, we load the RDS objects and the annotation file.
 load_summaries()
 build_functional_enrichments()
 
+lysogeny_counts <- readRDS(file = "lysogeny_counts.rds")
+lytic_cycle_induction_counts <- readRDS(file = "lytic_cycle_induction_counts.rds")
 annotation <- readRDS(file = "GBJ002-GIL01-GIL16.rds")
 ```
 

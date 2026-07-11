@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Eduardo Lozano">
-<meta name="dcterms.date" content="2026-07-10">
+<meta name="dcterms.date" content="2026-07-11">
 
 <title>Hierarchical clusterings comparisons – TectiviRNAseq</title>
 <style>
@@ -487,7 +487,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 10, 2026</p>
+      <p class="date">July 11, 2026</p>
     </div>
   </div>
   
@@ -627,222 +627,243 @@ Kruskal-Wallis chi-squared = 35.39, df = 2, p-value = 2.067e-08</code></pre>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>clusters_legend <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"clusters_legend.tsv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> cluster_gene_table[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">13</span><span class="sc">:</span><span class="dv">15</span>)]</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(genes_clusters[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])) <span class="sc">&lt;</span> <span class="dv">3</span>, ]</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(genes_clusters)) <span class="sc">&lt;</span> <span class="fu">ncol</span>(genes_clusters), ]</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>GBJ002_clusters_copy <span class="ot">&lt;-</span> genes_clusters<span class="sc">$</span>GBJ002_clusters</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters <span class="sc">%&gt;%</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">ifelse</span>(</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(.),</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">case_when</span>(</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GBJ002_clusters"</span>        <span class="sc">~</span> <span class="st">"Unclustered_GBJ002"</span>,</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GIL01_clusters"</span>         <span class="sc">~</span> <span class="st">"Unclustered_GIL01"</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GIL16_clusters"</span>         <span class="sc">~</span> <span class="st">"Unclustered_GIL16"</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GBJ002_clusters_copy"</span>   <span class="sc">~</span> <span class="st">"Unclustered_GBJ002_copy"</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>      ),</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.character</span>(.)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">names_to =</span> <span class="st">"Strain"</span>, <span class="at">values_to =</span> <span class="st">"Cluster"</span>)</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>strain_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"GBJ002_clusters"</span>, <span class="st">"GIL01_clusters"</span>, <span class="st">"GIL16_clusters"</span>, <span class="st">"GBJ002_clusters_copy"</span>)</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>cluster_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Unclustered_GBJ002"</span>, <span class="st">"Unclustered_GBJ002_copy"</span>, <span class="fu">names</span>(gbj002_clusters), <span class="fu">names</span>(gil01_clusters), <span class="st">"Unclustered_GIL01"</span>, <span class="fu">names</span>(gil16_clusters), <span class="st">"Unclustered_GIL16"</span>)</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Strain <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Strain, <span class="at">levels =</span> strain_levels)</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Cluster, <span class="at">levels =</span> cluster_levels)</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters <span class="sc">%&gt;%</span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(clusters_design, <span class="at">by =</span> <span class="st">"Cluster"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">Stripe =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Stripe), <span class="cn">NA</span>, Stripe),</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">Stripes_number =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Stripes_number), <span class="dv">0</span>, Stripes_number),</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text =</span> <span class="fu">case_when</span>(</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"plain"</span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">Size =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Size), <span class="dv">3</span>, Size)</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Strain <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Strain, <span class="at">levels =</span> strain_levels)</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Cluster, <span class="at">levels =</span> cluster_levels)</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  genes_clusters,</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Strain,</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">stratum =</span> Cluster,</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">alluvium =</span> Gene_ID,</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> Base</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_flow</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_stratum</span>(<span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  </span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_identity</span>(</span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide =</span> <span class="st">"legend"</span>,</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> clusters_legend<span class="sc">$</span>Colour,</span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> clusters_legend<span class="sc">$</span>Category,</span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">name   =</span> <span class="cn">NULL</span></span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="dv">1</span>))) <span class="sc">+</span>  </span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.direction =</span> <span class="st">"horizontal"</span>,</span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>p_aux <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>  genes_clusters,</span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Strain,</span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">stratum =</span> Cluster,</span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">alluvium =</span> Gene_ID</span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">geom_stratum</span>()</span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>pb <span class="ot">&lt;-</span> <span class="fu">ggplot_build</span>(p_aux)</span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>stratum_df <span class="ot">&lt;-</span> pb<span class="sc">$</span>data[[<span class="dv">1</span>]]</span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>stratum_df<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">levels</span>(genes_clusters<span class="sc">$</span>Cluster)[stratum_df<span class="sc">$</span>stratum]</span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>x_levels <span class="ot">&lt;-</span> <span class="fu">levels</span>(genes_clusters<span class="sc">$</span>Strain)</span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>stratum_df<span class="sc">$</span>Strain <span class="ot">&lt;-</span> <span class="fu">factor</span>(x_levels[<span class="fu">round</span>(stratum_df<span class="sc">$</span>x)], <span class="at">levels =</span> x_levels)</span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>strata_striped <span class="ot">&lt;-</span> stratum_df <span class="sc">%&gt;%</span></span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(clusters_design, <span class="at">by =</span> <span class="st">"Cluster"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Stripes_number <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="sc">!</span><span class="fu">is.na</span>(Stripe))</span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>stripe_segments <span class="ot">&lt;-</span> <span class="fu">do.call</span>(</span>
-<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>  rbind,</span>
-<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(strata_striped)), <span class="cf">function</span>(i) {</span>
-<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>    row <span class="ot">&lt;-</span> strata_striped[i, ]</span>
-<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>    xmin <span class="ot">&lt;-</span> row<span class="sc">$</span>xmin; xmax <span class="ot">&lt;-</span> row<span class="sc">$</span>xmax</span>
-<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>    ymin <span class="ot">&lt;-</span> row<span class="sc">$</span>ymin; ymax <span class="ot">&lt;-</span> row<span class="sc">$</span>ymax</span>
-<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>    dx <span class="ot">&lt;-</span> xmax <span class="sc">-</span> xmin; dy <span class="ot">&lt;-</span> ymax <span class="sc">-</span> ymin</span>
-<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (dx <span class="sc">&lt;=</span> <span class="dv">0</span> <span class="sc">||</span> dy <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
-<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>    k <span class="ot">&lt;-</span> dy<span class="sc">/</span>dx</span>
-<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>    cx <span class="ot">&lt;-</span> (xmin <span class="sc">+</span> xmax)<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a>    cy <span class="ot">&lt;-</span> (ymin <span class="sc">+</span> ymax)<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>    t_central <span class="ot">&lt;-</span> cy <span class="sc">-</span> k<span class="sc">*</span>(cx <span class="sc">-</span> xmin)</span>
-<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>    R <span class="ot">&lt;-</span> <span class="fu">max</span>(ymax <span class="sc">-</span> t_central, t_central <span class="sc">-</span> ymin)</span>
-<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>    t_values <span class="ot">&lt;-</span> <span class="fu">seq</span>(t_central <span class="sc">-</span> R, t_central <span class="sc">+</span> R, <span class="at">length.out =</span> row<span class="sc">$</span>Stripes_number)</span>
-<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>    rect_intersections <span class="ot">&lt;-</span> <span class="cf">function</span>(t) {</span>
-<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a>      pts <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>      yL <span class="ot">&lt;-</span> t</span>
-<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (yL <span class="sc">&gt;=</span> ymin <span class="sc">&amp;&amp;</span> yL <span class="sc">&lt;=</span> ymax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xmin, yL)))</span>
-<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a>      yR <span class="ot">&lt;-</span> k<span class="sc">*</span>dx <span class="sc">+</span> t</span>
-<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (yR <span class="sc">&gt;=</span> ymin <span class="sc">&amp;&amp;</span> yR <span class="sc">&lt;=</span> ymax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xmax, yR)))</span>
-<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">abs</span>(k) <span class="sc">&gt;</span> <span class="fl">1e-12</span>) {</span>
-<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a>        xB <span class="ot">&lt;-</span> xmin <span class="sc">+</span> (ymin <span class="sc">-</span> t)<span class="sc">/</span>k</span>
-<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (xB <span class="sc">&gt;=</span> xmin <span class="sc">&amp;&amp;</span> xB <span class="sc">&lt;=</span> xmax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xB, ymin)))</span>
-<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a>        xT <span class="ot">&lt;-</span> xmin <span class="sc">+</span> (ymax <span class="sc">-</span> t)<span class="sc">/</span>k</span>
-<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (xT <span class="sc">&gt;=</span> xmin <span class="sc">&amp;&amp;</span> xT <span class="sc">&lt;=</span> xmax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xT, ymax)))</span>
-<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(pts) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
-<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a>      df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">do.call</span>(rbind, pts))</span>
-<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a>      df <span class="ot">&lt;-</span> <span class="fu">distinct</span>(df)</span>
-<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(df) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
-<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a>      df[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, ]</span>
-<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(t_values, <span class="cf">function</span>(t) {</span>
-<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a>      inters <span class="ot">&lt;-</span> <span class="fu">rect_intersections</span>(t)</span>
-<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">is.null</span>(inters)) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
-<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(</span>
-<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> inters[<span class="dv">1</span>,<span class="dv">1</span>],</span>
-<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> inters[<span class="dv">1</span>,<span class="dv">2</span>],</span>
-<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a>        <span class="at">xend =</span> inters[<span class="dv">2</span>,<span class="dv">1</span>],</span>
-<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a>        <span class="at">yend =</span> inters[<span class="dv">2</span>,<span class="dv">2</span>],</span>
-<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a>        <span class="at">Stripe =</span> row<span class="sc">$</span>Stripe,</span>
-<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a>        <span class="at">Strain =</span> row<span class="sc">$</span>Strain</span>
-<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a>    }))</span>
-<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
-<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> stripe_segments,</span>
-<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">xend =</span> xend, <span class="at">color =</span> Stripe),</span>
-<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> stripe_segments<span class="sc">$</span>y,</span>
-<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a>    <span class="at">yend =</span> stripe_segments<span class="sc">$</span>yend,</span>
-<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.6</span>,</span>
-<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span></span>
-<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_identity</span>()</span>
-<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a>pb_final <span class="ot">&lt;-</span> <span class="fu">ggplot_build</span>(p)</span>
-<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a>strata_final <span class="ot">&lt;-</span> pb_final<span class="sc">$</span>data[[<span class="dv">2</span>]]</span>
-<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a>strata_final<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">levels</span>(genes_clusters<span class="sc">$</span>Cluster)[strata_final<span class="sc">$</span>stratum]</span>
-<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a>strata_final <span class="ot">&lt;-</span> strata_final <span class="sc">%&gt;%</span></span>
-<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(clusters_design, <span class="at">by =</span> <span class="st">"Cluster"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text =</span> <span class="fu">case_when</span>(</span>
-<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
-<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
-<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold_white"</span> <span class="sc">~</span> <span class="st">"bold_white"</span>,</span>
-<span id="cb6-164"><a href="#cb6-164" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"plain"</span></span>
-<span id="cb6-165"><a href="#cb6-165" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-166"><a href="#cb6-166" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text_color =</span> <span class="fu">case_when</span>(</span>
-<span id="cb6-167"><a href="#cb6-167" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
-<span id="cb6-168"><a href="#cb6-168" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold_white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
-<span id="cb6-169"><a href="#cb6-169" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"black"</span></span>
-<span id="cb6-170"><a href="#cb6-170" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-171"><a href="#cb6-171" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text_face =</span> <span class="fu">case_when</span>(</span>
-<span id="cb6-172"><a href="#cb6-172" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
-<span id="cb6-173"><a href="#cb6-173" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold_white"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
-<span id="cb6-174"><a href="#cb6-174" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"plain"</span></span>
-<span id="cb6-175"><a href="#cb6-175" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb6-176"><a href="#cb6-176" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb6-177"><a href="#cb6-177" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Cluster =</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="st">"^Unclustered"</span>, Cluster), <span class="st">""</span>, Cluster))</span>
-<span id="cb6-178"><a href="#cb6-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-179"><a href="#cb6-179" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
-<span id="cb6-180"><a href="#cb6-180" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
-<span id="cb6-181"><a href="#cb6-181" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> strata_final,</span>
-<span id="cb6-182"><a href="#cb6-182" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb6-183"><a href="#cb6-183" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> x,</span>
-<span id="cb6-184"><a href="#cb6-184" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> (ymin <span class="sc">+</span> ymax) <span class="sc">/</span> <span class="dv">2</span>,</span>
-<span id="cb6-185"><a href="#cb6-185" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> Cluster,</span>
-<span id="cb6-186"><a href="#cb6-186" aria-hidden="true" tabindex="-1"></a>      <span class="at">fontface =</span> Text_face,</span>
-<span id="cb6-187"><a href="#cb6-187" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> Size</span>
-<span id="cb6-188"><a href="#cb6-188" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-189"><a href="#cb6-189" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> strata_final<span class="sc">$</span>Text_color,</span>
-<span id="cb6-190"><a href="#cb6-190" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span></span>
-<span id="cb6-191"><a href="#cb6-191" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-192"><a href="#cb6-192" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size_identity</span>() <span class="sc">+</span></span>
-<span id="cb6-193"><a href="#cb6-193" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">"off"</span>) <span class="sc">+</span></span>
-<span id="cb6-194"><a href="#cb6-194" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb6-195"><a href="#cb6-195" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(</span>
-<span id="cb6-196"><a href="#cb6-196" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb6-197"><a href="#cb6-197" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(</span>
-<span id="cb6-198"><a href="#cb6-198" aria-hidden="true" tabindex="-1"></a>      <span class="at">GBJ002_clusters      =</span> <span class="st">"GBJ002"</span>,</span>
-<span id="cb6-199"><a href="#cb6-199" aria-hidden="true" tabindex="-1"></a>      <span class="at">GIL01_clusters       =</span> <span class="st">"GIL01"</span>,</span>
-<span id="cb6-200"><a href="#cb6-200" aria-hidden="true" tabindex="-1"></a>      <span class="at">GIL16_clusters       =</span> <span class="st">"GIL16"</span>,</span>
-<span id="cb6-201"><a href="#cb6-201" aria-hidden="true" tabindex="-1"></a>      <span class="at">GBJ002_clusters_copy =</span> <span class="st">"GBJ002"</span></span>
-<span id="cb6-202"><a href="#cb6-202" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-203"><a href="#cb6-203" aria-hidden="true" tabindex="-1"></a>    <span class="at">sec.axis =</span> <span class="fu">dup_axis</span>()</span>
-<span id="cb6-204"><a href="#cb6-204" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-205"><a href="#cb6-205" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb6-206"><a href="#cb6-206" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y        =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
-<span id="cb6-207"><a href="#cb6-207" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x        =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
-<span id="cb6-208"><a href="#cb6-208" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x.top    =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
-<span id="cb6-209"><a href="#cb6-209" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x       =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-210"><a href="#cb6-210" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y       =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb6-211"><a href="#cb6-211" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-212"><a href="#cb6-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-213"><a href="#cb6-213" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters <span class="sc">|&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">across</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ends_with</span>(<span class="st">"_clusters"</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      \(x) {</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        cluster_num <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>          stringr<span class="sc">::</span><span class="fu">str_extract</span>(x, <span class="st">"(?&lt;=_C)</span><span class="sc">\\</span><span class="st">d+"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        x[</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">is.na</span>(cluster_num) <span class="sc">&amp;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>          cluster_num <span class="sc">&lt;=</span> <span class="dv">19</span> <span class="sc">&amp;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>          x <span class="sc">!=</span> <span class="st">"GIL16_C019"</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        ] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        x</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(genes_clusters[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>])) <span class="sc">&lt;</span> <span class="dv">3</span>, ]</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(genes_clusters)) <span class="sc">&lt;</span> <span class="fu">ncol</span>(genes_clusters), ]</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>GBJ002_clusters_copy <span class="ot">&lt;-</span> genes_clusters<span class="sc">$</span>GBJ002_clusters</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters <span class="sc">%&gt;%</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">ifelse</span>(</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(.),</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>      <span class="fu">case_when</span>(</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GBJ002_clusters"</span>        <span class="sc">~</span> <span class="st">"Unclustered_GBJ002"</span>,</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GIL01_clusters"</span>         <span class="sc">~</span> <span class="st">"Unclustered_GIL01"</span>,</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GIL16_clusters"</span>         <span class="sc">~</span> <span class="st">"Unclustered_GIL16"</span>,</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cur_column</span>() <span class="sc">==</span> <span class="st">"GBJ002_clusters_copy"</span>   <span class="sc">~</span> <span class="st">"Unclustered_GBJ002_copy"</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.character</span>(.)</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">names_to =</span> <span class="st">"Strain"</span>, <span class="at">values_to =</span> <span class="st">"Cluster"</span>)</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>strain_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"GBJ002_clusters"</span>, <span class="st">"GIL01_clusters"</span>, <span class="st">"GIL16_clusters"</span>, <span class="st">"GBJ002_clusters_copy"</span>)</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>cluster_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Unclustered_GBJ002"</span>, <span class="st">"Unclustered_GBJ002_copy"</span>, <span class="fu">names</span>(gbj002_clusters), <span class="fu">names</span>(gil01_clusters), <span class="st">"Unclustered_GIL01"</span>, <span class="fu">names</span>(gil16_clusters), <span class="st">"Unclustered_GIL16"</span>)</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Strain <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Strain, <span class="at">levels =</span> strain_levels)</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Cluster, <span class="at">levels =</span> cluster_levels)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>genes_clusters <span class="ot">&lt;-</span> genes_clusters <span class="sc">%&gt;%</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(clusters_design, <span class="at">by =</span> <span class="st">"Cluster"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">Stripe =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Stripe), <span class="cn">NA</span>, Stripe),</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">Stripes_number =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Stripes_number), <span class="dv">0</span>, Stripes_number),</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"plain"</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">Size =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Size), <span class="dv">3</span>, Size)</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Strain <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Strain, <span class="at">levels =</span> strain_levels)</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>genes_clusters<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">factor</span>(genes_clusters<span class="sc">$</span>Cluster, <span class="at">levels =</span> cluster_levels)</span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>  genes_clusters,</span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Strain,</span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">stratum =</span> Cluster,</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">alluvium =</span> Gene_ID,</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> Base</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_flow</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_stratum</span>(<span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  </span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_identity</span>(</span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide =</span> <span class="st">"legend"</span>,</span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> clusters_legend<span class="sc">$</span>Colour,</span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> clusters_legend<span class="sc">$</span>Category,</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">name   =</span> <span class="cn">NULL</span></span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="dv">1</span>))) <span class="sc">+</span>  </span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.direction =</span> <span class="st">"horizontal"</span>,</span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>p_aux <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>  genes_clusters,</span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Strain,</span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>    <span class="at">stratum =</span> Cluster,</span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>    <span class="at">alluvium =</span> Gene_ID</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> <span class="fu">geom_stratum</span>()</span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>pb <span class="ot">&lt;-</span> <span class="fu">ggplot_build</span>(p_aux)</span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>stratum_df <span class="ot">&lt;-</span> pb<span class="sc">$</span>data[[<span class="dv">1</span>]]</span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>stratum_df<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">levels</span>(genes_clusters<span class="sc">$</span>Cluster)[stratum_df<span class="sc">$</span>stratum]</span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>x_levels <span class="ot">&lt;-</span> <span class="fu">levels</span>(genes_clusters<span class="sc">$</span>Strain)</span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>stratum_df<span class="sc">$</span>Strain <span class="ot">&lt;-</span> <span class="fu">factor</span>(x_levels[<span class="fu">round</span>(stratum_df<span class="sc">$</span>x)], <span class="at">levels =</span> x_levels)</span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>strata_striped <span class="ot">&lt;-</span> stratum_df <span class="sc">%&gt;%</span></span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(clusters_design, <span class="at">by =</span> <span class="st">"Cluster"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Stripes_number <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="sc">!</span><span class="fu">is.na</span>(Stripe))</span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a>stripe_segments <span class="ot">&lt;-</span> <span class="fu">do.call</span>(</span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a>  rbind,</span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(strata_striped)), <span class="cf">function</span>(i) {</span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a>    row <span class="ot">&lt;-</span> strata_striped[i, ]</span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a>    xmin <span class="ot">&lt;-</span> row<span class="sc">$</span>xmin; xmax <span class="ot">&lt;-</span> row<span class="sc">$</span>xmax</span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a>    ymin <span class="ot">&lt;-</span> row<span class="sc">$</span>ymin; ymax <span class="ot">&lt;-</span> row<span class="sc">$</span>ymax</span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a>    dx <span class="ot">&lt;-</span> xmax <span class="sc">-</span> xmin; dy <span class="ot">&lt;-</span> ymax <span class="sc">-</span> ymin</span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (dx <span class="sc">&lt;=</span> <span class="dv">0</span> <span class="sc">||</span> dy <span class="sc">&lt;=</span> <span class="dv">0</span>) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a>    k <span class="ot">&lt;-</span> dy<span class="sc">/</span>dx</span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a>    cx <span class="ot">&lt;-</span> (xmin <span class="sc">+</span> xmax)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a>    cy <span class="ot">&lt;-</span> (ymin <span class="sc">+</span> ymax)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a>    t_central <span class="ot">&lt;-</span> cy <span class="sc">-</span> k<span class="sc">*</span>(cx <span class="sc">-</span> xmin)</span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a>    R <span class="ot">&lt;-</span> <span class="fu">max</span>(ymax <span class="sc">-</span> t_central, t_central <span class="sc">-</span> ymin)</span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a>    t_values <span class="ot">&lt;-</span> <span class="fu">seq</span>(t_central <span class="sc">-</span> R, t_central <span class="sc">+</span> R, <span class="at">length.out =</span> row<span class="sc">$</span>Stripes_number)</span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>    rect_intersections <span class="ot">&lt;-</span> <span class="cf">function</span>(t) {</span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>      pts <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a>      yL <span class="ot">&lt;-</span> t</span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (yL <span class="sc">&gt;=</span> ymin <span class="sc">&amp;&amp;</span> yL <span class="sc">&lt;=</span> ymax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xmin, yL)))</span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a>      yR <span class="ot">&lt;-</span> k<span class="sc">*</span>dx <span class="sc">+</span> t</span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (yR <span class="sc">&gt;=</span> ymin <span class="sc">&amp;&amp;</span> yR <span class="sc">&lt;=</span> ymax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xmax, yR)))</span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">abs</span>(k) <span class="sc">&gt;</span> <span class="fl">1e-12</span>) {</span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a>        xB <span class="ot">&lt;-</span> xmin <span class="sc">+</span> (ymin <span class="sc">-</span> t)<span class="sc">/</span>k</span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (xB <span class="sc">&gt;=</span> xmin <span class="sc">&amp;&amp;</span> xB <span class="sc">&lt;=</span> xmax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xB, ymin)))</span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a>        xT <span class="ot">&lt;-</span> xmin <span class="sc">+</span> (ymax <span class="sc">-</span> t)<span class="sc">/</span>k</span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (xT <span class="sc">&gt;=</span> xmin <span class="sc">&amp;&amp;</span> xT <span class="sc">&lt;=</span> xmax) pts <span class="ot">&lt;-</span> <span class="fu">append</span>(pts, <span class="fu">list</span>(<span class="fu">c</span>(xT, ymax)))</span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(pts) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a>      df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">do.call</span>(rbind, pts))</span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a>      df <span class="ot">&lt;-</span> <span class="fu">distinct</span>(df)</span>
+<span id="cb6-143"><a href="#cb6-143" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(df) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb6-144"><a href="#cb6-144" aria-hidden="true" tabindex="-1"></a>      df[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, ]</span>
+<span id="cb6-145"><a href="#cb6-145" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-146"><a href="#cb6-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-147"><a href="#cb6-147" aria-hidden="true" tabindex="-1"></a>    <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(t_values, <span class="cf">function</span>(t) {</span>
+<span id="cb6-148"><a href="#cb6-148" aria-hidden="true" tabindex="-1"></a>      inters <span class="ot">&lt;-</span> <span class="fu">rect_intersections</span>(t)</span>
+<span id="cb6-149"><a href="#cb6-149" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">is.null</span>(inters)) <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb6-150"><a href="#cb6-150" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(</span>
+<span id="cb6-151"><a href="#cb6-151" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> inters[<span class="dv">1</span>,<span class="dv">1</span>],</span>
+<span id="cb6-152"><a href="#cb6-152" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> inters[<span class="dv">1</span>,<span class="dv">2</span>],</span>
+<span id="cb6-153"><a href="#cb6-153" aria-hidden="true" tabindex="-1"></a>        <span class="at">xend =</span> inters[<span class="dv">2</span>,<span class="dv">1</span>],</span>
+<span id="cb6-154"><a href="#cb6-154" aria-hidden="true" tabindex="-1"></a>        <span class="at">yend =</span> inters[<span class="dv">2</span>,<span class="dv">2</span>],</span>
+<span id="cb6-155"><a href="#cb6-155" aria-hidden="true" tabindex="-1"></a>        <span class="at">Stripe =</span> row<span class="sc">$</span>Stripe,</span>
+<span id="cb6-156"><a href="#cb6-156" aria-hidden="true" tabindex="-1"></a>        <span class="at">Strain =</span> row<span class="sc">$</span>Strain</span>
+<span id="cb6-157"><a href="#cb6-157" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb6-158"><a href="#cb6-158" aria-hidden="true" tabindex="-1"></a>    }))</span>
+<span id="cb6-159"><a href="#cb6-159" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb6-160"><a href="#cb6-160" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-161"><a href="#cb6-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-162"><a href="#cb6-162" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
+<span id="cb6-163"><a href="#cb6-163" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb6-164"><a href="#cb6-164" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> stripe_segments,</span>
+<span id="cb6-165"><a href="#cb6-165" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">xend =</span> xend, <span class="at">color =</span> Stripe),</span>
+<span id="cb6-166"><a href="#cb6-166" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> stripe_segments<span class="sc">$</span>y,</span>
+<span id="cb6-167"><a href="#cb6-167" aria-hidden="true" tabindex="-1"></a>    <span class="at">yend =</span> stripe_segments<span class="sc">$</span>yend,</span>
+<span id="cb6-168"><a href="#cb6-168" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb6-169"><a href="#cb6-169" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.6</span>,</span>
+<span id="cb6-170"><a href="#cb6-170" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.75</span></span>
+<span id="cb6-171"><a href="#cb6-171" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-172"><a href="#cb6-172" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_identity</span>()</span>
+<span id="cb6-173"><a href="#cb6-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-174"><a href="#cb6-174" aria-hidden="true" tabindex="-1"></a>pb_final <span class="ot">&lt;-</span> <span class="fu">ggplot_build</span>(p)</span>
+<span id="cb6-175"><a href="#cb6-175" aria-hidden="true" tabindex="-1"></a>strata_final <span class="ot">&lt;-</span> pb_final<span class="sc">$</span>data[[<span class="dv">2</span>]]</span>
+<span id="cb6-176"><a href="#cb6-176" aria-hidden="true" tabindex="-1"></a>strata_final<span class="sc">$</span>Cluster <span class="ot">&lt;-</span> <span class="fu">levels</span>(genes_clusters<span class="sc">$</span>Cluster)[strata_final<span class="sc">$</span>stratum]</span>
+<span id="cb6-177"><a href="#cb6-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-178"><a href="#cb6-178" aria-hidden="true" tabindex="-1"></a>strata_final <span class="ot">&lt;-</span> strata_final <span class="sc">%&gt;%</span></span>
+<span id="cb6-179"><a href="#cb6-179" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(clusters_design, <span class="at">by =</span> <span class="st">"Cluster"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-180"><a href="#cb6-180" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-181"><a href="#cb6-181" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-182"><a href="#cb6-182" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
+<span id="cb6-183"><a href="#cb6-183" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
+<span id="cb6-184"><a href="#cb6-184" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold_white"</span> <span class="sc">~</span> <span class="st">"bold_white"</span>,</span>
+<span id="cb6-185"><a href="#cb6-185" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"plain"</span></span>
+<span id="cb6-186"><a href="#cb6-186" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb6-187"><a href="#cb6-187" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text_color =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-188"><a href="#cb6-188" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
+<span id="cb6-189"><a href="#cb6-189" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold_white"</span> <span class="sc">~</span> <span class="st">"white"</span>,</span>
+<span id="cb6-190"><a href="#cb6-190" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"black"</span></span>
+<span id="cb6-191"><a href="#cb6-191" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb6-192"><a href="#cb6-192" aria-hidden="true" tabindex="-1"></a>    <span class="at">Text_face =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-193"><a href="#cb6-193" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
+<span id="cb6-194"><a href="#cb6-194" aria-hidden="true" tabindex="-1"></a>      Text <span class="sc">==</span> <span class="st">"bold_white"</span> <span class="sc">~</span> <span class="st">"bold"</span>,</span>
+<span id="cb6-195"><a href="#cb6-195" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"plain"</span></span>
+<span id="cb6-196"><a href="#cb6-196" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-197"><a href="#cb6-197" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-198"><a href="#cb6-198" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Cluster =</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="st">"^Unclustered"</span>, Cluster), <span class="st">""</span>, Cluster))</span>
+<span id="cb6-199"><a href="#cb6-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-200"><a href="#cb6-200" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
+<span id="cb6-201"><a href="#cb6-201" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb6-202"><a href="#cb6-202" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> strata_final,</span>
+<span id="cb6-203"><a href="#cb6-203" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb6-204"><a href="#cb6-204" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> x,</span>
+<span id="cb6-205"><a href="#cb6-205" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> (ymin <span class="sc">+</span> ymax) <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb6-206"><a href="#cb6-206" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> Cluster,</span>
+<span id="cb6-207"><a href="#cb6-207" aria-hidden="true" tabindex="-1"></a>      <span class="at">fontface =</span> Text_face,</span>
+<span id="cb6-208"><a href="#cb6-208" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> Size</span>
+<span id="cb6-209"><a href="#cb6-209" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb6-210"><a href="#cb6-210" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> strata_final<span class="sc">$</span>Text_color,</span>
+<span id="cb6-211"><a href="#cb6-211" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span></span>
+<span id="cb6-212"><a href="#cb6-212" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-213"><a href="#cb6-213" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size_identity</span>() <span class="sc">+</span></span>
+<span id="cb6-214"><a href="#cb6-214" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">"off"</span>) <span class="sc">+</span></span>
+<span id="cb6-215"><a href="#cb6-215" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb6-216"><a href="#cb6-216" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(</span>
+<span id="cb6-217"><a href="#cb6-217" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb6-218"><a href="#cb6-218" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb6-219"><a href="#cb6-219" aria-hidden="true" tabindex="-1"></a>      <span class="at">GBJ002_clusters      =</span> <span class="st">"GBJ002"</span>,</span>
+<span id="cb6-220"><a href="#cb6-220" aria-hidden="true" tabindex="-1"></a>      <span class="at">GIL01_clusters       =</span> <span class="st">"GIL01"</span>,</span>
+<span id="cb6-221"><a href="#cb6-221" aria-hidden="true" tabindex="-1"></a>      <span class="at">GIL16_clusters       =</span> <span class="st">"GIL16"</span>,</span>
+<span id="cb6-222"><a href="#cb6-222" aria-hidden="true" tabindex="-1"></a>      <span class="at">GBJ002_clusters_copy =</span> <span class="st">"GBJ002"</span></span>
+<span id="cb6-223"><a href="#cb6-223" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb6-224"><a href="#cb6-224" aria-hidden="true" tabindex="-1"></a>    <span class="at">sec.axis =</span> <span class="fu">dup_axis</span>()</span>
+<span id="cb6-225"><a href="#cb6-225" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-226"><a href="#cb6-226" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb6-227"><a href="#cb6-227" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y        =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>),</span>
+<span id="cb6-228"><a href="#cb6-228" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x        =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb6-229"><a href="#cb6-229" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x.top    =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb6-230"><a href="#cb6-230" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x       =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-231"><a href="#cb6-231" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y       =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb6-232"><a href="#cb6-232" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-233"><a href="#cb6-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-234"><a href="#cb6-234" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `geom_text()`:
-! Problem while converting geom to grob.
-ℹ Error occurred in the 4th layer.
-Caused by error in `checkNA()`:
-! mezcla de valores no informados e informados para fontsize</code></pre>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hierarchical_clusterings_comparisons_files/figure-html/alluvial_plot-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -852,13 +873,13 @@ Caused by error in `checkNA()`:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gil01_gbj002 <span class="ot">&lt;-</span> <span class="fu">cluster_compare</span>(gbj002_clusters, gil01_clusters)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gil16_gbj002 <span class="ot">&lt;-</span> <span class="fu">cluster_compare</span>(gbj002_clusters, gil16_clusters)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>gil16_gil01 <span class="ot">&lt;-</span> <span class="fu">cluster_compare</span>(gil01_clusters, gil16_clusters)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>gil01_gbj002_heatmaps <span class="ot">&lt;-</span> <span class="fu">heatmap_comparison</span>(<span class="at">comparison_matrix =</span> gil01_gbj002, <span class="at">rows =</span> <span class="st">"GIL01"</span>, <span class="at">columns =</span> <span class="st">"GBJ002"</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>gil16_gbj002_heatmaps <span class="ot">&lt;-</span> <span class="fu">heatmap_comparison</span>(<span class="at">comparison_matrix =</span> gil16_gbj002, <span class="at">rows =</span> <span class="st">"GIL16"</span>, <span class="at">columns =</span> <span class="st">"GBJ002"</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>gil16_gil01_heatmaps <span class="ot">&lt;-</span> <span class="fu">heatmap_comparison</span>(<span class="at">comparison_matrix =</span> gil16_gil01, <span class="at">rows =</span> <span class="st">"GIL16"</span>, <span class="at">columns =</span> <span class="st">"GIL01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gil01_gbj002 <span class="ot">&lt;-</span> <span class="fu">cluster_compare</span>(gbj002_clusters, gil01_clusters)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>gil16_gbj002 <span class="ot">&lt;-</span> <span class="fu">cluster_compare</span>(gbj002_clusters, gil16_clusters)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>gil16_gil01 <span class="ot">&lt;-</span> <span class="fu">cluster_compare</span>(gil01_clusters, gil16_clusters)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>gil01_gbj002_heatmaps <span class="ot">&lt;-</span> <span class="fu">heatmap_comparison</span>(<span class="at">comparison_matrix =</span> gil01_gbj002, <span class="at">rows =</span> <span class="st">"GIL01"</span>, <span class="at">columns =</span> <span class="st">"GBJ002"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>gil16_gbj002_heatmaps <span class="ot">&lt;-</span> <span class="fu">heatmap_comparison</span>(<span class="at">comparison_matrix =</span> gil16_gbj002, <span class="at">rows =</span> <span class="st">"GIL16"</span>, <span class="at">columns =</span> <span class="st">"GBJ002"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>gil16_gil01_heatmaps <span class="ot">&lt;-</span> <span class="fu">heatmap_comparison</span>(<span class="at">comparison_matrix =</span> gil16_gil01, <span class="at">rows =</span> <span class="st">"GIL16"</span>, <span class="at">columns =</span> <span class="st">"GIL01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="gil01-vs-gbj002-heatmaps" class="level2">
@@ -869,7 +890,7 @@ Caused by error in `checkNA()`:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gil01_gbj002_heatmaps<span class="sc">$</span>heatmap_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gil01_gbj002_heatmaps<span class="sc">$</span>heatmap_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="htmlwidget-a9ce446f357783b36a80" style="width:100%;height:520px;" class="plotly html-widget"></div>
@@ -883,7 +904,7 @@ Caused by error in `checkNA()`:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gil01_gbj002_heatmaps<span class="sc">$</span>heatmap_columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gil01_gbj002_heatmaps<span class="sc">$</span>heatmap_columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="htmlwidget-945931917ad6e414eb8b" style="width:100%;height:520px;" class="plotly html-widget"></div>
@@ -900,7 +921,7 @@ Caused by error in `checkNA()`:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gil16_gbj002_heatmaps<span class="sc">$</span>heatmap_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gil16_gbj002_heatmaps<span class="sc">$</span>heatmap_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="htmlwidget-7ef22d7310595967216a" style="width:100%;height:520px;" class="plotly html-widget"></div>
@@ -914,7 +935,7 @@ Caused by error in `checkNA()`:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gil16_gbj002_heatmaps<span class="sc">$</span>heatmap_columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gil16_gbj002_heatmaps<span class="sc">$</span>heatmap_columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="htmlwidget-a2d4dbc9a8660785d2bc" style="width:100%;height:520px;" class="plotly html-widget"></div>
@@ -931,7 +952,7 @@ Caused by error in `checkNA()`:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gil16_gil01_heatmaps<span class="sc">$</span>heatmap_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gil16_gil01_heatmaps<span class="sc">$</span>heatmap_rows</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="htmlwidget-06c0be684ad3af3ecfe5" style="width:100%;height:520px;" class="plotly html-widget"></div>
@@ -945,7 +966,7 @@ Caused by error in `checkNA()`:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gil16_gil01_heatmaps<span class="sc">$</span>heatmap_columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gil16_gil01_heatmaps<span class="sc">$</span>heatmap_columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div id="htmlwidget-44c2f030811bbadf388d" style="width:100%;height:520px;" class="plotly html-widget"></div>
