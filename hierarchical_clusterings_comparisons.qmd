@@ -168,6 +168,11 @@ genes_clusters <- genes_clusters |>
     dplyr::across(
       ends_with("_clusters"),
       \(x) {
+
+        x <- as.character(x)
+
+        x[x == "GIL16_C019b"] <- "GIL16_C019"
+
         cluster_num <- as.numeric(
           stringr::str_extract(x, "(?<=_C)\\d+")
         )
@@ -205,6 +210,7 @@ genes_clusters <- genes_clusters %>%
 
 strain_levels <- c("GBJ002_clusters", "GIL01_clusters", "GIL16_clusters", "GBJ002_clusters_copy")
 cluster_levels <- c("Unclustered_GBJ002", "Unclustered_GBJ002_copy", names(gbj002_clusters), names(gil01_clusters), "Unclustered_GIL01", names(gil16_clusters), "Unclustered_GIL16")
+cluster_levels[cluster_levels == "GIL16_C019b"] <- "GIL16_C019"
 
 genes_clusters$Strain <- factor(genes_clusters$Strain, levels = strain_levels)
 genes_clusters$Cluster <- factor(genes_clusters$Cluster, levels = cluster_levels)
