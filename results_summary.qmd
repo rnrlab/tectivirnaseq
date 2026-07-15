@@ -588,7 +588,9 @@ Upset plots were used to examine the overlap of DE genes among pairwise strain c
 #| fig-width: 10
 #| fig-height: 6
 
-upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "UP", order = c(
+upset_contrasts(group = c("t0", "t10", "t30", "t60", "t60-mock"), de_genes = "UP", order = c(
+  "Time point 0 - Strains GIL01 vs GBJ002",
+  "Time point 10 - Strains GIL01 vs GBJ002",
   "Time point 30 - Strains GIL01 vs GBJ002",
   "Time point 30 - Strains GIL16 vs GBJ002",
   "Time point 30 - Strains GIL16 vs GIL01",
@@ -600,14 +602,13 @@ upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "UP", order = c(
   "Time point 60-mock - Strains GIL16 vs GIL01"
 ))
 
-upset_contrasts(group = c("t30", "t60", "t60-mock"), de_genes = "DOWN", order = c(
+upset_contrasts(group = c("t10", "t30", "t60", "t60-mock"), de_genes = "DOWN", order = c(
+  "Time point 10 - Strains GIL16 vs GBJ002",
   "Time point 30 - Strains GIL01 vs GBJ002",
   "Time point 30 - Strains GIL16 vs GBJ002",
   "Time point 30 - Strains GIL16 vs GIL01",
   "Time point 60 - Strains GIL01 vs GBJ002",
   "Time point 60 - Strains GIL16 vs GBJ002",
-  "Time point 60 - Strains GIL16 vs GIL01",
-  "Time point 60-mock - Strains GIL01 vs GBJ002",
   "Time point 60-mock - Strains GIL16 vs GBJ002",
   "Time point 60-mock - Strains GIL16 vs GIL01"
 ))
@@ -861,7 +862,7 @@ ggplot() +
 #| code-fold: true
 #| warning: false
 
-inter_de_genes <- create_de_genes_table(group = "strains", filter = c("t0", "t30", "t60", "t60-mock"))
+inter_de_genes <- create_de_genes_table(group = "strains", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
 
 colnames(inter_de_genes)[1:2] <- c("Gene ID", "Gene symbol")
 
@@ -871,8 +872,8 @@ clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
 
 lfc_cols <- colnames(inter_de_genes)[4:ncol(inter_de_genes)]
 groups <- sub(" - .*", "", lfc_cols)
-group_levels <- c("t0", "t30", "t60", "t60-mock")
-group_labels <- c("Time point 0", "Time point 30", "Time point 60", "Time point 60-mock")
+group_levels <- c("t0", "t10", "t30", "t60", "t60-mock")
+group_labels <- c("Time point 0", "Time point 10", "Time point 30", "Time point 60", "Time point 60-mock")
 group_counts <- sapply(group_levels, function(g) sum(groups == g))
 second_row <- c(colnames(inter_de_genes)[1:3], sub(".* - ", "", lfc_cols))
 
@@ -1151,7 +1152,6 @@ upset_contrasts(group = "GIL16", de_genes = "UP", order = c(
 ))
 
 upset_contrasts(group = "GIL16", de_genes = "DOWN", order = c(
-  "Time points 10 vs 0",
   "Time points 30 vs 0",
   "Time points 60 vs 0",
   "Time points 60 vs 60-mock",
