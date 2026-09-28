@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Eduardo Lozano">
-<meta name="dcterms.date" content="2026-07-10">
+<meta name="dcterms.date" content="2026-09-28">
 
 <title>Time points 60-mock vs 0 contrast – TectiviRNAseq</title>
 <style>
@@ -477,7 +477,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 10, 2026</p>
+      <p class="date">September 28, 2026</p>
     </div>
   </div>
   
@@ -657,33 +657,20 @@ low counts [2]     : 195, 3.9%
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>kegg_up <span class="ot">&lt;-</span> <span class="fu">kegg_enrichment</span>(up_genes, all_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>kegg_up <span class="ot">&lt;-</span> <span class="fu">kegg_enrichment</span>(up_genes, all_genes)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>kegg_down <span class="ot">&lt;-</span> <span class="fu">kegg_enrichment</span>(down_genes, all_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in file(file, "rt"): URL
-'https://yulab-smu.top/clusterProfiler/md5.txt': status was 'SSL peer
-certificate or SSH remote key was not OK'</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>kegg_down <span class="ot">&lt;-</span> <span class="fu">kegg_enrichment</span>(down_genes, all_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in file(file, "rt"): URL
-'https://yulab-smu.top/clusterProfiler/md5.txt': status was 'SSL peer
-certificate or SSH remote key was not OK'</code></pre>
-</div>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(kegg_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">extensions =</span> <span class="st">"Scroller"</span>, <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(kegg_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">extensions =</span> <span class="st">"Scroller"</span>, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-dfd8ab212716726d6fab" style="width:100%;height:auto;"></div>
@@ -691,13 +678,13 @@ certificate or SSH remote key was not OK'</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(kegg_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>,</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">extensions =</span> <span class="st">"Scroller"</span>, <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(kegg_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">extensions =</span> <span class="st">"Scroller"</span>, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-61ea22da297ff578b42b" style="width:100%;height:auto;"></div>
@@ -708,85 +695,30 @@ certificate or SSH remote key was not OK'</code></pre>
 <section id="go" class="level2">
 <h2 class="anchored" data-anchor-id="go">GO</h2>
 <p>The Gene Ontology (GO) is organized into three categories: <strong>Biological Process</strong> (BP), which describes the biological objectives to which gene products contribute; <strong>Molecular Function</strong> (MF), which refers to the elemental activities of gene products at the molecular level; and <strong>Cellular Component</strong> (CC), which specifies the locations within the cell where gene products are active.</p>
-<ul>
-<li><p>According to <strong>BP</strong>, positive enrichment was mainly related to amino acids and nucleic acids metabolism, while negative enrichment was found in organic acids, oxoacids and other amino acids processes.</p></li>
-<li><p>Regarding <strong>MF</strong>, we found positive enrichments in different enzymatic functions, such as oxidoreductase and lyase, and vitamins binding.</p></li>
-</ul>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>go_bp_up <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(up_genes, all_genes, <span class="st">"BP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>go_bp_up <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(up_genes, all_genes, <span class="st">"BP"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>go_bp_down <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(down_genes, all_genes, <span class="st">"BP"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>go_mf_up <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(up_genes, all_genes, <span class="st">"MF"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>go_mf_down <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(down_genes, all_genes, <span class="st">"MF"</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>go_cc_up <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(up_genes, all_genes, <span class="st">"CC"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>go_cc_down <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(down_genes, all_genes, <span class="st">"CC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-63.14% of input gene IDs are fail to map...</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-77.15% of input gene IDs are fail to map...</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>go_bp_down <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(down_genes, all_genes, <span class="st">"BP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-79.89% of input gene IDs are fail to map...
-Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-77.15% of input gene IDs are fail to map...</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>go_mf_up <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(up_genes, all_genes, <span class="st">"MF"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-63.14% of input gene IDs are fail to map...
-Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-77.15% of input gene IDs are fail to map...</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>go_mf_down <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(down_genes, all_genes, <span class="st">"MF"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-79.89% of input gene IDs are fail to map...
-Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-77.15% of input gene IDs are fail to map...</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>go_cc_up <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(up_genes, all_genes, <span class="st">"CC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-63.14% of input gene IDs are fail to map...
-Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-77.15% of input gene IDs are fail to map...</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>go_cc_down <span class="ot">&lt;-</span> <span class="fu">go_enrichment</span>(down_genes, all_genes, <span class="st">"CC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-79.89% of input gene IDs are fail to map...
-Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
-77.15% of input gene IDs are fail to map...</code></pre>
-</div>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_bp_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollY =</span> <span class="dv">400</span>,</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_bp_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollY =</span> <span class="dv">400</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-85906d0f999d148ff691" style="width:100%;height:auto;"></div>
@@ -794,14 +726,14 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_bp_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollY =</span> <span class="dv">400</span>,</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_bp_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollY =</span> <span class="dv">400</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-1c33c211d066fd75589e" style="width:100%;height:auto;"></div>
@@ -809,13 +741,13 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_mf_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_mf_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-2178c349716dab333a6c" style="width:100%;height:auto;"></div>
@@ -823,13 +755,13 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_mf_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_mf_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-a985f26e8117dfb29849" style="width:100%;height:auto;"></div>
@@ -837,13 +769,13 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_cc_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_cc_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-edf58d515c9f54942edb" style="width:100%;height:auto;"></div>
@@ -851,13 +783,13 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_cc_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(go_cc_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"RichFactor"</span>, <span class="st">"FoldEnrichment"</span>, <span class="st">"zScore"</span>), <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"pvalue"</span>, <span class="st">"p.adjust"</span>, <span class="st">"qvalue"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-7ff84827f73458026b32" style="width:100%;height:auto;"></div>
@@ -871,27 +803,27 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ec_1_up <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(up_genes, all_genes, <span class="dv">1</span>)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ec_1_down <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(down_genes, all_genes, <span class="dv">1</span>)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>ec_2_up <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(up_genes, all_genes, <span class="dv">2</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>ec_2_down <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(down_genes, all_genes, <span class="dv">2</span>)</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>ec_3_up <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(up_genes, all_genes, <span class="dv">3</span>)</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>ec_3_down <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(down_genes, all_genes, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ec_1_up <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(up_genes, all_genes, <span class="dv">1</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ec_1_down <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(down_genes, all_genes, <span class="dv">1</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>ec_2_up <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(up_genes, all_genes, <span class="dv">2</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>ec_2_down <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(down_genes, all_genes, <span class="dv">2</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>ec_3_up <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(up_genes, all_genes, <span class="dv">3</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>ec_3_down <span class="ot">&lt;-</span> <span class="fu">ec_enrichment</span>(down_genes, all_genes, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_1_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_1_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-4acf519e12217acf5b9c" style="width:100%;height:auto;"></div>
@@ -899,14 +831,14 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_1_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_1_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-298245bac492eaa0abff" style="width:100%;height:auto;"></div>
@@ -914,14 +846,14 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_2_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_2_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-29daba07878c5651bf1b" style="width:100%;height:auto;"></div>
@@ -929,14 +861,14 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_2_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_2_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-f42c90f3f6f24df9f8be" style="width:100%;height:auto;"></div>
@@ -944,14 +876,14 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_3_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"Sub-subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_3_up, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Positive enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"Sub-subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-cec7177c3f23986b2d18" style="width:100%;height:auto;"></div>
@@ -959,14 +891,14 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_3_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"Sub-subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(ec_3_down, <span class="at">rownames =</span> <span class="cn">FALSE</span>, <span class="at">caption =</span> <span class="st">"Negative enrichment"</span>, <span class="at">colnames =</span> <span class="fu">c</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"EC number"</span>, <span class="st">"Class"</span>, <span class="st">"Subclass"</span>, <span class="st">"Sub-subclass"</span>, <span class="st">"DE"</span>, <span class="st">"No DE"</span>, <span class="st">"Genes"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p value"</span>, <span class="st">"Adjusted p-value"</span>), <span class="at">extensions =</span> <span class="st">"Scroller"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deferRender =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatRound</span>(<span class="at">columns =</span> <span class="st">"odds.ratio"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">formatSignif</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"p.value"</span>, <span class="st">"padj"</span>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-4d50387060461f45a0fe" style="width:100%;height:auto;"></div>
@@ -981,20 +913,20 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>es_up <span class="ot">&lt;-</span> <span class="fu">enrichment_summary</span>(up_genes, <span class="at">categories =</span> <span class="fu">list</span>(cog_up, kegg_up, go_bp_up, go_mf_up, go_cc_up, ec_1_up, ec_2_up, ec_3_up))</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>es_down <span class="ot">&lt;-</span> <span class="fu">enrichment_summary</span>(down_genes, <span class="at">categories =</span> <span class="fu">list</span>(cog_down, kegg_down, go_bp_down, go_mf_down, go_cc_down, ec_1_down, ec_2_down, ec_3_down))</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>es_de <span class="ot">&lt;-</span> <span class="fu">rbind</span>(es_up, es_down)</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(es_de) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"UP"</span>, <span class="st">"DOWN"</span>)</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(es_de, <span class="at">colnames =</span> <span class="fu">c</span>(<span class="st">"DE genes"</span>, <span class="st">"DE number"</span>, <span class="st">"COG"</span>, <span class="st">"KEGG"</span>, <span class="st">"GO (BP)"</span>, <span class="st">"GO (MF)"</span>, <span class="st">"GO (CC)"</span>, <span class="st">"EC (1)"</span>, <span class="st">"EC (2)"</span>, <span class="st">"EC (3)"</span>),</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">extensions =</span> <span class="fu">c</span>(<span class="st">"Buttons"</span>, <span class="st">"FixedColumns"</span>, <span class="st">"Scroller"</span>), <span class="at">options =</span> <span class="fu">list</span>(</span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">autoWidth =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">dom =</span> <span class="st">"Brftip"</span>,</span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">buttons =</span> <span class="fu">c</span>(<span class="st">"copy"</span>, <span class="st">"csv"</span>, <span class="st">"excel"</span>),</span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">fixedColumns =</span> <span class="fu">list</span>(<span class="at">leftColumns =</span> <span class="dv">2</span>),</span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">deferRender =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>es_up <span class="ot">&lt;-</span> <span class="fu">enrichment_summary</span>(up_genes, <span class="at">categories =</span> <span class="fu">list</span>(cog_up, kegg_up, go_bp_up, go_mf_up, go_cc_up, ec_1_up, ec_2_up, ec_3_up))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>es_down <span class="ot">&lt;-</span> <span class="fu">enrichment_summary</span>(down_genes, <span class="at">categories =</span> <span class="fu">list</span>(cog_down, kegg_down, go_bp_down, go_mf_down, go_cc_down, ec_1_down, ec_2_down, ec_3_down))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>es_de <span class="ot">&lt;-</span> <span class="fu">rbind</span>(es_up, es_down)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(es_de) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"UP"</span>, <span class="st">"DOWN"</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(es_de, <span class="at">colnames =</span> <span class="fu">c</span>(<span class="st">"DE genes"</span>, <span class="st">"DE number"</span>, <span class="st">"COG"</span>, <span class="st">"KEGG"</span>, <span class="st">"GO (BP)"</span>, <span class="st">"GO (MF)"</span>, <span class="st">"GO (CC)"</span>, <span class="st">"EC (1)"</span>, <span class="st">"EC (2)"</span>, <span class="st">"EC (3)"</span>),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">extensions =</span> <span class="fu">c</span>(<span class="st">"Buttons"</span>, <span class="st">"FixedColumns"</span>, <span class="st">"Scroller"</span>), <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">autoWidth =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">dom =</span> <span class="st">"Brftip"</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">buttons =</span> <span class="fu">c</span>(<span class="st">"copy"</span>, <span class="st">"csv"</span>, <span class="st">"excel"</span>),</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">fixedColumns =</span> <span class="fu">list</span>(<span class="at">leftColumns =</span> <span class="dv">2</span>),</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">scrollX =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">scroller =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">deferRender =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="datatables html-widget html-fill-item" id="htmlwidget-e75ddcd59b52aa304a94" style="width:100%;height:auto;"></div>
@@ -1007,7 +939,7 @@ Warning in bitr(gene, fromType = fromType, toType = "ENTREZID", OrgDb = OrgDb):
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">create_summary</span>(<span class="at">contrast_name =</span> <span class="st">"Time points 60-mock vs 0"</span>, <span class="at">rds_name =</span> <span class="st">"gil16_t60-mock_t0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">create_summary</span>(<span class="at">contrast_name =</span> <span class="st">"Time points 60-mock vs 0"</span>, <span class="at">rds_name =</span> <span class="st">"gil16_t60-mock_t0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
