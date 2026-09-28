@@ -402,49 +402,368 @@ ggplot() +
   )
 ```
 
-## DE genes
+## Contrasts genes
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: lysogeny_de_genes
+#| label: lysogeny_contrasts_genes
 #| code-fold: true
 
-lysogeny_de_genes <- create_de_genes_table(group = "strains", filter = "Lysogeny")
+lysogeny_contrasts_genes <- create_contrasts_genes_table(
+  group = "strains",
+  filter = "Lysogeny"
+)
 
-colnames(lysogeny_de_genes) <- c("Gene ID", "Gene symbol", "Description", "GIL01 vs GBJ002", "GIL16 vs GBJ002", "GIL16 vs GIL01")
+lysogeny_genes_table <- lysogeny_contrasts_genes$table
+lysogeny_genes_status <- lysogeny_contrasts_genes$status
 
-max_abs <- ceiling(max(abs(lysogeny_de_genes[, 4:ncol(lysogeny_de_genes)]), na.rm = TRUE))
-brks <- seq(-max_abs, max_abs, length.out = 50)
-clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
+status_order <- match(
+  lysogeny_genes_table$Gene_ID,
+  lysogeny_genes_status$Gene_ID
+)
 
-sketch <- withTags(table(
-  class = "display",
-  thead(
-    tr(
-      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Gene annotation"),
-      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Lysogeny contrasts")
-    ),
-    tr(
-      lapply(colnames(lysogeny_de_genes),
-             function(x) th(style = "text-align: center;", x))
+if(anyNA(status_order)){
+  stop(
+    "Algunos Gene_ID de table no están presentes en status."
+  )
+}
+
+lysogeny_genes_status <- lysogeny_genes_status[
+  status_order,
+  ,
+  drop = FALSE
+]
+
+stopifnot(
+  identical(
+    as.character(lysogeny_genes_table$Gene_ID),
+    as.character(lysogeny_genes_status$Gene_ID)
+  )
+)
+
+colnames(lysogeny_genes_table) <- c(
+  "Gene ID",
+  "Gene symbol",
+  "Description",
+  "GIL01 vs GBJ002",
+  "GIL16 vs GBJ002",
+  "GIL16 vs GIL01"
+)
+
+status_aux <- lysogeny_genes_status[
+  ,
+  -1,
+  drop = FALSE
+]
+
+status_aux[] <- lapply(
+  status_aux,
+  as.character
+)
+
+colnames(status_aux) <- c(
+  "Status GIL01 vs GBJ002",
+  "Status GIL16 vs GBJ002",
+  "Status GIL16 vs GIL01"
+)
+
+lfc_names <- c(
+  "GIL01 vs GBJ002",
+  "GIL16 vs GBJ002",
+  "GIL16 vs GIL01"
+)
+
+lysogeny_genes_table[lfc_names] <- lapply(
+  lysogeny_genes_table[lfc_names],
+  as.numeric
+)
+
+lfc_matrix <- as.matrix(
+  lysogeny_genes_table[
+    ,
+    lfc_names,
+    drop = FALSE
+  ]
+)
+
+storage.mode(lfc_matrix) <- "numeric"
+
+status_matrix <- as.matrix(status_aux)
+
+de_mask <- status_matrix %in% c(
+  "UP",
+  "DOWN"
+)
+
+de_values <- abs(
+  lfc_matrix[
+    de_mask & !is.na(lfc_matrix)
+  ]
+)
+
+if(length(de_values) == 0){
+
+  max_abs <- 1
+
+} else {
+
+  max_abs <- ceiling(
+    max(
+      de_values,
+      na.rm = TRUE
     )
   )
-))
 
-datatable(lysogeny_de_genes, container = sketch, rownames = FALSE,
-          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
-            dom = "Brftip",
-            buttons = c("copy", "csv", "excel"),
-            fixedColumns = list(leftColumns = 1),
-            scrollX = TRUE,
-            scrollY = 400,
-            scroller = TRUE,
-            deferRender = TRUE)) %>%
-  formatRound(columns = c(4:6), digits = 2) %>%
-  formatStyle(columns = c(4:6), backgroundColor = styleInterval(brks, clrs)) %>%
-  formatStyle(columns = c(1, 2, 4:ncol(lysogeny_de_genes)), `text-align` = "center")
+  if(!is.finite(max_abs) || max_abs <= 0){
+    max_abs <- 1
+  }
+}
+
+n_colors <- 100
+
+red_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#F8696B"
+  )
+)(n_colors)
+
+blue_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#5A8AC6"
+  )
+)(n_colors)
+
+get_cell_color <- function(lfc, status){
+
+  color <- rep(
+    "#FFFFFF",
+    length(lfc)
+  )
+
+  valid <- (
+    !is.na(lfc) &
+    !is.na(status) &
+    status %in% c("UP", "DOWN")
+  )
+
+  if(!any(valid)){
+    return(color)
+  }
+
+  intensity <- abs(lfc[valid]) / max_abs
+
+  intensity <- pmax(
+    0,
+    pmin(
+      1,
+      intensity
+    )
+  )
+
+  color_index <- pmax(
+    1,
+    pmin(
+      n_colors,
+      ceiling(intensity * n_colors)
+    )
+  )
+
+  valid_positions <- which(valid)
+
+  up_positions <- valid_positions[
+    status[valid] == "UP"
+  ]
+
+  down_positions <- valid_positions[
+    status[valid] == "DOWN"
+  ]
+
+  if(length(up_positions) > 0){
+
+    up_index <- color_index[
+      status[valid] == "UP"
+    ]
+
+    color[up_positions] <- red_palette[
+      up_index
+    ]
+  }
+
+  if(length(down_positions) > 0){
+
+    down_index <- color_index[
+      status[valid] == "DOWN"
+    ]
+
+    color[down_positions] <- blue_palette[
+      down_index
+    ]
+  }
+
+  color
+}
+
+color_aux <- data.frame(
+  `Color GIL01 vs GBJ002` = get_cell_color(
+    lysogeny_genes_table[["GIL01 vs GBJ002"]],
+    status_aux[["Status GIL01 vs GBJ002"]]
+  ),
+  `Color GIL16 vs GBJ002` = get_cell_color(
+    lysogeny_genes_table[["GIL16 vs GBJ002"]],
+    status_aux[["Status GIL16 vs GBJ002"]]
+  ),
+  `Color GIL16 vs GIL01` = get_cell_color(
+    lysogeny_genes_table[["GIL16 vs GIL01"]],
+    status_aux[["Status GIL16 vs GIL01"]]
+  ),
+  check.names = FALSE
+)
+
+lysogeny_genes_dt_data <- cbind(
+  lysogeny_genes_table,
+  color_aux
+)
+
+all_colors <- unique(
+  c(
+    "#FFFFFF",
+    red_palette,
+    blue_palette
+  )
+)
+
+sketch <- htmltools::withTags(
+  table(
+    class = "display",
+    thead(
+      tr(
+        th(
+          colspan = 3,
+          style = "text-align: center; font-weight: bold;",
+          "Gene annotation"
+        ),
+        th(
+          colspan = 3,
+          style = "text-align: center; font-weight: bold;",
+          "Lysogeny contrasts"
+        ),
+        th(
+          colspan = 3,
+          style = "display:none;",
+          ""
+        )
+      ),
+      tr(
+        lapply(
+          colnames(lysogeny_genes_dt_data),
+          function(x){
+            th(
+              style = if(
+                grepl("^Color ", x)
+              ) {
+                "display:none;"
+              } else {
+                "text-align:center;"
+              },
+              x
+            )
+          }
+        )
+      )
+    )
+  )
+)
+
+lysogeny_genes_dt <- DT::datatable(
+  lysogeny_genes_dt_data,
+  container = sketch,
+  rownames = FALSE,
+  filter = "top",
+  extensions = c(
+    "Buttons",
+    "FixedColumns",
+    "Scroller"
+  ),
+  options = list(
+    dom = "Brftip",
+    buttons = list(
+      list(
+        extend = "copy",
+        exportOptions = list(
+          columns = 0:5
+        )
+      ),
+      list(
+        extend = "csv",
+        exportOptions = list(
+          columns = 0:5
+        )
+      ),
+      list(
+        extend = "excel",
+        exportOptions = list(
+          columns = 0:5
+        )
+      )
+    ),
+    columnDefs = list(
+      list(
+        targets = 6:8,
+        visible = FALSE,
+        searchable = FALSE
+      )
+    ),
+    fixedColumns = list(
+      leftColumns = 1
+    ),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE
+  )
+) %>%
+  DT::formatRound(
+    columns = lfc_names,
+    digits = 2
+  ) %>%
+  DT::formatStyle(
+    columns = "GIL01 vs GBJ002",
+    valueColumns = "Color GIL01 vs GBJ002",
+    backgroundColor = DT::styleEqual(
+      all_colors,
+      all_colors
+    )
+  ) %>%
+  DT::formatStyle(
+    columns = "GIL16 vs GBJ002",
+    valueColumns = "Color GIL16 vs GBJ002",
+    backgroundColor = DT::styleEqual(
+      all_colors,
+      all_colors
+    )
+  ) %>%
+  DT::formatStyle(
+    columns = "GIL16 vs GIL01",
+    valueColumns = "Color GIL16 vs GIL01",
+    backgroundColor = DT::styleEqual(
+      all_colors,
+      all_colors
+    )
+  ) %>%
+  DT::formatStyle(
+    columns = c(
+      "Gene ID",
+      "Gene symbol",
+      lfc_names
+    ),
+    `text-align` = "center"
+  )
+
+lysogeny_genes_dt
 ```
 
 ## Enrichments summary

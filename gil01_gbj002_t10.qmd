@@ -203,6 +203,7 @@ According to KEGG categories, no enrichments were found.
 #| error: true
 #| label: kegg
 #| message: false
+#| warning: false
 #| code-fold: true
 
 kegg_up <- kegg_enrichment(up_genes, all_genes)
@@ -242,8 +243,9 @@ The Gene Ontology (GO) is organized into three categories: **Biological Process*
 #| eval: true
 #| error: true
 #| label: go
-#| code-fold: true
 #| message: false
+#| warning: false
+#| code-fold: true
 
 go_bp_up <- go_enrichment(up_genes, all_genes, "BP")
 go_bp_down <- go_enrichment(down_genes, all_genes, "BP")

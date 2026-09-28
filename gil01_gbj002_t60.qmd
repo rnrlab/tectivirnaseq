@@ -204,6 +204,7 @@ According to KEGG categories, we only found positive enrichments. The ribosome p
 #| error: true
 #| label: kegg
 #| message: false
+#| warning: false
 #| code-fold: true
 
 kegg_up <- kegg_enrichment(up_genes, all_genes)
@@ -238,19 +239,14 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
 
 The Gene Ontology (GO) is organized into three categories: **Biological Process** (BP), which describes the biological objectives to which gene products contribute; **Molecular Function** (MF), which refers to the elemental activities of gene products at the molecular level; and **Cellular Component** (CC), which specifies the locations within the cell where gene products are active.
 
--   According to **BP**, we observed positive enrichment of amino acid and nucleotide processes, mostly.
-
--   Regarding **MF**, we found positive enrichments of RNA binding and structural molecules activities.
-
--   Regarding **CC**, we found positive enrichments of ribosome-related components.
-
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
 #| label: go
-#| code-fold: true
 #| message: false
+#| warning: false
+#| code-fold: true
 
 go_bp_up <- go_enrichment(up_genes, all_genes, "BP")
 go_bp_down <- go_enrichment(down_genes, all_genes, "BP")

@@ -680,6 +680,11 @@ go_enrichment <- function(genes_set, all_genes, ont, plots = FALSE, showCategory
 
 go_enrichment_by_cluster <- function(cluster_gene_table, all_genes, ont) {
 
+  valid_genes <- keys(
+    org.Bthuringiensis.eg.db,
+    keytype = "GID"
+  )
+  
   results_list <- list()
 
   for (cl in levels(cluster_gene_table$Cluster)) {
@@ -687,6 +692,11 @@ go_enrichment_by_cluster <- function(cluster_gene_table, all_genes, ont) {
     hc_genes <- cluster_gene_table %>%
       dplyr::filter(Cluster == cl) %>%
       dplyr::pull(Gene)
+
+    hc_genes <- intersect(hc_genes, valid_genes)
+
+    if (length(hc_genes) == 0)
+      next
 
     ego <- enrichGO(
       gene          = hc_genes,
@@ -1101,83 +1111,98 @@ create_summary <- function(contrast_name = "contrast", rds_name = "result"){
 
   attr(enrichment_summary, "contrast") <- contrast_name
   attr(enrichment_summary, "group") <- group
-  saveRDS(enrichment_summary, file = paste0(prefix,"_enrichment_summary.rds"))
+  saveRDS(enrichment_summary, file = paste0(prefix, "_enrichment_summary.rds"))
 
-  if(exists("up_genes", inherits = TRUE)){
-    up_genes <- get("up_genes", inherits = TRUE)
-  } else {
-    up_genes <- NULL
-  }
+  make_contrast_genes_df <- function(x, id_col){
 
-  if(exists("down_genes", inherits = TRUE)){
-    down_genes <- get("down_genes", inherits = TRUE)
-  } else {
-    down_genes <- NULL
+    required_columns <- c(id_col, "LFC", "Adjusted_p_value")
+    missing_columns <- setdiff(required_columns, colnames(x))
+
+    if(length(missing_columns) > 0){
+      stop(
+        "The following required columns are missing: ",
+        paste(missing_columns, collapse = ", ")
+      )
+    }
+
+    annotation_columns <- c(
+      id_col,
+      "Gene_symbol",
+      "Description",
+      "LFC",
+      "Adjusted_p_value"
+    )
+
+    annotation_columns <- unique(
+      annotation_columns[annotation_columns %in% colnames(x)]
+    )
+
+    out <- x[, annotation_columns, drop = FALSE]
+
+    colnames(out)[colnames(out) == id_col] <- "Gene_ID"
+
+    out$DE_status <- "Not_DE"
+
+    out$DE_status[
+      !is.na(out$Adjusted_p_value) &
+        !is.na(out$LFC) &
+        out$Adjusted_p_value < 0.05 &
+        out$LFC > log2(1.5)
+    ] <- "UP"
+
+    out$DE_status[
+      !is.na(out$Adjusted_p_value) &
+        !is.na(out$LFC) &
+        out$Adjusted_p_value < 0.05 &
+        out$LFC < -log2(1.5)
+    ] <- "DOWN"
+
+    out$DE_status <- factor(
+      out$DE_status,
+      levels = c("UP", "DOWN", "Not_DE")
+    )
+
+    rownames(out) <- NULL
+
+    out
   }
 
   if(exists("contrast_df", inherits = TRUE)){
+
     contrast_df_obj <- get("contrast_df", inherits = TRUE)
 
-    up_df <- contrast_df_obj[contrast_df_obj$Gene_ID %in% up_genes, c("Gene_ID", "LFC")]
-    down_df <- contrast_df_obj[contrast_df_obj$Gene_ID %in% down_genes, c("Gene_ID", "LFC")]
-  } else {
-    up_df <- NULL
-    down_df <- NULL
-  }
-
-  de_genes <- list(
-    up_genes = up_df,
-    down_genes = down_df
-  )
-
-  attr(de_genes,"contrast") <- contrast_name
-  attr(de_genes,"group") <- group
-  saveRDS(de_genes, file = paste0(prefix, "_de_genes.rds"))
-
-  if(exists("contrast_tectivirus_df", inherits = TRUE) &&
-    exists("contrast_tectivirus", inherits = TRUE)){
-
-    contrast_tectivirus_df_obj <- get("contrast_tectivirus_df", inherits = TRUE)
-    contrast_tectivirus_obj <- get("contrast_tectivirus", inherits = TRUE)
-
-    up_tectivirus <- rownames(
-      contrast_tectivirus_obj[
-        contrast_tectivirus_obj$padj < 0.05 &
-          contrast_tectivirus_obj$log2FoldChange > log2(1.5),
-      ]
+    contrast_genes <- make_contrast_genes_df(
+      contrast_df_obj,
+      id_col = "Gene_ID"
     )
 
-    down_tectivirus <- rownames(
-      contrast_tectivirus_obj[
-        contrast_tectivirus_obj$padj < 0.05 &
-          contrast_tectivirus_obj$log2FoldChange < -log2(1.5),
-      ]
-    )
-
-    up_tectivirus_df <- contrast_tectivirus_df_obj[
-      contrast_tectivirus_df_obj$Gene_symbol %in% up_tectivirus,
-      c("Gene_symbol", "LFC")
-    ]
-
-    down_tectivirus_df <- contrast_tectivirus_df_obj[
-      contrast_tectivirus_df_obj$Gene_symbol %in% down_tectivirus,
-      c("Gene_symbol", "LFC")
-    ]
-
-    colnames(up_tectivirus_df)[1] <- "Gene_ID"
-    colnames(down_tectivirus_df)[1] <- "Gene_ID"
-
-    de_tectivirus_genes <- list(
-      up_genes = up_tectivirus_df,
-      down_genes = down_tectivirus_df
-    )
-
-    attr(de_tectivirus_genes, "contrast") <- contrast_name
-    attr(de_tectivirus_genes, "group") <- group
+    attr(contrast_genes, "contrast") <- contrast_name
+    attr(contrast_genes, "group") <- group
 
     saveRDS(
-      de_tectivirus_genes,
-      file = paste0(prefix, "_de_tectivirus_genes.rds")
+      contrast_genes,
+      file = paste0(prefix, "_contrast_genes.rds")
+    )
+  }
+
+  if(exists("contrast_tectivirus_df", inherits = TRUE)){
+
+    contrast_tectivirus_df_obj <- get(
+      "contrast_tectivirus_df",
+      inherits = TRUE
+    )
+
+    contrast_tectivirus_genes <- make_contrast_genes_df(
+      contrast_tectivirus_df_obj,
+      id_col = "Gene_symbol"
+    )
+
+    attr(contrast_tectivirus_genes, "contrast") <- contrast_name
+    attr(contrast_tectivirus_genes, "group") <- group
+
+    saveRDS(
+      contrast_tectivirus_genes,
+      file = paste0(prefix, "_contrast_tectivirus_genes.rds")
     )
   }
 
@@ -1715,7 +1740,7 @@ networks_attributes_differences <- function(data, names, gene_order, ranking_att
 load_summaries <- function(path = "."){
   files <- list.files(
     path,
-    pattern = ".*_(contrast|enrichment)_summary\\.rds$|.*_de_genes\\.rds$|.*_de_tectivirus_genes\\.rds$",
+    pattern = ".*_(contrast|enrichment)_summary\\.rds$|.*_contrast_genes\\.rds$|.*_contrast_tectivirus_genes\\.rds$",
     full.names = TRUE
   )
   out <- list()
@@ -2011,6 +2036,7 @@ venn_contrasts <- function(group, de_genes = c("UP", "DOWN"), label_alpha) {
     if (is.null(lbl)) NA_character_ else lbl
   })
   
+  set_names <- sub("^Strains ", "", set_names)
   names(gene_sets) <- set_names
   
   ggVennDiagram(gene_sets, label_alpha = label_alpha) +
@@ -2072,79 +2098,303 @@ upset_contrasts <- function(group, de_genes = c("UP", "DOWN"), order = NULL) {
   )
 }
 
-create_de_genes_table <- function(group = c("strains", "time_points"), filter = FALSE){
+create_contrasts_genes_table <- function(
+    group = c("strains", "time_points"),
+    filter = FALSE
+){
 
   group <- match.arg(group)
-  objs <- ls(.GlobalEnv, pattern = "_de_genes$")
-  
-  obj_groups <- sapply(objs, function(nm) attr(get(nm, envir = .GlobalEnv), "group"))
-  
-  if(group == "strains"){
-    valid_vals <- c("Lysogeny", "t0", "t10", "t30", "t60", "t60-mock")
-  } else if(group == "time_points"){
-    valid_vals <- c("GBJ002", "GIL01", "GIL16")
-  } else {
-    stop("Group must be 'strains' or 'time_points'.")
+
+  objs <- ls(
+    .GlobalEnv,
+    pattern = "_contrast_genes$"
+  )
+
+  if(length(objs) == 0){
+    return(NULL)
   }
-  
-  selected <- objs[obj_groups %in% valid_vals]
-  
+
+  obj_groups <- sapply(
+    objs,
+    function(nm){
+      attr(
+        get(nm, envir = .GlobalEnv),
+        "group"
+      )
+    },
+    USE.NAMES = TRUE
+  )
+
+  if(group == "strains"){
+
+    valid_vals <- c(
+      "Lysogeny",
+      "t0",
+      "t10",
+      "t30",
+      "t60",
+      "t60-mock"
+    )
+
+  } else {
+
+    valid_vals <- c(
+      "GBJ002",
+      "GIL01",
+      "GIL16"
+    )
+  }
+
+  selected <- objs[obj_groups[objs] %in% valid_vals]
+
   if(!identical(filter, FALSE)){
+
     selected <- selected[
-      sapply(obj_groups[selected], function(grp)
-        any(sapply(filter, function(f) grepl(f, grp, ignore.case = TRUE)))
+      sapply(
+        selected,
+        function(nm){
+
+          grp <- obj_groups[[nm]]
+
+          any(
+            sapply(
+              filter,
+              function(f){
+                grepl(f, grp, ignore.case = TRUE)
+              }
+            )
+          )
+        }
       )
     ]
   }
-  
-  if(length(selected) == 0) return(NULL)
-  
+
+  if(length(selected) == 0){
+    return(NULL)
+  }
+
   dfs <- list()
-  
+
   for(nm in selected){
+
     obj <- get(nm, envir = .GlobalEnv)
+
+    required_columns <- c(
+      "Gene_ID",
+      "LFC",
+      "DE_status"
+    )
+
+    missing_columns <- setdiff(
+      required_columns,
+      colnames(obj)
+    )
+
+    if(length(missing_columns) > 0){
+
+      stop(
+        "Object '",
+        nm,
+        "' is missing the following required columns: ",
+        paste(missing_columns, collapse = ", ")
+      )
+    }
+
     grp <- attr(obj, "group")
     contrast <- attr(obj, "contrast")
-    
-    df_up <- obj$up_genes
-    df_down <- obj$down_genes
-    
-    df <- rbind(df_up, df_down)
-    
-    if(nrow(df) == 0) next
-    
-    colnames(df) <- c("Gene_ID", "LFC")
-    df$Contrast <- paste(grp, contrast, sep = " - ")
-    
+
+    if(is.null(grp) || is.null(contrast)){
+
+      stop(
+        "Object '",
+        nm,
+        "' does not contain the required attributes ",
+        "'group' and 'contrast'."
+      )
+    }
+
+    annotation_columns <- intersect(
+      c(
+        "Gene_ID",
+        "Gene_symbol",
+        "Description"
+      ),
+      colnames(obj)
+    )
+
+    df <- obj[
+      ,
+      c(
+        annotation_columns,
+        "LFC",
+        "DE_status"
+      ),
+      drop = FALSE
+    ]
+
+    if(nrow(df) == 0){
+      next
+    }
+
+    if(!"Gene_symbol" %in% colnames(df)){
+      df$Gene_symbol <- NA_character_
+    }
+
+    if(!"Description" %in% colnames(df)){
+      df$Description <- NA_character_
+    }
+
+    df <- df[
+      ,
+      c(
+        "Gene_ID",
+        "Gene_symbol",
+        "Description",
+        "LFC",
+        "DE_status"
+      ),
+      drop = FALSE
+    ]
+
+    df$Contrast <- paste(
+      grp,
+      contrast,
+      sep = " - "
+    )
+
     dfs[[nm]] <- df
   }
-  
-  long_df <- do.call(rbind, dfs)
-  
-  wide_df <- reshape(long_df, timevar = "Contrast", idvar = "Gene_ID", direction = "wide")
-  
-  colnames(wide_df) <- sub("^LFC\\.", "", colnames(wide_df))
-  
-  if(exists("annotation", inherits = TRUE)){
-    annot <- get("annotation", inherits = TRUE)
-    annot_sel <- annot[, c("Gene_ID", "Gene_symbol", "Description")]
-    
-    final_df <- merge(annot_sel, wide_df, by = "Gene_ID", all.y = TRUE)
-    order_idx <- match(final_df$Gene_ID, annot_sel$Gene_ID)
-    final_df <- final_df[order(order_idx), ]
-  } else {
-    final_df <- wide_df
+
+  if(length(dfs) == 0){
+    return(NULL)
   }
-  
-  lfc_cols <- setdiff(colnames(final_df), c("Gene_ID", "Gene_symbol", "Description"))
-  keep <- rowSums(!is.na(final_df[, lfc_cols])) > 0
-  
-  final_df <- final_df[keep, ]
-  
+
+  long_df <- do.call(
+    rbind,
+    dfs
+  )
+
+  rownames(long_df) <- NULL
+
+  contrast_names <- unique(long_df$Contrast)
+
+  annotation_df <- long_df[
+    ,
+    c(
+      "Gene_ID",
+      "Gene_symbol",
+      "Description"
+    ),
+    drop = FALSE
+  ]
+
+  annotation_df <- annotation_df[
+    !duplicated(annotation_df$Gene_ID),
+    ,
+    drop = FALSE
+  ]
+
+  lfc_long <- long_df[
+    ,
+    c(
+      "Gene_ID",
+      "Contrast",
+      "LFC"
+    ),
+    drop = FALSE
+  ]
+
+  status_long <- long_df[
+    ,
+    c(
+      "Gene_ID",
+      "Contrast",
+      "DE_status"
+    ),
+    drop = FALSE
+  ]
+
+  lfc_wide <- reshape(
+    lfc_long,
+    timevar = "Contrast",
+    idvar = "Gene_ID",
+    direction = "wide"
+  )
+
+  status_wide <- reshape(
+    status_long,
+    timevar = "Contrast",
+    idvar = "Gene_ID",
+    direction = "wide"
+  )
+
+  colnames(lfc_wide) <- sub(
+    "^LFC\\.",
+    "",
+    colnames(lfc_wide)
+  )
+
+  colnames(status_wide) <- sub(
+    "^DE_status\\.",
+    "",
+    colnames(status_wide)
+  )
+
+  final_df <- merge(
+    annotation_df,
+    lfc_wide,
+    by = "Gene_ID",
+    all.y = TRUE,
+    sort = FALSE
+  )
+
+  order_idx <- match(
+    final_df$Gene_ID,
+    annotation_df$Gene_ID
+  )
+
+  final_df <- final_df[
+    order(order_idx),
+    ,
+    drop = FALSE
+  ]
+
+  lfc_cols <- setdiff(
+    colnames(final_df),
+    c(
+      "Gene_ID",
+      "Gene_symbol",
+      "Description"
+    )
+  )
+
+  if(length(lfc_cols) > 0){
+
+    keep <- rowSums(
+      !is.na(final_df[, lfc_cols, drop = FALSE])
+    ) > 0
+
+    final_df <- final_df[
+      keep,
+      ,
+      drop = FALSE
+    ]
+  }
+
+  status_df <- status_wide[
+    match(final_df$Gene_ID, status_wide$Gene_ID),
+    ,
+    drop = FALSE
+  ]
+
   if(group == "time_points"){
-    
-    contrast_order <- c("GBJ002", "GIL01", "GIL16")
-    
+
+    contrast_order <- c(
+      "GBJ002",
+      "GIL01",
+      "GIL16"
+    )
+
     desired_order <- c(
       "Time points 10 vs 0",
       "Time points 30 vs 0",
@@ -2152,43 +2402,107 @@ create_de_genes_table <- function(group = c("strains", "time_points"), filter = 
       "Time points 60 vs 60-mock",
       "Time points 60-mock vs 0"
     )
-    
+
   } else {
-    
-    contrast_order <- if(!identical(filter, FALSE)) filter else unique(sub(" - .*", "",lfc_cols))
-    
+
+    if(!identical(filter, FALSE)){
+
+      contrast_order <- filter
+
+    } else {
+
+      contrast_order <- unique(
+        sub(
+          " - .*",
+          "",
+          contrast_names
+        )
+      )
+    }
+
     desired_order <- c(
       "Strains GIL01 vs GBJ002",
       "Strains GIL16 vs GBJ002",
       "Strains GIL16 vs GIL01"
     )
   }
-  
+
   lfc_cols <- setdiff(
     colnames(final_df),
-    c("Gene_ID", "Gene_symbol", "Description")
+    c(
+      "Gene_ID",
+      "Gene_symbol",
+      "Description"
+    )
   )
-  
-  group_tag <- sub(" - .*", "", lfc_cols)
-  base_names <- sub(".* - ", "", lfc_cols)
-  
+
+  group_tag <- sub(
+    " - .*",
+    "",
+    lfc_cols
+  )
+
+  base_names <- sub(
+    "^[^-]+ - ",
+    "",
+    lfc_cols
+  )
+
   ord <- order(
     match(group_tag, contrast_order),
     match(base_names, desired_order),
     lfc_cols
   )
-  
-  final_df <- final_df[, c(
-    "Gene_ID", "Gene_symbol", "Description",
-    lfc_cols[ord]
-  )]
-  
+
+  ordered_contrasts <- lfc_cols[ord]
+
+  final_df <- final_df[
+    ,
+    c(
+      "Gene_ID",
+      "Gene_symbol",
+      "Description",
+      ordered_contrasts
+    ),
+    drop = FALSE
+  ]
+
+  status_df <- status_df[
+    ,
+    c(
+      "Gene_ID",
+      ordered_contrasts
+    ),
+    drop = FALSE
+  ]
+
+  for(column in ordered_contrasts){
+
+    status_df[[column]] <- factor(
+      status_df[[column]],
+      levels = c(
+        "UP",
+        "DOWN",
+        "Not_DE"
+      )
+    )
+  }
+
   rownames(final_df) <- NULL
-  
-  final_df
+  rownames(status_df) <- NULL
+
+  result <- list(
+    table = final_df,
+    status = status_df
+  )
+
+  attr(result, "group") <- group
+  attr(result, "contrasts") <- ordered_contrasts
+
+  result
 }
 
-create_de_tectivirus_genes_table <- function(){
+create_contrasts_tectivirus_genes_table <- function(){
 
   counts <- readRDS(file = "lysogeny_counts.rds")
   
@@ -2203,55 +2517,171 @@ create_de_tectivirus_genes_table <- function(){
 
   tectivirus_annotation <- combine_tectivirus_genes()$tectivirus_annotation
 
-  objs <- ls(.GlobalEnv, pattern = "_de_tectivirus_genes$")
+  objs <- ls(
+    .GlobalEnv,
+    pattern = "_contrast_tectivirus_genes$"
+  )
+
+  if(length(objs) == 0){
+    return(NULL)
+  }
 
   obj_groups <- sapply(
     objs,
-    function(nm) attr(get(nm, envir = .GlobalEnv), "group")
+    function(nm){
+      attr(
+        get(nm, envir = .GlobalEnv),
+        "group"
+      )
+    },
+    USE.NAMES = TRUE
   )
 
-  selected <- objs[obj_groups %in% valid_vals]
+  selected <- objs[
+    obj_groups[objs] %in% valid_vals
+  ]
 
-  if(length(selected) == 0) return(NULL)
+  if(length(selected) == 0){
+    return(NULL)
+  }
 
   dfs <- list()
 
   for(nm in selected){
 
-    obj <- get(nm, envir = .GlobalEnv)
-    grp <- attr(obj, "group")
+    obj <- get(
+      nm,
+      envir = .GlobalEnv
+    )
 
-    df_up <- obj$up_genes
-    df_down <- obj$down_genes
+    required_columns <- c(
+      "Gene_ID",
+      "LFC",
+      "DE_status"
+    )
 
-    df <- rbind(df_up, df_down)
+    missing_columns <- setdiff(
+      required_columns,
+      colnames(obj)
+    )
 
-    if(nrow(df) == 0) next
+    if(length(missing_columns) > 0){
 
-    colnames(df) <- c("Gene_symbol", "LFC")
+      stop(
+        "Object '",
+        nm,
+        "' is missing the following required columns: ",
+        paste(missing_columns, collapse = ", ")
+      )
+    }
+
+    grp <- attr(
+      obj,
+      "group"
+    )
+
+    if(is.null(grp)){
+
+      stop(
+        "Object '",
+        nm,
+        "' does not contain the required 'group' attribute."
+      )
+    }
+
+    df <- obj[
+      ,
+      c(
+        "Gene_ID",
+        "LFC",
+        "DE_status"
+      ),
+      drop = FALSE
+    ]
+
+    if(nrow(df) == 0){
+      next
+    }
+
+    colnames(df)[
+      colnames(df) == "Gene_ID"
+    ] <- "Gene_symbol"
+
     df$Group <- grp
 
     dfs[[nm]] <- df
   }
 
-  if(length(dfs) == 0) return(NULL)
+  if(length(dfs) == 0){
+    return(NULL)
+  }
 
-  long_df <- do.call(rbind, dfs)
+  long_df <- do.call(
+    rbind,
+    dfs
+  )
 
-  wide_df <- reshape(
-    long_df,
+  rownames(long_df) <- NULL
+
+  lfc_long <- long_df[
+    ,
+    c(
+      "Gene_symbol",
+      "Group",
+      "LFC"
+    ),
+    drop = FALSE
+  ]
+
+  status_long <- long_df[
+    ,
+    c(
+      "Gene_symbol",
+      "Group",
+      "DE_status"
+    ),
+    drop = FALSE
+  ]
+
+  lfc_wide <- reshape(
+    lfc_long,
     timevar = "Group",
     idvar = "Gene_symbol",
     direction = "wide"
   )
 
-  colnames(wide_df) <- sub("^LFC\\.", "", colnames(wide_df))
+  status_wide <- reshape(
+    status_long,
+    timevar = "Group",
+    idvar = "Gene_symbol",
+    direction = "wide"
+  )
+
+  colnames(lfc_wide) <- sub(
+    "^LFC\\.",
+    "",
+    colnames(lfc_wide)
+  )
+
+  colnames(status_wide) <- sub(
+    "^DE_status\\.",
+    "",
+    colnames(status_wide)
+  )
 
   final_df <- merge(
-    tectivirus_annotation[, c("Gene_symbol", "Description")],
-    wide_df,
+    tectivirus_annotation[
+      ,
+      c(
+        "Gene_symbol",
+        "Description"
+      ),
+      drop = FALSE
+    ],
+    lfc_wide,
     by = "Gene_symbol",
-    all.x = TRUE
+    all.x = TRUE,
+    sort = FALSE
   )
 
   order_idx <- match(
@@ -2259,29 +2689,109 @@ create_de_tectivirus_genes_table <- function(){
     tectivirus_annotation$Gene_symbol
   )
 
-  final_df <- final_df[order(order_idx), ]
+  final_df <- final_df[
+    order(order_idx),
+    ,
+    drop = FALSE
+  ]
 
-  lfc_cols <- intersect(valid_vals, colnames(final_df))
+  present_lfc_cols <- intersect(
+    valid_vals,
+    colnames(final_df)
+  )
 
-  keep <- rowSums(!is.na(final_df[, lfc_cols, drop = FALSE])) > 0
+  if(length(present_lfc_cols) > 0){
 
-  final_df <- final_df[keep, ]
+    keep <- rowSums(
+      !is.na(
+        final_df[
+          ,
+          present_lfc_cols,
+          drop = FALSE
+        ]
+      )
+    ) > 0
 
-  missing_cols <- setdiff(valid_vals, colnames(final_df))
+    final_df <- final_df[
+      keep,
+      ,
+      drop = FALSE
+    ]
 
-  for(col in missing_cols){
-    final_df[[col]] <- NA_real_
+  } else {
+
+    return(NULL)
   }
 
-  final_df <- final_df[, c(
-    "Gene_symbol",
-    "Description",
-    valid_vals
-  )]
+  missing_lfc_cols <- setdiff(
+    valid_vals,
+    colnames(final_df)
+  )
+
+  for(column in missing_lfc_cols){
+    final_df[[column]] <- NA_real_
+  }
+
+  status_df <- status_wide[
+    match(
+      final_df$Gene_symbol,
+      status_wide$Gene_symbol
+    ),
+    ,
+    drop = FALSE
+  ]
+
+  missing_status_cols <- setdiff(
+    valid_vals,
+    colnames(status_df)
+  )
+
+  for(column in missing_status_cols){
+    status_df[[column]] <- NA_character_
+  }
+
+  final_df <- final_df[
+    ,
+    c(
+      "Gene_symbol",
+      "Description",
+      valid_vals
+    ),
+    drop = FALSE
+  ]
+
+  status_df <- status_df[
+    ,
+    c(
+      "Gene_symbol",
+      valid_vals
+    ),
+    drop = FALSE
+  ]
+
+  for(column in valid_vals){
+
+    status_df[[column]] <- factor(
+      status_df[[column]],
+      levels = c(
+        "UP",
+        "DOWN",
+        "Not_DE"
+      )
+    )
+  }
 
   rownames(final_df) <- NULL
+  rownames(status_df) <- NULL
 
-  final_df
+  result <- list(
+    table = final_df,
+    status = status_df
+  )
+
+  attr(result, "groups") <- valid_vals
+
+  result
 }
 
 # Other functions
@@ -2391,7 +2901,8 @@ volcano_plot <- function(contrast_df, limits = NULL, tectivirus = FALSE) {
       ) +
       scale_x_continuous(limits = limits) +
       theme_linedraw(base_size = 14) +
-      theme(panel.grid = element_blank())
+      theme(panel.grid = element_blank(),
+            panel.border = element_blank())
 
   } else {
 
@@ -2429,7 +2940,8 @@ volcano_plot <- function(contrast_df, limits = NULL, tectivirus = FALSE) {
       ) +
       scale_x_continuous(limits = limits) +
       theme_linedraw(base_size = 14) +
-      theme(panel.grid = element_blank())
+      theme(panel.grid = element_blank(),
+            panel.border = element_blank())
   }
 
   ggplotly(p, tooltip = "text")
