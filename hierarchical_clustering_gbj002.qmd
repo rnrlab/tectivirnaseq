@@ -277,7 +277,7 @@ datatable(cluster_gene_table, rownames = FALSE,
 
 expression_plots <- clusters_expression(expression_matrix = rhos@logratio,
                                         metadata = metadata, time_points = c(0, 10, 30, 60),
-                                        de_genes = c("gbj002_t10_t0", "gbj002_t30_t0", "gbj002_t60_t0", "gbj002_t60_t60-mock", "gbj002_t60-mock_t0"),
+                                        contrast_genes = c("gbj002_t10_t0", "gbj002_t30_t0", "gbj002_t60_t0", "gbj002_t60_t60-mock", "gbj002_t60-mock_t0"),
                                         which_contrast = 3)
 ```
 

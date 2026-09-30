@@ -409,6 +409,7 @@ ggplot() +
 #| eval: true
 #| error: true
 #| label: lysogeny_contrasts_genes
+#| warning: false
 #| code-fold: true
 
 lysogeny_contrasts_genes <- create_contrasts_genes_table(
@@ -1171,76 +1172,634 @@ ggplot() +
   )
 ```
 
-## DE genes
+## Contrasts genes
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: inter_de_genes
-#| code-fold: true
+#| label: inter_contrasts_genes
 #| warning: false
+#| code-fold: true
 
-inter_de_genes <- create_de_genes_table(group = "strains", filter = c("t0", "t10", "t30", "t60", "t60-mock"))
+inter_contrasts_genes <- create_contrasts_genes_table(
+  group = "strains",
+  filter = c("t0", "t10", "t30", "t60", "t60-mock")
+)
 
-colnames(inter_de_genes)[1:2] <- c("Gene ID", "Gene symbol")
+inter_genes_table <- inter_contrasts_genes$table
+inter_genes_status <- inter_contrasts_genes$status
 
-max_abs <- ceiling(max(abs(inter_de_genes[, 4:ncol(inter_de_genes)]), na.rm = TRUE))
-brks <- seq(-max_abs, max_abs, length.out = 50)
-clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
+status_order <- match(
+  inter_genes_table$Gene_ID,
+  inter_genes_status$Gene_ID
+)
 
-lfc_cols <- colnames(inter_de_genes)[4:ncol(inter_de_genes)]
-groups <- sub(" - .*", "", lfc_cols)
-group_levels <- c("t0", "t10", "t30", "t60", "t60-mock")
-group_labels <- c("Time point 0", "Time point 10", "Time point 30", "Time point 60", "Time point 60-mock")
-group_counts <- sapply(group_levels, function(g) sum(groups == g))
-second_row <- c(colnames(inter_de_genes)[1:3], sub(".* - ", "", lfc_cols))
-
-sketch <- withTags(table(
-  class = "display",
-  thead(
-    tr(
-      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Gene annotation"),
-      lapply(seq_along(group_levels), function(i)
-        th(colspan = group_counts[i], style = "text-align: center; font-weight: bold;", group_labels[i])
-      )
-    ),
-    tr(
-      lapply(second_row, function(x) th(style = "text-align: center;", x))
-    )
+if(anyNA(status_order)){
+  stop(
+    "Algunos Gene_ID de table no están presentes en status."
   )
-))
+}
 
-datatable(inter_de_genes, container = sketch, rownames = FALSE,
-          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
-            dom = "Brftip",
-            buttons = c("copy", "csv", "excel"),
-            fixedColumns = list(leftColumns = 1),
-            scrollX = TRUE,
-            scrollY = 400,
-            scroller = TRUE,
-            deferRender = TRUE)) %>%
-  formatRound(columns = 4:ncol(inter_de_genes), digits = 2) %>%
-  formatStyle(columns = 4:ncol(inter_de_genes), backgroundColor = styleInterval(brks, clrs)) %>%
-  formatStyle(columns = c(1, 2, 4:ncol(inter_de_genes)), `text-align` = "center")
+inter_genes_status <- inter_genes_status[
+  status_order,
+  ,
+  drop = FALSE
+]
 
-counts <- lysogeny_counts
-tectivirus_de_table <- create_de_tectivirus_genes_table()
-
-colnames(tectivirus_de_table) <- c("Gene symbol", "Description", "Lysogeny", "Time point 0", "Time point 10", "Time point 30", "Time point 60", "Time point 60-mock")
-
-max_abs <- ceiling(
-  max(
-    abs(tectivirus_de_table[, 3:ncol(tectivirus_de_table)]),
-    na.rm = TRUE
+stopifnot(
+  identical(
+    as.character(inter_genes_table$Gene_ID),
+    as.character(inter_genes_status$Gene_ID)
   )
 )
 
-brks <- seq(-max_abs, max_abs, length.out = 50)
+colnames(inter_genes_table)[1:2] <- c(
+  "Gene ID",
+  "Gene symbol"
+)
 
-clrs <- colorRampPalette(
-  c("#5A8AC6", "white", "#F8696B")
-)(length(brks) + 1)
+status_aux <- inter_genes_status[
+  ,
+  -1,
+  drop = FALSE
+]
+
+status_aux[] <- lapply(
+  status_aux,
+  as.character
+)
+
+lfc_names <- colnames(
+  inter_genes_table
+)[4:ncol(inter_genes_table)]
+
+colnames(status_aux) <- paste0(
+  "Status ",
+  lfc_names
+)
+
+inter_genes_table[lfc_names] <- lapply(
+  inter_genes_table[lfc_names],
+  as.numeric
+)
+
+lfc_matrix <- as.matrix(
+  inter_genes_table[
+    ,
+    lfc_names,
+    drop = FALSE
+  ]
+)
+
+storage.mode(lfc_matrix) <- "numeric"
+
+status_matrix <- as.matrix(status_aux)
+
+de_mask <- status_matrix %in% c(
+  "UP",
+  "DOWN"
+)
+
+de_values <- abs(
+  lfc_matrix[
+    de_mask & !is.na(lfc_matrix)
+  ]
+)
+
+if(length(de_values) == 0){
+
+  max_abs <- 1
+
+} else {
+
+  max_abs <- ceiling(
+    max(
+      de_values,
+      na.rm = TRUE
+    )
+  )
+
+  if(!is.finite(max_abs) || max_abs <= 0){
+    max_abs <- 1
+  }
+}
+
+n_colors <- 100
+
+red_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#F8696B"
+  )
+)(n_colors)
+
+blue_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#5A8AC6"
+  )
+)(n_colors)
+
+get_cell_color <- function(lfc, status){
+
+  color <- rep(
+    "#FFFFFF",
+    length(lfc)
+  )
+
+  valid <- (
+    !is.na(lfc) &
+    !is.na(status) &
+    status %in% c("UP", "DOWN")
+  )
+
+  if(!any(valid)){
+    return(color)
+  }
+
+  intensity <- abs(lfc[valid]) / max_abs
+
+  intensity <- pmax(
+    0,
+    pmin(
+      1,
+      intensity
+    )
+  )
+
+  color_index <- pmax(
+    1,
+    pmin(
+      n_colors,
+      ceiling(intensity * n_colors)
+    )
+  )
+
+  valid_positions <- which(valid)
+
+  up_positions <- valid_positions[
+    status[valid] == "UP"
+  ]
+
+  down_positions <- valid_positions[
+    status[valid] == "DOWN"
+  ]
+
+  if(length(up_positions) > 0){
+
+    up_index <- color_index[
+      status[valid] == "UP"
+    ]
+
+    color[up_positions] <- red_palette[
+      up_index
+    ]
+  }
+
+  if(length(down_positions) > 0){
+
+    down_index <- color_index[
+      status[valid] == "DOWN"
+    ]
+
+    color[down_positions] <- blue_palette[
+      down_index
+    ]
+  }
+
+  color
+}
+
+color_aux <- as.data.frame(
+  setNames(
+    lapply(
+      seq_along(lfc_names),
+      function(i){
+
+        get_cell_color(
+          inter_genes_table[[lfc_names[i]]],
+          status_aux[[i]]
+        )
+      }
+    ),
+    paste0(
+      "Color ",
+      lfc_names
+    )
+  ),
+  check.names = FALSE
+)
+
+inter_genes_dt_data <- cbind(
+  inter_genes_table,
+  color_aux
+)
+
+all_colors <- unique(
+  c(
+    "#FFFFFF",
+    red_palette,
+    blue_palette
+  )
+)
+
+groups <- sub(" - .*", "", lfc_names)
+
+group_levels <- c(
+  "t0",
+  "t10",
+  "t30",
+  "t60",
+  "t60-mock"
+)
+
+group_labels <- c(
+  "Time point 0",
+  "Time point 10",
+  "Time point 30",
+  "Time point 60",
+  "Time point 60-mock"
+)
+
+group_counts <- sapply(
+  group_levels,
+  function(g){
+    sum(groups == g)
+  }
+)
+
+second_row <- c(
+  colnames(inter_genes_table)[1:3],
+  sub(".* - ", "", lfc_names),
+  rep("", length(lfc_names))
+)
+
+sketch <- withTags(
+  table(
+    class = "display",
+    thead(
+      tr(
+        th(
+          colspan = 3,
+          style = "text-align: center; font-weight: bold;",
+          "Gene annotation"
+        ),
+        lapply(
+          seq_along(group_levels),
+          function(i)
+            th(
+              colspan = group_counts[i],
+              style = "text-align: center; font-weight: bold;",
+              group_labels[i]
+            )
+        ),
+        th(
+          colspan = length(lfc_names),
+          style = "display:none;",
+          ""
+        )
+      ),
+      tr(
+        lapply(
+          seq_along(second_row),
+          function(i){
+
+            th(
+              style = if(
+                i > (3 + length(lfc_names))
+              ){
+                "display:none;"
+              } else {
+                "text-align:center;"
+              },
+              second_row[i]
+            )
+          }
+        )
+      )
+    )
+  )
+)
+
+inter_genes_dt <- DT::datatable(
+  inter_genes_dt_data,
+  container = sketch,
+  rownames = FALSE,
+  filter = "top",
+  extensions = c(
+    "Buttons",
+    "FixedColumns",
+    "Scroller"
+  ),
+  options = list(
+    dom = "Brftip",
+    buttons = list(
+      list(
+        extend = "copy",
+        exportOptions = list(
+          columns = 0:(ncol(inter_genes_table) - 1)
+        )
+      ),
+      list(
+        extend = "csv",
+        exportOptions = list(
+          columns = 0:(ncol(inter_genes_table) - 1)
+        )
+      ),
+      list(
+        extend = "excel",
+        exportOptions = list(
+          columns = 0:(ncol(inter_genes_table) - 1)
+        )
+      )
+    ),
+    columnDefs = list(
+      list(
+        targets = seq(
+          ncol(inter_genes_table),
+          ncol(inter_genes_dt_data) - 1
+        ),
+        visible = FALSE,
+        searchable = FALSE
+      )
+    ),
+    fixedColumns = list(
+      leftColumns = 1
+    ),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE
+  )
+)
+
+for(i in seq_along(lfc_names)){
+
+  inter_genes_dt <- inter_genes_dt %>%
+    DT::formatStyle(
+      columns = lfc_names[i],
+      valueColumns = paste0(
+        "Color ",
+        lfc_names[i]
+      ),
+      backgroundColor = DT::styleEqual(
+        all_colors,
+        all_colors
+      )
+    )
+}
+
+inter_genes_dt <- inter_genes_dt %>%
+  DT::formatRound(
+    columns = lfc_names,
+    digits = 2
+  ) %>%
+  DT::formatStyle(
+    columns = c(
+      "Gene ID",
+      "Gene symbol",
+      lfc_names
+    ),
+    `text-align` = "center"
+  )
+
+inter_genes_dt
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| error: true
+#| label: inter_contrasts_tectivirus_genes
+#| code-fold: true
+#| warning: false
+
+counts <- lysogeny_counts
+tectivirus_contrasts <- create_contrasts_tectivirus_genes_table()
+
+tectivirus_genes_table <- tectivirus_contrasts$table
+tectivirus_genes_status <- tectivirus_contrasts$status
+
+status_order <- match(
+  tectivirus_genes_table$Gene_symbol,
+  tectivirus_genes_status$Gene_symbol
+)
+
+if(anyNA(status_order)){
+  stop(
+    "Algunos Gene_symbol de table no están presentes en status."
+  )
+}
+
+tectivirus_genes_status <- tectivirus_genes_status[
+  status_order,
+  ,
+  drop = FALSE
+]
+
+stopifnot(
+  identical(
+    as.character(tectivirus_genes_table$Gene_symbol),
+    as.character(tectivirus_genes_status$Gene_symbol)
+  )
+)
+
+colnames(tectivirus_genes_table) <- c(
+  "Gene symbol",
+  "Description",
+  "Lysogeny",
+  "Time point 0",
+  "Time point 10",
+  "Time point 30",
+  "Time point 60",
+  "Time point 60-mock"
+)
+
+status_aux <- tectivirus_genes_status[
+  ,
+  -1,
+  drop = FALSE
+]
+
+status_aux[] <- lapply(
+  status_aux,
+  as.character
+)
+
+lfc_names <- colnames(
+  tectivirus_genes_table
+)[3:ncol(tectivirus_genes_table)]
+
+colnames(status_aux) <- paste0(
+  "Status ",
+  lfc_names
+)
+
+tectivirus_genes_table[lfc_names] <- lapply(
+  tectivirus_genes_table[lfc_names],
+  as.numeric
+)
+
+lfc_matrix <- as.matrix(
+  tectivirus_genes_table[
+    ,
+    lfc_names,
+    drop = FALSE
+  ]
+)
+
+storage.mode(lfc_matrix) <- "numeric"
+
+status_matrix <- as.matrix(status_aux)
+
+de_mask <- status_matrix %in% c(
+  "UP",
+  "DOWN"
+)
+
+de_values <- abs(
+  lfc_matrix[
+    de_mask & !is.na(lfc_matrix)
+  ]
+)
+
+if(length(de_values) == 0){
+
+  max_abs <- 1
+
+} else {
+
+  max_abs <- ceiling(
+    max(
+      de_values,
+      na.rm = TRUE
+    )
+  )
+
+  if(!is.finite(max_abs) || max_abs <= 0){
+    max_abs <- 1
+  }
+}
+
+n_colors <- 100
+
+red_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#F8696B"
+  )
+)(n_colors)
+
+blue_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#5A8AC6"
+  )
+)(n_colors)
+
+get_cell_color <- function(lfc, status){
+
+  color <- rep(
+    "#FFFFFF",
+    length(lfc)
+  )
+
+  valid <- (
+    !is.na(lfc) &
+    !is.na(status) &
+    status %in% c("UP", "DOWN")
+  )
+
+  if(!any(valid)){
+    return(color)
+  }
+
+  intensity <- abs(lfc[valid]) / max_abs
+
+  intensity <- pmax(
+    0,
+    pmin(
+      1,
+      intensity
+    )
+  )
+
+  color_index <- pmax(
+    1,
+    pmin(
+      n_colors,
+      ceiling(intensity * n_colors)
+    )
+  )
+
+  valid_positions <- which(valid)
+
+  up_positions <- valid_positions[
+    status[valid] == "UP"
+  ]
+
+  down_positions <- valid_positions[
+    status[valid] == "DOWN"
+  ]
+
+  if(length(up_positions) > 0){
+
+    up_index <- color_index[
+      status[valid] == "UP"
+    ]
+
+    color[up_positions] <- red_palette[
+      up_index
+    ]
+  }
+
+  if(length(down_positions) > 0){
+
+    down_index <- color_index[
+      status[valid] == "DOWN"
+    ]
+
+    color[down_positions] <- blue_palette[
+      down_index
+    ]
+  }
+
+  color
+}
+
+color_aux <- as.data.frame(
+  setNames(
+    lapply(
+      seq_along(lfc_names),
+      function(i){
+
+        get_cell_color(
+          tectivirus_genes_table[[lfc_names[i]]],
+          status_aux[[i]]
+        )
+      }
+    ),
+    paste0(
+      "Color ",
+      lfc_names
+    )
+  ),
+  check.names = FALSE
+)
+
+tectivirus_genes_dt_data <- cbind(
+  tectivirus_genes_table,
+  color_aux
+)
+
+all_colors <- unique(
+  c(
+    "#FFFFFF",
+    red_palette,
+    blue_palette
+  )
+)
 
 sketch <- withTags(
   table(
@@ -1256,43 +1815,120 @@ sketch <- withTags(
           colspan = 6,
           style = "text-align: center; font-weight: bold;",
           "Strains GIL16 vs GIL01 contrasts"
+        ),
+        th(
+          colspan = 6,
+          style = "display:none;",
+          ""
         )
       ),
       tr(
         lapply(
-          colnames(tectivirus_de_table),
-          function(x) th(style = "text-align: center;", x)
+          c(
+            colnames(tectivirus_genes_table),
+            colnames(color_aux)
+          ),
+          function(x){
+
+            th(
+              style = if(
+                grepl("^Color ", x)
+              ){
+                "display:none;"
+              } else {
+                "text-align:center;"
+              },
+              x
+            )
+          }
         )
       )
     )
   )
 )
 
-datatable(
-  tectivirus_de_table,
+tectivirus_genes_dt <- DT::datatable(
+  tectivirus_genes_dt_data,
   container = sketch,
   rownames = FALSE,
   filter = "top",
-  extensions = c("Buttons", "FixedColumns", "Scroller"),
+  extensions = c(
+    "Buttons",
+    "FixedColumns",
+    "Scroller"
+  ),
   options = list(
     dom = "Brftip",
-    buttons = c("copy", "csv", "excel"),
-    fixedColumns = list(leftColumns = 1),
+    buttons = list(
+      list(
+        extend = "copy",
+        exportOptions = list(
+          columns = 0:(ncol(tectivirus_genes_table) - 1)
+        )
+      ),
+      list(
+        extend = "csv",
+        exportOptions = list(
+          columns = 0:(ncol(tectivirus_genes_table) - 1)
+        )
+      ),
+      list(
+        extend = "excel",
+        exportOptions = list(
+          columns = 0:(ncol(tectivirus_genes_table) - 1)
+        )
+      )
+    ),
+    columnDefs = list(
+      list(
+        targets = seq(
+          ncol(tectivirus_genes_table),
+          ncol(tectivirus_genes_dt_data) - 1
+        ),
+        visible = FALSE,
+        searchable = FALSE
+      )
+    ),
+    fixedColumns = list(
+      leftColumns = 1
+    ),
     scrollX = TRUE,
     scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE
   )
-) %>%
-  formatRound(columns = 3:ncol(tectivirus_de_table), digits = 2) %>%
-  formatStyle(
-    columns = 3:ncol(tectivirus_de_table),
-    backgroundColor = styleInterval(brks, clrs)
+)
+
+for(i in seq_along(lfc_names)){
+
+  tectivirus_genes_dt <- tectivirus_genes_dt %>%
+    DT::formatStyle(
+      columns = lfc_names[i],
+      valueColumns = paste0(
+        "Color ",
+        lfc_names[i]
+      ),
+      backgroundColor = DT::styleEqual(
+        all_colors,
+        all_colors
+      )
+    )
+}
+
+tectivirus_genes_dt <- tectivirus_genes_dt %>%
+  DT::formatRound(
+    columns = lfc_names,
+    digits = 2
   ) %>%
-  formatStyle(
-    columns = c(1, 3:ncol(tectivirus_de_table)),
+  DT::formatStyle(
+    columns = c(
+      "Gene symbol",
+      lfc_names
+    ),
     `text-align` = "center"
   )
+
+tectivirus_genes_dt
 ```
 
 ## Enrichments summary
@@ -1740,56 +2376,388 @@ ggplot() +
   )
 ```
 
-## DE genes
+## Contrasts genes
 
 ```{r}
 #| echo: true
 #| eval: true
 #| error: true
-#| label: intra_de_genes
+#| label: intra_contrasts_genesç
+#| warning: false
 #| code-fold: true
 
-intra_de_genes <- create_de_genes_table(group = "time_points")
+intra_contrasts_genes <- create_contrasts_genes_table(
+  group = "time_points"
+)
 
-colnames(intra_de_genes)[1:2] <- c("Gene ID", "Gene symbol")
+intra_genes_table <- intra_contrasts_genes$table
+intra_genes_status <- intra_contrasts_genes$status
 
-max_abs <- ceiling(max(abs(intra_de_genes[, 4:ncol(intra_de_genes)]), na.rm = TRUE))
-brks <- seq(-max_abs, max_abs, length.out = 50)
-clrs <- colorRampPalette(c("#5A8AC6", "white", "#F8696B"))(length(brks) + 1)
+status_order <- match(
+  intra_genes_table$Gene_ID,
+  intra_genes_status$Gene_ID
+)
 
-lfc_cols <- colnames(intra_de_genes)[4:ncol(intra_de_genes)]
-groups <- sub(" - .*", "", lfc_cols)
-group_levels <- c("GBJ002", "GIL01", "GIL16")
-group_counts <- sapply(group_levels, function(g) sum(groups == g))
-second_row <- c(colnames(intra_de_genes)[1:3], sub(".* - ", "", lfc_cols))
+if(anyNA(status_order)){
+  stop(
+    "Algunos Gene_ID de table no están presentes en status."
+  )
+}
 
-sketch <- withTags(table(
-  class = "display",
-  thead(
-    tr(
-      th(colspan = 3, style = "text-align: center; font-weight: bold;", "Gene annotation"),
-      lapply(seq_along(group_levels), function(i)
-        th(colspan = group_counts[i], style = "text-align: center; font-weight: bold;", group_levels[i])
-      )
-    ),
-    tr(
-      lapply(second_row, function(x) th(style = "text-align: center;", x))
+intra_genes_status <- intra_genes_status[
+  status_order,
+  ,
+  drop = FALSE
+]
+
+stopifnot(
+  identical(
+    as.character(intra_genes_table$Gene_ID),
+    as.character(intra_genes_status$Gene_ID)
+  )
+)
+
+colnames(intra_genes_table)[1:2] <- c(
+  "Gene ID",
+  "Gene symbol"
+)
+
+status_aux <- intra_genes_status[
+  ,
+  -1,
+  drop = FALSE
+]
+
+status_aux[] <- lapply(
+  status_aux,
+  as.character
+)
+
+lfc_names <- colnames(
+  intra_genes_table
+)[4:ncol(intra_genes_table)]
+
+colnames(status_aux) <- paste0(
+  "Status ",
+  lfc_names
+)
+
+intra_genes_table[lfc_names] <- lapply(
+  intra_genes_table[lfc_names],
+  as.numeric
+)
+
+lfc_matrix <- as.matrix(
+  intra_genes_table[
+    ,
+    lfc_names,
+    drop = FALSE
+  ]
+)
+
+storage.mode(lfc_matrix) <- "numeric"
+
+status_matrix <- as.matrix(status_aux)
+
+de_mask <- status_matrix %in% c(
+  "UP",
+  "DOWN"
+)
+
+de_values <- abs(
+  lfc_matrix[
+    de_mask & !is.na(lfc_matrix)
+  ]
+)
+
+if(length(de_values) == 0){
+
+  max_abs <- 1
+
+} else {
+
+  max_abs <- ceiling(
+    max(
+      de_values,
+      na.rm = TRUE
     )
   )
-))
 
-datatable(intra_de_genes, container = sketch, rownames = FALSE,
-          filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
-            dom = "Brftip",
-            buttons = c("copy", "csv", "excel"),
-            fixedColumns = list(leftColumns = 1),
-            scrollX = TRUE,
-            scrollY = 400,
-            scroller = TRUE,
-            deferRender = TRUE)) %>%
-  formatRound(columns = 4:ncol(intra_de_genes), digits = 2) %>%
-  formatStyle(columns = 4:ncol(intra_de_genes), backgroundColor = styleInterval(brks, clrs)) %>%
-  formatStyle(columns = c(1, 2, 4:ncol(intra_de_genes)), `text-align` = "center")
+  if(!is.finite(max_abs) || max_abs <= 0){
+    max_abs <- 1
+  }
+}
+
+n_colors <- 100
+
+red_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#F8696B"
+  )
+)(n_colors)
+
+blue_palette <- grDevices::colorRampPalette(
+  c(
+    "#FFFFFF",
+    "#5A8AC6"
+  )
+)(n_colors)
+
+get_cell_color <- function(lfc, status){
+
+  color <- rep(
+    "#FFFFFF",
+    length(lfc)
+  )
+
+  valid <- (
+    !is.na(lfc) &
+    !is.na(status) &
+    status %in% c("UP", "DOWN")
+  )
+
+  if(!any(valid)){
+    return(color)
+  }
+
+  intensity <- abs(lfc[valid]) / max_abs
+
+  intensity <- pmax(
+    0,
+    pmin(
+      1,
+      intensity
+    )
+  )
+
+  color_index <- pmax(
+    1,
+    pmin(
+      n_colors,
+      ceiling(intensity * n_colors)
+    )
+  )
+
+  valid_positions <- which(valid)
+
+  up_positions <- valid_positions[
+    status[valid] == "UP"
+  ]
+
+  down_positions <- valid_positions[
+    status[valid] == "DOWN"
+  ]
+
+  if(length(up_positions) > 0){
+
+    up_index <- color_index[
+      status[valid] == "UP"
+    ]
+
+    color[up_positions] <- red_palette[
+      up_index
+    ]
+  }
+
+  if(length(down_positions) > 0){
+
+    down_index <- color_index[
+      status[valid] == "DOWN"
+    ]
+
+    color[down_positions] <- blue_palette[
+      down_index
+    ]
+  }
+
+  color
+}
+
+color_aux <- as.data.frame(
+  setNames(
+    lapply(
+      seq_along(lfc_names),
+      function(i){
+
+        get_cell_color(
+          intra_genes_table[[lfc_names[i]]],
+          status_aux[[i]]
+        )
+      }
+    ),
+    paste0(
+      "Color ",
+      lfc_names
+    )
+  ),
+  check.names = FALSE
+)
+
+intra_genes_dt_data <- cbind(
+  intra_genes_table,
+  color_aux
+)
+
+all_colors <- unique(
+  c(
+    "#FFFFFF",
+    red_palette,
+    blue_palette
+  )
+)
+
+groups <- sub(" - .*", "", lfc_names)
+
+group_levels <- c(
+  "GBJ002",
+  "GIL01",
+  "GIL16"
+)
+
+group_counts <- sapply(
+  group_levels,
+  function(g){
+    sum(groups == g)
+  }
+)
+
+second_row <- c(
+  colnames(intra_genes_table)[1:3],
+  sub(".* - ", "", lfc_names),
+  rep("", length(lfc_names))
+)
+
+sketch <- withTags(
+  table(
+    class = "display",
+    thead(
+      tr(
+        th(
+          colspan = 3,
+          style = "text-align: center; font-weight: bold;",
+          "Gene annotation"
+        ),
+        lapply(
+          seq_along(group_levels),
+          function(i)
+            th(
+              colspan = group_counts[i],
+              style = "text-align: center; font-weight: bold;",
+              group_levels[i]
+            )
+        ),
+        th(
+          colspan = length(lfc_names),
+          style = "display:none;",
+          ""
+        )
+      ),
+      tr(
+        lapply(
+          seq_along(second_row),
+          function(i){
+
+            th(
+              style = if(
+                i > (3 + length(lfc_names))
+              ){
+                "display:none;"
+              } else {
+                "text-align:center;"
+              },
+              second_row[i]
+            )
+          }
+        )
+      )
+    )
+  )
+)
+
+intra_genes_dt <- DT::datatable(
+  intra_genes_dt_data,
+  container = sketch,
+  rownames = FALSE,
+  filter = "top",
+  extensions = c(
+    "Buttons",
+    "FixedColumns",
+    "Scroller"
+  ),
+  options = list(
+    dom = "Brftip",
+    buttons = list(
+      list(
+        extend = "copy",
+        exportOptions = list(
+          columns = 0:(ncol(intra_genes_table) - 1)
+        )
+      ),
+      list(
+        extend = "csv",
+        exportOptions = list(
+          columns = 0:(ncol(intra_genes_table) - 1)
+        )
+      ),
+      list(
+        extend = "excel",
+        exportOptions = list(
+          columns = 0:(ncol(intra_genes_table) - 1)
+        )
+      )
+    ),
+    columnDefs = list(
+      list(
+        targets = seq(
+          ncol(intra_genes_table),
+          ncol(intra_genes_dt_data) - 1
+        ),
+        visible = FALSE,
+        searchable = FALSE
+      )
+    ),
+    fixedColumns = list(
+      leftColumns = 1
+    ),
+    scrollX = TRUE,
+    scrollY = 400,
+    scroller = TRUE,
+    deferRender = TRUE
+  )
+)
+
+for(i in seq_along(lfc_names)){
+
+  intra_genes_dt <- intra_genes_dt %>%
+    DT::formatStyle(
+      columns = lfc_names[i],
+      valueColumns = paste0(
+        "Color ",
+        lfc_names[i]
+      ),
+      backgroundColor = DT::styleEqual(
+        all_colors,
+        all_colors
+      )
+    )
+}
+
+intra_genes_dt <- intra_genes_dt %>%
+  DT::formatRound(
+    columns = lfc_names,
+    digits = 2
+  ) %>%
+  DT::formatStyle(
+    columns = c(
+      "Gene ID",
+      "Gene symbol",
+      lfc_names
+    ),
+    `text-align` = "center"
+  )
+
+intra_genes_dt
 ```
 
 ## Enrichments summary

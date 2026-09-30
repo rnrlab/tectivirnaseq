@@ -16,8 +16,8 @@
 #727DCC	Coenzyme transport and metabolism
 #5C5A1B	Metabolism of cofactors and vitamins
 #0099FF	Inorganic ion transport and metabolism
-#FF9999	Heterogeneous or non‑canonical metabolic enrichments
-#D6AADF	Function unknown
+#D6AADF	Unknown function
+#FF9999	Heterogeneous enrichments
 #BFBFBF	Ambiguous enrichment
 #7F7F7F	No significant enrichment
-#000000	Unclustered genes
+#000000	Noisy genes

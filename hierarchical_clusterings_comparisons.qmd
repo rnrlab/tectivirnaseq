@@ -154,6 +154,7 @@ Although the proportions of shared genes between strains are more easily seen in
 #| eval: true
 #| error: true
 #| label: alluvial_plot
+#| warning: false
 #| code-fold: true
 #| fig-width: 15
 #| fig-height: 12
@@ -167,24 +168,7 @@ genes_clusters <- genes_clusters |>
   dplyr::mutate(
     dplyr::across(
       ends_with("_clusters"),
-      \(x) {
-
-        x <- as.character(x)
-
-        x[x == "GIL16_C019b"] <- "GIL16_C019"
-
-        cluster_num <- as.numeric(
-          stringr::str_extract(x, "(?<=_C)\\d+")
-        )
-
-        x[
-          !is.na(cluster_num) &
-          cluster_num <= 19 &
-          x != "GIL16_C019"
-        ] <- NA
-
-        x
-      }
+      as.character
     )
   )
 
@@ -210,7 +194,6 @@ genes_clusters <- genes_clusters %>%
 
 strain_levels <- c("GBJ002_clusters", "GIL01_clusters", "GIL16_clusters", "GBJ002_clusters_copy")
 cluster_levels <- c("Unclustered_GBJ002", "Unclustered_GBJ002_copy", names(gbj002_clusters), names(gil01_clusters), "Unclustered_GIL01", names(gil16_clusters), "Unclustered_GIL16")
-cluster_levels[cluster_levels == "GIL16_C019b"] <- "GIL16_C019"
 
 genes_clusters$Strain <- factor(genes_clusters$Strain, levels = strain_levels)
 genes_clusters$Cluster <- factor(genes_clusters$Cluster, levels = cluster_levels)
@@ -218,18 +201,22 @@ genes_clusters$Cluster <- factor(genes_clusters$Cluster, levels = cluster_levels
 genes_clusters <- genes_clusters %>%
   left_join(clusters_design, by = "Cluster") %>%
   mutate(
-    Stripe = ifelse(is.na(Stripe), NA, Stripe),
     Stripes_number = ifelse(is.na(Stripes_number), 0, Stripes_number),
-    Text = case_when(
-      Text == "bold" ~ "bold",
-      Text == "white" ~ "white",
-      TRUE ~ "plain"
-    ),
+    Text = dplyr::coalesce(as.character(Text), "plain"),
     Size = ifelse(is.na(Size), 3, Size)
   )
 
 genes_clusters$Strain <- factor(genes_clusters$Strain, levels = strain_levels)
 genes_clusters$Cluster <- factor(genes_clusters$Cluster, levels = cluster_levels)
+
+legend_df <- data.frame(
+  Strain = factor(
+    rep("GBJ002_clusters", nrow(clusters_legend)),
+    levels = strain_levels
+  ),
+  y = NA_real_,
+  Base = clusters_legend$Colour
+)
 
 p <- ggplot(
   genes_clusters,
@@ -240,15 +227,44 @@ p <- ggplot(
     fill = Base
   )
 ) +
-  geom_flow(alpha = 0.5) +
-  geom_stratum(color = "black") +  
+  geom_flow(
+    alpha = 0.5,
+    show.legend = FALSE
+  ) +
+  geom_stratum(
+    color = "black",
+    show.legend = FALSE
+  ) +
+  geom_point(
+    data = legend_df,
+    aes(
+      x = Strain,
+      y = y,
+      fill = Base
+    ),
+    shape = 22,
+    alpha = 0,
+    inherit.aes = FALSE,
+    show.legend = TRUE,
+    key_glyph = "rect"
+  ) +
   scale_fill_identity(
     guide = "legend",
+    limits = clusters_legend$Colour,
     breaks = clusters_legend$Colour,
     labels = clusters_legend$Category,
-    name   = NULL
+    name = NULL,
+    drop = FALSE
   ) +
-  guides(fill = guide_legend(override.aes = list(alpha = 1))) +  
+  guides(
+    fill = guide_legend(
+      override.aes = list(
+        alpha = 1,
+        colour = "black",
+        linewidth = 0.5
+      )
+    )
+  ) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
@@ -333,7 +349,8 @@ p <- p +
     yend = stripe_segments$yend,
     inherit.aes = FALSE,
     linewidth = 0.6,
-    alpha = 0.75
+    alpha = 0.75,
+    show.legend = FALSE
   ) +
   scale_color_identity()
 
@@ -344,24 +361,43 @@ strata_final$Cluster <- levels(genes_clusters$Cluster)[strata_final$stratum]
 strata_final <- strata_final %>%
   left_join(clusters_design, by = "Cluster") %>%
   mutate(
-    Text = case_when(
-      Text == "bold" ~ "bold",
-      Text == "white" ~ "white",
-      Text == "bold_white" ~ "bold_white",
-      TRUE ~ "plain"
-    ),
+    Text = dplyr::coalesce(as.character(Text), "plain"),
+
     Text_color = case_when(
-      Text == "white" ~ "white",
-      Text == "bold_white" ~ "white",
+      Text %in% c(
+        "white",
+        "white_italic",
+        "bold_white",
+        "bold_white_italic"
+      ) ~ "white",
       TRUE ~ "black"
     ),
+
     Text_face = case_when(
-      Text == "bold" ~ "bold",
-      Text == "bold_white" ~ "bold",
+      Text %in% c(
+        "bold_white_italic",
+        "bold_italic"
+      ) ~ "bold.italic",
+
+      Text %in% c(
+        "white_italic",
+        "italic"
+      ) ~ "italic",
+
+      Text %in% c(
+        "bold_white",
+        "bold"
+      ) ~ "bold",
+
       TRUE ~ "plain"
+    ),
+
+    Cluster = case_when(
+      grepl("^Unclustered", Cluster) ~ "",
+      Size == 0 ~ "",
+      TRUE ~ as.character(Cluster)
     )
-  ) %>%
-  mutate(Cluster = ifelse(grepl("^Unclustered", Cluster), "", Cluster))
+  )
 
 p <- p +
   geom_text(

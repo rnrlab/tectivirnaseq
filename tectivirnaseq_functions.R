@@ -76,7 +76,7 @@ compute_stability <- function(clusters, strain, frac = 0.80, B = 100, seed = 0) 
 
 clusters_expression <- function(expression_matrix, metadata, time_points,
                                 clusters = NULL, order = NULL,
-                                de_genes = NULL, which_contrast = NULL) {
+                                contrast_genes = NULL, which_contrast = NULL) {
 
   logratio_long <- expression_matrix %>%
     as.data.frame(stringsAsFactors = FALSE) %>%
@@ -124,11 +124,11 @@ clusters_expression <- function(expression_matrix, metadata, time_points,
 
   cluster_colors <- NULL
 
-  if (!is.null(de_genes) && !is.null(which_contrast)) {
-    de_object <- readRDS(paste0(de_genes[which_contrast], "_de_genes.rds"))
+  if (!is.null(contrast_genes) && !is.null(which_contrast)) {
+    contrast_object <- readRDS(paste0(contrast_genes[which_contrast], "_contrast_genes.rds")    )
 
-    up_genes <- de_object$up_genes$Gene_ID
-    down_genes <- de_object$down_genes$Gene_ID
+    up_genes <- contrast_object$Gene_ID[contrast_object$DE_status == "UP"]
+    down_genes <- contrast_object$Gene_ID[contrast_object$DE_status == "DOWN"]
 
     cluster_colors <- dat %>%
       distinct(Gene, Cluster) %>%
@@ -651,24 +651,51 @@ kegg_enrichment_by_cluster <- function(cluster_gene_table, all_genes) {
 
 go_enrichment <- function(genes_set, all_genes, ont, plots = FALSE, showCategory = 10) {
 
-  ego <- enrichGO(gene = genes_set,
-                  OrgDb = org.Bthuringiensis.eg.db,
-                  keyType = "GID",
-                  ont = ont,
-                  pvalueCutoff = 0.05,
-                  pAdjustMethod = "BH",
-                  universe = all_genes)
-
-  ego_df <- as.data.frame(ego)
-
   cols <- c(
     "ID", "Description", "GeneRatio", "BgRatio", "RichFactor",
     "FoldEnrichment", "zScore", "pvalue", "p.adjust", "qvalue",
     "geneID", "Count"
   )
 
+  ego <- tryCatch(
+    enrichGO(
+      gene = genes_set,
+      OrgDb = org.Bthuringiensis.eg.db,
+      keyType = "GID",
+      ont = ont,
+      pvalueCutoff = 0.05,
+      pAdjustMethod = "BH",
+      universe = all_genes
+    ),
+    error = function(e) NULL
+  )
+
+  if (is.null(ego)) {
+    return(
+      setNames(
+        data.frame(
+          matrix(
+            ncol = length(cols),
+            nrow = 0
+          )
+        ),
+        cols
+      )
+    )
+  }
+
+  ego_df <- as.data.frame(ego)
+
   if (nrow(ego_df) == 0) {
-    ego_df <- setNames(data.frame(matrix(ncol = length(cols), nrow = 0)), cols)
+    ego_df <- setNames(
+      data.frame(
+        matrix(
+          ncol = length(cols),
+          nrow = 0
+        )
+      ),
+      cols
+    )
   } else if (plots) {
     print(dotplot(ego, showCategory = showCategory))
     print(barplot(ego, showCategory = showCategory))
@@ -684,7 +711,7 @@ go_enrichment_by_cluster <- function(cluster_gene_table, all_genes, ont) {
     org.Bthuringiensis.eg.db,
     keytype = "GID"
   )
-  
+
   results_list <- list()
 
   for (cl in levels(cluster_gene_table$Cluster)) {
@@ -698,20 +725,52 @@ go_enrichment_by_cluster <- function(cluster_gene_table, all_genes, ont) {
     if (length(hc_genes) == 0)
       next
 
-    ego <- enrichGO(
-      gene          = hc_genes,
-      OrgDb         = org.Bthuringiensis.eg.db,
-      keyType       = "GID",
-      ont           = ont,
-      pvalueCutoff  = 0.05,
-      pAdjustMethod = "BH",      
-      universe      = all_genes
+    ego <- tryCatch(
+      enrichGO(
+        gene          = hc_genes,
+        OrgDb         = org.Bthuringiensis.eg.db,
+        keyType       = "GID",
+        ont           = ont,
+        pvalueCutoff  = 0.05,
+        pAdjustMethod = "BH",
+        universe      = all_genes
+      ),
+      error = function(e) NULL
     )
 
-    ego_df <- as.data.frame(ego) %>%
+    if (is.null(ego))
+      next
+
+    ego_df <- as.data.frame(ego)
+
+    if (nrow(ego_df) == 0)
+      next
+
+    ego_df <- ego_df %>%
       dplyr::mutate(Cluster = cl)
 
     results_list[[as.character(cl)]] <- ego_df
+  }
+
+  if (length(results_list) == 0) {
+
+    cols <- c(
+      "ID", "Description", "GeneRatio", "BgRatio", "RichFactor",
+      "FoldEnrichment", "zScore", "pvalue", "p.adjust", "qvalue",
+      "geneID", "Count", "Cluster"
+    )
+
+    return(
+      setNames(
+        data.frame(
+          matrix(
+            ncol = length(cols),
+            nrow = 0
+          )
+        ),
+        cols
+      )
+    )
   }
 
   final_results <- dplyr::bind_rows(results_list) %>%
@@ -2013,10 +2072,9 @@ combine_summaries <- function(type = c("contrast", "enrichment"), group = c("str
 
 venn_contrasts <- function(group, de_genes = c("UP", "DOWN"), label_alpha) {
   de_genes <- match.arg(de_genes)
-  gene_slot <- if (de_genes == "UP") "up_genes" else "down_genes"
   high_color <- if (de_genes == "UP") "red" else "blue"
   
-  obj_names <- ls(envir = .GlobalEnv, pattern = "_de_genes$")
+  obj_names <- ls(envir = .GlobalEnv, pattern = "_contrast_genes$")
   
   objects <- lapply(obj_names, function(x) get(x, envir = .GlobalEnv))
   names(objects) <- obj_names
@@ -2029,27 +2087,41 @@ venn_contrasts <- function(group, de_genes = c("UP", "DOWN"), label_alpha) {
     stop("Not enough contrasts found for the specified group.")
   }
   
-  gene_sets <- lapply(objects, function(x) x[[gene_slot]]$Gene_ID)
+  gene_sets <- lapply(objects, function(x) {
+
+    if (de_genes == "UP") {
+
+      x$Gene_ID[
+        x$DE_status == "UP"
+      ]
+
+    } else {
+
+      x$Gene_ID[
+        x$DE_status == "DOWN"
+      ]
+
+    }
+
+  })
   
   set_names <- sapply(objects, function(x) {
     lbl <- attr(x, "contrast")
     if (is.null(lbl)) NA_character_ else lbl
   })
   
-  set_names <- sub("^Strains ", "", set_names)
   names(gene_sets) <- set_names
   
   ggVennDiagram(gene_sets, label_alpha = label_alpha) +
-    scale_fill_gradient(low = "grey90", high = high_color, name = ifelse(de_genes == "UP", "UP genes", "DOWN genes")) +
+    scale_fill_gradient(low = "grey90", high = high_color, name = "DE genes") +
     coord_cartesian(clip = "off") +
-    theme(legend.title = element_text(face = "bold"), plot.margin = margin(30, 90, 30, 90))
+    theme(legend.title = element_text(face = "bold"), plot.margin = margin(0, 3, 0, 3, unit = "cm"))
 }
 
 upset_contrasts <- function(group, de_genes = c("UP", "DOWN"), order = NULL) {
   de_genes <- match.arg(de_genes)
-  gene_slot <- if (de_genes == "UP") "up_genes" else "down_genes"
   
-  obj_names <- ls(envir = .GlobalEnv, pattern = "_de_genes$")
+  obj_names <- ls(envir = .GlobalEnv, pattern = "_contrast_genes$")
   objects <- lapply(obj_names, function(x) get(x, envir = .GlobalEnv))
   names(objects) <- obj_names
   
@@ -2061,7 +2133,31 @@ upset_contrasts <- function(group, de_genes = c("UP", "DOWN"), order = NULL) {
     stop("Not enough contrasts found for the specified group(s).")
   }
   
-  gene_sets <- lapply(objects, function(x) x[[gene_slot]]$Gene_ID)
+  gene_sets <- lapply(objects, function(x) {
+
+    if (de_genes == "UP") {
+
+      x$Gene_ID[
+        x$DE_status == "UP"
+      ]
+
+    } else {
+
+      x$Gene_ID[
+        x$DE_status == "DOWN"
+      ]
+
+    }
+
+  })
+
+  gene_sets <- gene_sets[
+    lengths(gene_sets) > 0
+  ]
+
+  objects <- objects[
+    names(objects) %in% names(gene_sets)
+  ]
   
   if (length(group) == 1) {
     set_names <- vapply(objects, function(x) {

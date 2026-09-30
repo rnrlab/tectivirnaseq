@@ -1,4 +1,4 @@
-Sample	Strain	Time	MMC	Replicate
+Sample	Strain	Time_point	MMC	Replicate
 GBJ002_t0_I	GBJ002	0	FALSE	I
 GBJ002_t0_II	GBJ002	0	FALSE	II
 GBJ002_t0_III	GBJ002	0	FALSE	III
