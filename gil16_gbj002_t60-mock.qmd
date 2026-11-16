@@ -56,7 +56,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -68,6 +68,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -79,7 +80,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 153 upregulated and 637 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 157 upregulated and 637 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -91,7 +92,7 @@ As can be seen in the `summary()` results, 153 upregulated and 637 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -155,7 +156,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we found positive enrichment in translation, ribosomal structure and biogenesis (**J**), energy production and conversion (**C**) and carbohydrate transport and metabolism (**G**) due to 37, 14 and 15 DE genes, respectively. Regarding negative enrichment, it was found in transcription (**K**) and function unknown	(**S**) due to 36 and 19 DE genes, respectively.
+According to COG categories, we found positive enrichment in translation, ribosomal structure and biogenesis (**J**) and energy production and conversion (**C**) due to 39 and 14 DE genes, respectively. Regarding negative enrichment, it was found in function unknown (**S**) and mobilome: prophages, transposons (**X**) due to 208 and 11 DE genes, respectively.
 
 ```{r}
 #| echo: true
@@ -223,7 +224,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -231,7 +232,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -318,7 +319,7 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although no statistically significant results were obtained in any case.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although statistically significant results were obtained only in **6** level due to upregulated ligases genes.
 
 ```{r}
 #| echo: true

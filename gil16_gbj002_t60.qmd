@@ -56,7 +56,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -68,6 +68,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -79,7 +80,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 493 upregulated and 512 downregulated genes were obtained. In addition, 97 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 502 upregulated and 517 downregulated genes were obtained. In addition, 98 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -91,7 +92,7 @@ As can be seen in the `summary()` results, 493 upregulated and 512 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -137,7 +138,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Among the upregulated genes, we find many chromosomal tRNA genes and two hypothetical proteins (GBJ002_05071 and GBJ002_05154) genes from pBtic235. Among the downregulated genes, we find genes mostly from the chromosome, but also seven from pBtic235, including GBJ002-DNT_253 with the lowest LFC and GBJ002-DNT_255.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Among the upregulated genes, we find many chromosomal tRNA genes and two hypothetical proteins (GBJ002_05071 and GBJ002_05154) genes from pBtic235. Among the downregulated genes, we find genes mostly from the chromosome, but also seven from pBtic235, including GBJ002-DNT_272 with the lowest LFC and GBJ002-DNT_275.
 
 ```{r}
 #| echo: true
@@ -155,7 +156,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we found positive enrichment in inorganic ion transport and metabolism (**P**) due to 38 DE genes and negative enrichment in general function prediction only (**R**) due to 48 DE genes.
+According to COG categories, we found positive enrichment in amino acid transport and metabolism (**E**) and inorganic ion transport and metabolism (**P**) due to 46 and 33 DE genes, respectively, and negative enrichment in function unknown (**S**) due to 140 DE genes.
 
 ```{r}
 #| echo: true
@@ -223,7 +224,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -231,7 +232,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -318,7 +319,7 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving significant results for all of them. At the first level, **1** and **7** numbers were positively enriched by 25 oxidorreductases and 14 translocases genes, respectively. In the second, **1.6** and **7.2** numbers were enriched by 6 and 5 upregulated genes, respectively. In the third, the same 6 genes positively enrich the **1.6.5** number, which correspond to NADH-quinone oxidoreductase subunits (GBJ002_02486, GBJ002_02489, GBJ002_02490, GBJ002_02491 and GBJ002_02492) genes and FMN-dependent NADH-azoreductase (GBJ002_04614) gene. Regarding the genes with **7.2** number, they are: calcium-translocating P-type ATPase SERCA-type (GBJ002_01084), magnesium-translocating P-type ATPase (GBJ002_01361), petrobactin import ATP-binding protein FpuC (GBJ002_01590), potassium-transporting ATPase subunit KdpA (GBJ002_03521) and potassium-transporting ATPase subunit KdpB (GBJ002_03522).
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving significant results in the first and second levels. At the first level, **7** was positively enriched by 17 translocases genes. In the second, **7.2** was enriched by 9 upregulated genes.
 
 ```{r}
 #| echo: true

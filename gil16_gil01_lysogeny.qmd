@@ -56,7 +56,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -68,6 +68,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -79,7 +80,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 305 upregulated and 374 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 313 upregulated and 379 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -91,7 +92,7 @@ As can be seen in the `summary()` results, 305 upregulated and 374 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -155,7 +156,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichment in translation, ribosomal structure and biogenesis (**J**) due to 65 upregulated genes and negative enrichment in transcription (**K**) due to 19 downregulated genes.
+According to COG categories, we  found positive enrichment in translation, ribosomal structure and biogenesis (**J**) and cell motility (**N**) due to 68 and 8 upregulated genes, respectively, and negative enrichment in function unknown (**S**), replication, recombination and repair (**L**) and mobilome: prophages, transposons (**X**) due to 119, 21 and 8 downregulated genes, respectively.
 
 ```{r}
 #| echo: true
@@ -223,7 +224,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -231,7 +232,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -318,7 +319,7 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although significant results were only found at second level. Specifically, at level **1.2**, 8 out of 17 genes were upregulated, which were: GBJ002_00158 (glutamate-5-semialdehyde dehydrogenase), GBJ002_00936 (2-oxoacid:acceptor oxidoreductase subunit alpha), GBJ002_01185 (pyruvate dehydrogenase complex E1 component subunit beta), GBJ002_01186 (pyruvate dehydrogenase E1 component subunit alpha), GBJ002_01379 (3-methyl-2-oxobutanoate dehydrogenase subunit beta), GBJ002_01380 (3-methyl-2-oxobutanoate dehydrogenase subunit alpha), GBJ002_01594 (bifunctional acetaldehyde-CoA/alcohol dehydrogenase) and GBJ002_02336 (type I glyceraldehyde-3-phosphate dehydrogenase).
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving significant results at all of them for both upregulated and downregulated genes.
 
 ```{r}
 #| echo: true

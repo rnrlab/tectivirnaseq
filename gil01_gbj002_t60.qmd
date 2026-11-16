@@ -80,7 +80,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 287 upregulated and 416 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 288 upregulated and 420 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -92,7 +92,7 @@ As can be seen in the `summary()` results, 287 upregulated and 416 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -138,7 +138,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p value) on the y-axis. Among the upregulated genes, there are a large number of tRNA genes, as well as de novo transcripts and ncRNA, including again bacterial large (GBJ002_02755) and small (GBJ002_02756) signal recognition particles RNA genes. Among the downregulated genes, we find many chromosomal genes and 7 from pBtic235, including de novo transcript GBJ002-DNT_253.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p value) on the y-axis. Among the upregulated genes, there are a large number of tRNA genes, as well as de novo transcripts and ncRNA, including again bacterial large (GBJ002_02755) and small (GBJ002_02756) signal recognition particles RNA genes. Among the downregulated genes, we find many chromosomal genes and 7 from pBtic235, including de novo transcript GBJ002-DNT_272.
 
 ```{r}
 #| echo: true
@@ -156,7 +156,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we found positive enrichment in general function prediction only (**R**) and function unknown (**S**) due to 35 and 24 DE genes, respectively. Although this enrichment does not provide biological information, it could reflect unknown mechanisms in the bacteriophage-host interaction.
+According to COG categories, we found positive enrichment in amino acid transport and metabolism (**E**), nucleotide transport and metabolism (**F**) and translation, ribosomal structure and biogenesis (**J**) and negative enrichment in function unknown (**S**).
 
 ```{r}
 #| echo: true
@@ -197,7 +197,7 @@ datatable(cog_down, rownames = FALSE, caption = "Negative enrichment", colnames 
 
 ## KEGG
 
-According to KEGG categories, we only found positive enrichments. The ribosome pathway was enriched due to 18 DE genes, while metabolic pathways of pyrimidine and histidine were enriched due to 11 and 6 genes, respectively.
+According to KEGG categories, we only found positive enrichments. The ribosome pathway was enriched due to 18 DE genes, while metabolic enrichments were found on pyrimidine and amino acid pathways.
 
 ```{r}
 #| echo: true
@@ -224,7 +224,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -232,7 +232,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -319,7 +319,7 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although no statistically significant results were obtained in any case.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed. Statistically significant results were obtained in 1.20 and 1.20.4 levels due to repressed oxidoreductases genes.
 
 ```{r}
 #| echo: true

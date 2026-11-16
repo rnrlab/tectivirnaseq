@@ -54,7 +54,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -66,6 +66,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -77,7 +78,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 481 upregulated and 562 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 487 upregulated and 566 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -89,7 +90,7 @@ As can be seen in the `summary()` results, 481 upregulated and 562 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -144,7 +145,7 @@ A volcano plot displays each gene according to its LFC on the x-axis and the sta
 #| label: volcano_plot
 #| code-fold: true
 
-volcano_plot(contrast_df, limits = c(-10, 10))
+volcano_plot(contrast_df)
 ```
 
 # Enrichment analysis
@@ -153,7 +154,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichment in translation, ribosomal structure and biogenesis (**J**), nucleotide transport and metabolism (**F**) and energy production and conversion (**C**) due to 96, 26 and 34 DE genes, respectively. Although there are more terms related to defense mechanisms (**V**) than in the GIL01 vs GBJ002 contrast, statistical significance was not reached this time.
+According to COG categories, we found positive enrichment in translation, ribosomal structure and biogenesis (**J**), energy production and conversion (**C**), nucleotide transport and metabolism (**F**) and carbohydrate transport and metabolism (**G**) due to 102, 33, 23 and 33 DE genes, respectively. Although there are more terms related to defense mechanisms (**V**) than in the GIL01 vs GBJ002 contrast, statistical significance was not reached this time. However, function unknown (**S**) and mobilome: prophages, transposons (**X**) were negatively enriched.
 
 ```{r}
 #| echo: true
@@ -194,7 +195,7 @@ datatable(cog_down, rownames = FALSE, caption = "Negative enrichment", colnames 
 
 ## KEGG
 
-According to KEGG categories, we found several positive enrichments and one negative. The positive enrichments were mainly related to metabolic pathways, but also to translation. The negative enrichment was associated with DNA replication and with GBJ002_00997 (replicative DNA helicase), GBJ002_01520 (DNA primase), GBJ002_05128 (DNA polymerase-3 subunit alpha), GBJ002_05130 (DNA-directed DNA polymerase), GBJ002_05182 (Single-stranded DNA-binding protein) and GBJ002_05251 (AAA family ATPase) genes.
+According to KEGG categories, we found several positive enrichments and one negative. The positive enrichments were mainly related to metabolic pathways, but also to translation. The negative enrichment was associated with replication and repair pathways.
 
 ```{r}
 #| echo: true
@@ -221,7 +222,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -229,7 +230,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -316,7 +317,7 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although significant results were only found at first level. Specifically, **6** number was positively enriched due to 30 out of 91 ligases genes, including 13 tRNA-ligases genes.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving significant results in all of them.
 
 ```{r}
 #| echo: true

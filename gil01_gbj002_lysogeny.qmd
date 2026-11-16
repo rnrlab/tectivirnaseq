@@ -90,7 +90,7 @@ As can be seen in the `summary()` results, only 36 upregulated and 36 downregula
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Pfam", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -145,7 +145,7 @@ A volcano plot displays each gene according to its LFC on the x-axis and the sta
 #| label: volcano_plot
 #| code-fold: true
 
-volcano_plot(contrast_df, limits = c(-5, 5))
+volcano_plot(contrast_df)
 ```
 
 # Enrichment analysis
@@ -154,7 +154,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichment in defense mechanisms (**V**) due to the following genes: GBJ002_03367 (YoaR-like putative peptidoglycan binding domain-containing protein), GBJ002_03570 (ABC transporter permease), GBJ002_03572 (efflux RND transporter periplasmic adaptor subunit), GBJ002_04203 (phage shock protein A) and GBJ002_04384 (multidrug export protein MepA). Negative enrichments were found on function unknown (S) and mobilome: prophages, transposons (X) categories.
+According to COG categories, we only found positive enrichment in defense mechanisms (**V**) due to the following genes: GBJ002_03367 (YoaR-like putative peptidoglycan binding domain-containing protein), GBJ002_03570 (ABC transporter permease), GBJ002_03572 (efflux RND transporter periplasmic adaptor subunit), GBJ002_04203 (phage shock protein A) and GBJ002_04384 (multidrug export protein MepA). Negative enrichments were found on function unknown (**S**) and mobilome: prophages, transposons (**X**) categories.
 
 ```{r}
 #| echo: true
@@ -222,7 +222,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -230,7 +230,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
