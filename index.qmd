@@ -1,5 +1,5 @@
 ---
-title: "*Bacillus thuringiensis*–*Betatectivirus* dual RNAseq analysis"
+title: "*Bacillus thuringiensis*–*Betatectivirus* dual RNA-seq analysis"
 ---
 
 ```{r}
@@ -46,10 +46,6 @@ Once the raw reads were obtained, trimming was performed using `fastp`. In this 
 #| fig-height: 12
 
 rp_data <- read.csv("rp_data.tsv", header = TRUE, sep = "\t", check.names = FALSE)
-
-rp_data <- rp_data %>%
-  mutate(Contamination = rowSums(across(3:7))) %>%
-  dplyr::select(1, 2, Contamination, 8:ncol(rp_data))
 
 steps <- colnames(rp_data)[2:5]
 
@@ -317,13 +313,22 @@ This section presents the annotation of bacterial and phage genomes performed us
 #| eval: true
 #| error: true
 #| label: annotation
+#| warning: false
 #| code-fold: true
 
 saf <- read.csv("GBJ002-GIL01-GIL16.saf", sep = "\t", header = TRUE)
 bakta <- read.csv("annotation.tsv", sep = "\t", header = TRUE)
 cog_annotation <- read.csv("cog_annotation.tsv", sep = "\t", header = TRUE)
+pfam_annotation <- read.csv("pfam_annotation.tsv", sep = "\t", header = TRUE)
 additional_annotation <- read.csv("additional_annotation.tsv", sep = "\t", header = TRUE)
 tectivirus_annotation <- read.csv("tectivirus_annotation.tsv", sep = "\t", header = TRUE)
+
+pfam_annotation <- pfam_annotation %>%
+  group_by(ID) %>%
+  summarise(
+    Classification = paste(Pfam, collapse = "; "),
+    .groups = "drop"
+  )
 
 annotation <- saf %>%
   rename(Gene_ID = GeneID, Element = Chr) %>%
@@ -335,16 +340,23 @@ annotation <- saf %>%
     cog_annotation %>% dplyr::select(ID, COG),
     by = c("Gene_ID" = "ID")
   ) %>%
+  left_join(
+    pfam_annotation,
+    by = c("Gene_ID" = "ID")
+  ) %>%
   mutate(
     Gene_symbol = Gene,
     Description = Product,
-    Classification = COG,
     Association = NA_character_,
     Type = NA_character_,
     Subtype = NA_character_,
     Source = NA_character_
   ) %>%
-  dplyr::select(-Gene, -Product, -COG)
+  dplyr::select(
+    Gene_ID, Element, Start, End, Strand,
+    Gene_symbol, Description, COG, Classification,
+    Association, Type, Subtype, Source
+  )
 
 annotation_both <- additional_annotation %>% filter(Strand == "Both")
 
@@ -411,8 +423,8 @@ annotation$Element <- factor(annotation$Element, levels = c("chromosome", "pBtic
 annotation$Strand <- factor(annotation$Strand, levels = c("+", "-"))
 
 datatable(annotation, colnames = c("Gene ID", "Element", "Start", "End", "Strand",
-                                   "Gene symbol", "Description", "COG category / Homologue", "Association", "Type",
-                                   "Subtype", "Source"), rownames = FALSE,
+                                   "Gene symbol", "Description", "COG category", "Pfam / Homologue",
+                                   "Association", "Type", "Subtype", "Source"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
             buttons = c("copy", "csv", "excel"),
