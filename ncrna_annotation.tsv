@@ -1,0 +1,109 @@
+ID	Name	Rfam
+BHPEJKKPJL_173	T-box leader	RF00230
+BHPEJKKPJL_178	T-box leader	RF00230
+BHPEJKKPJL_183	T-box leader	RF00230
+BHPEJKKPJL_230	T-box leader	RF00230
+BHPEJKKPJL_197	Lysine riboswitch aptamer	RF00168
+BHPEJKKPJL_217	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_221	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_267	Purine riboswitch aptamer	RF00167
+BHPEJKKPJL_179	T-box leader	RF00230
+BHPEJKKPJL_212	c-di-AMP riboswitch aptamer (ydaO/yuaA leader)	RF00379
+BHPEJKKPJL_262	Purine riboswitch aptamer	RF00167
+BHPEJKKPJL_276	Ribosomal protein L19 leader	RF00556
+BHPEJKKPJL_248	PyrR binding site	RF00515
+BHPEJKKPJL_214	T-box leader	RF00230
+BHPEJKKPJL_192	ylbH leader	RF00516
+BHPEJKKPJL_199	Cobalamin riboswitch aptamer	RF00174
+BHPEJKKPJL_236	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_244	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_188	FMN riboswitch aptamer (RFN element)	RF00050
+BHPEJKKPJL_180	T-box leader	RF00230
+BHPEJKKPJL_174	M-box riboswitch aptamer (ykoK leader)	RF00380
+BHPEJKKPJL_219	azaaromatic riboswitch aptamer (yjdF RNA)	RF01764
+BHPEJKKPJL_216	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_202	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_176	T-box leader	RF00230
+BHPEJKKPJL_186	T-box leader	RF00230
+BHPEJKKPJL_237	T-box leader	RF00230
+BHPEJKKPJL_201	T-box leader	RF00230
+BHPEJKKPJL_268	Ribosomal protein L21 leader	RF00559
+BHPEJKKPJL_182	T-box leader	RF00230
+BHPEJKKPJL_245	T-box leader	RF00230
+BHPEJKKPJL_224	T-box leader	RF00230
+BHPEJKKPJL_231	T-box leader	RF00230
+BHPEJKKPJL_246	Ribosomal protein L20 leader	RF00558
+BHPEJKKPJL_234	T-box leader	RF00230
+BHPEJKKPJL_181	T-box leader	RF00230
+BHPEJKKPJL_177	T-box leader	RF00230
+BHPEJKKPJL_249	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_253	c-di-GMP-I riboswitch aptamer	RF01051
+BHPEJKKPJL_254	c-di-GMP-I riboswitch aptamer	RF01051
+BHPEJKKPJL_257	c-di-GMP-I riboswitch aptamer	RF01051
+BHPEJKKPJL_271	TPP riboswitch aptamer (THI element)	RF00059
+BHPEJKKPJL_263	cspA thermoregulator	RF01766
+BHPEJKKPJL_215	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_240	T-box leader	RF00230
+BHPEJKKPJL_229	T-box leader	RF00230
+BHPEJKKPJL_227	T-box leader	RF00230
+BHPEJKKPJL_272	Fluoride riboswitch aptamer (crcB RNA motif)	RF01734
+BHPEJKKPJL_266	uup RNA	RF03060
+BHPEJKKPJL_247	TPP riboswitch aptamer (THI element)	RF00059
+BHPEJKKPJL_193	epsC RNA	RF01735
+BHPEJKKPJL_279	L31-Firmicutes ribosomal protein leader	RF03156
+BHPEJKKPJL_218	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_278	PyrR binding site	RF00515
+BHPEJKKPJL_185	T-box leader	RF00230
+BHPEJKKPJL_226	T-box leader	RF00230
+BHPEJKKPJL_264	Ribosomal protein L10 leader	RF00557
+BHPEJKKPJL_205	glmS glucosamine-6-phosphate activated ribozyme aptamer	RF00234
+BHPEJKKPJL_209	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_220	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_225	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_256	Purine riboswitch aptamer	RF00167
+BHPEJKKPJL_258	Purine riboswitch aptamer	RF00167
+BHPEJKKPJL_261	Purine riboswitch aptamer	RF00167
+BHPEJKKPJL_210	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_260	Purine riboswitch aptamer	RF00167
+BHPEJKKPJL_228	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_270	TPP riboswitch aptamer (THI element)	RF00059
+BHPEJKKPJL_252	c-di-GMP-I riboswitch aptamer	RF01051
+BHPEJKKPJL_265	TPP riboswitch aptamer (THI element)	RF00059
+BHPEJKKPJL_238	T-box leader	RF00230
+BHPEJKKPJL_259	TPP riboswitch aptamer (THI element)	RF00059
+BHPEJKKPJL_255	TPP riboswitch aptamer (THI element)	RF00059
+BHPEJKKPJL_200	c-di-AMP riboswitch aptamer (ydaO/yuaA leader)	RF00379
+BHPEJKKPJL_187	c-di-AMP riboswitch aptamer (ydaO/yuaA leader)	RF00379
+BHPEJKKPJL_195	Lysine riboswitch aptamer	RF00168
+BHPEJKKPJL_273	c-di-GMP-I riboswitch aptamer	RF01051
+BHPEJKKPJL_191	T-box leader	RF00230
+BHPEJKKPJL_190	T-box leader	RF00230
+BHPEJKKPJL_203	T-box leader	RF00230
+BHPEJKKPJL_274	Manganese Mn2+ riboswitch aptamer (yybP-ykoY)	RF00080
+BHPEJKKPJL_277	PreQ1 (pre queuosine) riboswitch aptamer	RF00522
+BHPEJKKPJL_184	T-box leader	RF00230
+BHPEJKKPJL_198	Lysine riboswitch aptamer	RF00168
+BHPEJKKPJL_213	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_204	T-box leader	RF00230
+BHPEJKKPJL_222	SAM riboswitch aptamer (S box leader)	RF00162
+BHPEJKKPJL_206	T-box leader	RF00230
+BHPEJKKPJL_189	FMN riboswitch aptamer (RFN element)	RF00050
+BHPEJKKPJL_239	pan motif	RF01749
+BHPEJKKPJL_251	Purine riboswitch aptamer	RF00167
+BHPEJKKPJL_172	M-box riboswitch aptamer (ykoK leader)	RF00380
+BHPEJKKPJL_275	PreQ1 (pre queuosine) riboswitch aptamer	RF00522
+BHPEJKKPJL_223	T-box leader	RF00230
+BHPEJKKPJL_196	Lysine riboswitch aptamer	RF00168
+BHPEJKKPJL_175	T-box leader	RF00230
+BHPEJKKPJL_250	T-box leader	RF00230
+BHPEJKKPJL_242	T-box leader	RF00230
+BHPEJKKPJL_208	c-di-AMP riboswitch aptamer (ydaO/yuaA leader)	RF00379
+BHPEJKKPJL_233	T-box leader	RF00230
+BHPEJKKPJL_235	T-box leader	RF00230
+BHPEJKKPJL_232	T-box leader	RF00230
+BHPEJKKPJL_207	T-box leader	RF00230
+BHPEJKKPJL_194	T-box leader	RF00230
+BHPEJKKPJL_211	T-box leader	RF00230
+BHPEJKKPJL_269	Glycine riboswitch aptamer	RF00504
+BHPEJKKPJL_243	T-box leader	RF00230
+BHPEJKKPJL_241	T-box leader	RF00230

@@ -320,6 +320,7 @@ saf <- read.csv("GBJ002-GIL01-GIL16.saf", sep = "\t", header = TRUE)
 bakta <- read.csv("annotation.tsv", sep = "\t", header = TRUE)
 cog_annotation <- read.csv("cog_annotation.tsv", sep = "\t", header = TRUE)
 pfam_annotation <- read.csv("pfam_annotation.tsv", sep = "\t", header = TRUE)
+ncrna_annotation <- read.csv("ncrna_annotation.tsv", sep = "\t", header = TRUE)
 additional_annotation <- read.csv("additional_annotation.tsv", sep = "\t", header = TRUE)
 tectivirus_annotation <- read.csv("tectivirus_annotation.tsv", sep = "\t", header = TRUE)
 
@@ -419,11 +420,23 @@ annotation$Classification <- dplyr::coalesce(
   annotation$Classification
 )
 
+idx <- match(annotation$Gene_ID, ncrna_annotation$ID)
+
+annotation$Description <- dplyr::coalesce(
+  ncrna_annotation$Name[idx],
+  annotation$Description
+)
+
+annotation$Classification <- dplyr::coalesce(
+  ncrna_annotation$Rfam[idx],
+  annotation$Classification
+)
+
 annotation$Element <- factor(annotation$Element, levels = c("chromosome", "pBtic235", "GIL01", "GIL16"))
 annotation$Strand <- factor(annotation$Strand, levels = c("+", "-"))
 
 datatable(annotation, colnames = c("Gene ID", "Element", "Start", "End", "Strand",
-                                   "Gene symbol", "Description", "COG category", "Pfam / Homologue",
+                                   "Gene symbol", "Description", "COG category", "Family / Homologue",
                                    "Association", "Type", "Subtype", "Source"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",

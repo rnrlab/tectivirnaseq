@@ -56,7 +56,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -68,6 +68,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,

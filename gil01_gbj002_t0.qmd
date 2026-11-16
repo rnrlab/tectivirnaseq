@@ -56,7 +56,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -68,6 +68,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -91,7 +92,7 @@ As can be seen in the `summary()` results, only 1 upregulated gene was obtained.
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Pfam", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",

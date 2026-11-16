@@ -27,7 +27,7 @@ source("tectivirnaseq_functions.R")
 
 # Load data
 
-In this section, we load the data necessary to begin the RNAseq analysis: counts and metadata. We also load genome annotation files to visualize the results and the rRNA genes, which are one of the most common sources of noise in RNAseq analyses. Although rRNA gene reads removal was efficient using Bowtie2, we chose to discard these gene counts before normalization.
+In this section, we load the data necessary to begin the RNAseq analysis: counts and metadata. We also load genome annotation files to visualize the results.
 
 ```{r}
 #| echo: true

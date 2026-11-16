@@ -54,7 +54,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -66,6 +66,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -77,7 +78,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, only 35 upregulated and 38 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, only 36 upregulated and 36 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -89,7 +90,7 @@ As can be seen in the `summary()` results, only 35 upregulated and 38 downregula
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Pfam", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -153,7 +154,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we found positive enrichment in defense mechanisms (**V**) and nucleotide transport and metabolism (**F**) due to 5 genes in each category. Particularly interesting is the enrichment in genes of defense systems, specifically the following: GBJ002_03367 (YoaR-like putative peptidoglycan binding domain-containing protein), GBJ002_03570 (ABC transporter permease), GBJ002_03572 (efflux RND transporter periplasmic adaptor subunit), GBJ002_04203 (phage shock protein A) and GBJ002_04384 (multidrug export protein MepA).
+According to COG categories, we only found positive enrichment in defense mechanisms (**V**) due to the following genes: GBJ002_03367 (YoaR-like putative peptidoglycan binding domain-containing protein), GBJ002_03570 (ABC transporter permease), GBJ002_03572 (efflux RND transporter periplasmic adaptor subunit), GBJ002_04203 (phage shock protein A) and GBJ002_04384 (multidrug export protein MepA). Negative enrichments were found on function unknown (S) and mobilome: prophages, transposons (X) categories.
 
 ```{r}
 #| echo: true
@@ -194,7 +195,7 @@ datatable(cog_down, rownames = FALSE, caption = "Negative enrichment", colnames 
 
 ## KEGG
 
-According to KEGG categories, we found positive and negative enrichments. Among the positive, we find metabolic and membrane transport pathways. Among the negative, we find other metabolic and replication and repair pathways. Interestingly, nucleotide and pyrimidine metabolism pathways are present in both categories, reflecting that these pathways are altered both up and down depending on the gene.
+According to KEGG categories, we only found positive  enrichments related to metabolic and membrane transport pathways.
 
 ```{r}
 #| echo: true
