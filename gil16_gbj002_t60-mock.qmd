@@ -272,7 +272,7 @@ datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -280,7 +280,7 @@ datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -288,7 +288,7 @@ datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -296,16 +296,15 @@ datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -313,7 +312,7 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 

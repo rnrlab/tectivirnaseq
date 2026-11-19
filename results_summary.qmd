@@ -2382,7 +2382,7 @@ ggplot() +
 #| echo: true
 #| eval: true
 #| error: true
-#| label: intra_contrasts_genesç
+#| label: intra_contrasts_genes
 #| warning: false
 #| code-fold: true
 

@@ -50,7 +50,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -62,6 +62,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -85,7 +86,7 @@ As can be seen in the `summary()` results, 20 upregulated and 7 downregulated ge
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -149,7 +150,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichment in replication, recombination and repair (**L**) due to 5 genes: GBJ002_00759 (DNA topoisomerase IV subunit A), GBJ002_00941 (recombinase RecA), GBJ002_02363 (excinuclease ABC subunit UvrA), GBJ002_02364 (excinuclease ABC subunit B) and GBJ002_03098 (DNA helicase PcrA).
+According to COG categories, no enrichments were found.
 
 ```{r}
 #| echo: true
@@ -217,7 +218,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -225,7 +226,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -264,7 +265,7 @@ datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -272,16 +273,15 @@ datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -289,7 +289,7 @@ datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -297,7 +297,7 @@ datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -305,13 +305,13 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although statistical significance was only achieved in the third (**3.1.25**) due to GBJ002_02363 (excinuclease ABC subunit UvrA) and GBJ002_02364 (excinuclease ABC subunit B) upregulated genes.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although statistical significance was only achieved in the first (**5**) due to isomerases upregulated genes.
 
 ```{r}
 #| echo: true

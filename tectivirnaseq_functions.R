@@ -543,8 +543,8 @@ kegg_enrichment <- function(genes_set, all_genes) {
 
       cols <- c(
         "category", "subcategory", "ID", "Description", "GeneRatio", "BgRatio",
-        "RichFactor", "FoldEnrichment", "zScore", "pvalue", "p.adjust",
-        "qvalue", "geneID", "Count"
+        "RichFactor", "FoldEnrichment", "oddsRatio", "zScore", "pvalue", "p.adjust",
+        "qvalue", "geneID", "Count", "SetSize", "DESize", "UniverseSize"
       )
 
       kk_df <- setNames(
@@ -652,9 +652,10 @@ kegg_enrichment_by_cluster <- function(cluster_gene_table, all_genes) {
 go_enrichment <- function(genes_set, all_genes, ont, plots = FALSE, showCategory = 10) {
 
   cols <- c(
-    "ID", "Description", "GeneRatio", "BgRatio", "RichFactor",
-    "FoldEnrichment", "zScore", "pvalue", "p.adjust", "qvalue",
-    "geneID", "Count"
+    "ID", "Description", "GeneRatio", "BgRatio",
+    "RichFactor", "FoldEnrichment", "oddsRatio", "zScore",
+    "pvalue", "p.adjust", "qvalue", "geneID",
+    "Count", "SetSize", "DESize", "UniverseSize"
   )
 
   ego <- tryCatch(

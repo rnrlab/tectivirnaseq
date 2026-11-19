@@ -58,7 +58,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -70,6 +70,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -81,7 +82,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 10 upregulated and 144 downregulated genes were obtained. In addition, 678 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 12 upregulated and 147 downregulated genes were obtained. In addition, 486 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -93,7 +94,7 @@ As can be seen in the `summary()` results, 10 upregulated and 144 downregulated 
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -139,7 +140,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Among the upregulated genes, there are none from pBtic235 and GBJ002-DNT_117 stands out as the gene with the highest LFC. Downregulated genes are mostly from the chromosome, but there are also from pBtic235. In this case, group-specific protein (GBJ002_03815) and GBJ002-DNT_253 genes stand out as the chromosomal and pBtic235 genes, respectively, with the lowest LFC.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Among the upregulated genes, there are none from pBtic235 and 50S ribosomal protein L20 (GBJ002_01786) stands out as the gene with the highest LFC. Downregulated genes are mostly from the chromosome, but there are also from pBtic235. In this case, group-specific protein (GBJ002_03815) and GBJ002-DNT_272 genes stand out as the chromosomal and pBtic235 genes, respectively, with the lowest LFC.
 
 ```{r}
 #| echo: true
@@ -157,7 +158,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found negative enrichments in transcription (**K**) and function unknown (**S**) due to 14 and 8 DE genes, respectively.
+According to COG categories, we only found negative enrichment in function unknown (**S**) due to 59 genes, respectively.
 
 ```{r}
 #| echo: true
@@ -225,7 +226,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -233,15 +234,13 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
 ## GO
 
 The Gene Ontology (GO) is organized into three categories: **Biological Process** (BP), which describes the biological objectives to which gene products contribute; **Molecular Function** (MF), which refers to the elemental activities of gene products at the molecular level; and **Cellular Component** (CC), which specifies the locations within the cell where gene products are active.
-
--   Regarding **CC**, only positive enrichments were found, mainly related to the cytosol, ribosomes and ribonucleoprotein complex components.
 
 ```{r}
 #| echo: true
@@ -274,15 +273,16 @@ datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
+    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -290,7 +290,7 @@ datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -298,16 +298,15 @@ datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -315,13 +314,13 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although no statistically significant results were obtained in any case.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving statistically significant results in **1.20** and **1.20.4** numbers due to downregulated oxidoreductases genes.
 
 ```{r}
 #| echo: true

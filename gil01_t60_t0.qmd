@@ -50,7 +50,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -62,6 +62,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -73,7 +74,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 743 upregulated and 542 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 758 upregulated and 548 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -85,7 +86,7 @@ As can be seen in the `summary()` results, 743 upregulated and 542 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category / Homologue", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -131,7 +132,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on both the chromosome and pBtic235. Regarding the prophage region, it contains 10 of the 15 most overexpressed genes of the chromosome, the remaining ones being the GBJ002_03410 (diacylglycerol kinase) gene and DNT 155 and 226. Regarding GIL01, almost all genes were upregulated and with LFC between 4.94 and 9.85, being GIL01-DNT_01 the only not DE gene. In the plot, if we select only upregulated GIL01 genes, we can distinguish four zones: GIL01_01 to GIL01_07 genes, with LFC \> 5 and adjusted p-values \< 10^-37^; GIL01_09 to GIL01_30 genes (and GIL01_35), with LFC \> 8 and adjusted p-values \< 10^-33^; GIL01_36, with LFC = 9.07 and adjusted p-value ≈ 10^-19^; and GIL01_08, GIL01_33 and GIL01_34 genes, with LFC \< 7 and adjusted p-values \> 10^-17^. The first region corresponds mainly to the genes of the P1-P2 tandem promoters, while the second corresponds to those of the P3 promoter. The third region corresponds to a CDS predicted by Pharokka that may not be real, since its mean normalized counts are less than 70. Something similar occurs with the genes in the fourth region, which are poorly expressed. On the one hand, GIL01_08 has a mean normalized count of approximately 200. On the other hand, the genes expressed from the negative strand, GIL01_33 and GIL01_34, are found. In any case, the important thing about these areas is to highlight that the genes expressed from the P3 promoter are much more upregulated than those expressed from the P1-P2 tandem promoters.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on both the chromosome and pBtic235. Regarding the prophage region, it contains 10 of the 15 most overexpressed genes of the chromosome, the remaining ones being the GBJ002_03410 (diacylglycerol kinase) gene and DNT 168 and 248. Regarding GIL01, almost all genes were upregulated and with LFC between 4.89 and 9.85, being GIL01-DNT_01 the only not DE gene (adjusted p-value = 0.056). In the plot, if we select only upregulated GIL01 genes, we can distinguish four zones: GIL01_01 to GIL01_07 genes, with LFC > 5 and adjusted p-values < 10^-37^; GIL01_09 to GIL01_30 genes (and GIL01_35), with LFC > 8 and adjusted p-values < 10^-33^; GIL01_36, with LFC = 9.19 and adjusted p-value ≈ 10^-20^; and GIL01_08, GIL01_33 and GIL01_34 genes, with LFC < 7 and adjusted p-values > 10^-17^. The first region corresponds mainly to the genes of the P1-P2 tandem promoters, while the second corresponds to those of the P3 promoter. The third region corresponds to a CDS predicted by Pharokka that may not be real, since its mean normalized counts are less than 70. Something similar occurs with the genes in the fourth region, which are poorly expressed. On the one hand, GIL01_08 has a mean normalized count of approximately 200. On the other hand, the genes expressed from the negative strand, GIL01_33 and GIL01_34, are found. In any case, the important thing about these areas is to highlight that the genes expressed from the P3 promoter are much more upregulated than those expressed from the P1-P2 tandem promoters.
 
 ```{r}
 #| echo: true
@@ -149,7 +150,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichment in energy production and conversion (**C**), carbohydrate transport and metabolism (**G**) and replication, recombination and repair (**L**) due to 41, 33 and 22 DE genes, respectively.
+According to COG categories, we only found positive enrichment in energy production and conversion (**C**), replication, recombination and repair (**L**), mobilome: prophages, transposons (**X**) and nucleotide transport and metabolism (**F**) due to 41, 36, 15 and 26 DE genes, respectively.
 
 ```{r}
 #| echo: true
@@ -190,7 +191,7 @@ datatable(cog_down, rownames = FALSE, caption = "Negative enrichment", colnames 
 
 ## KEGG
 
-According to KEGG categories, we found positive and negative enrichments. In the case of the former, they were mainly related to metabolism, but also to replication and repair processes, specifically nucleotide excision repair, mismatch repair and DNA replication. In the case of the latter, it resulted in depletion of less metabolic pathways than in previous contrast. Interestingly, both positive and negative enrichment appear in amino acid metabolism, although the former is concentrated in arginine biosynthesis, alanine, aspartate and glutamate metabolism, and valine, leucine and isoleucine degradation, while the latter is concentrated in valine, leucine and isoleucine biosynthesis and biosynthesis of amino acids. This could be interpreted as a shift in amino acid metabolism toward GIL01 proteins, since the formation of certain amino acids is clearly favoured.
+According to KEGG categories, we found positive and negative enrichments. In the case of the former, they were mainly related to metabolism, but also to replication and repair processes, specifically nucleotide excision repair, homologous recombination, mismatch repair and DNA replication. In the case of the latter, it resulted in depletion of less metabolic pathways than in previous contrast. Interestingly, both positive and negative enrichment appear in amino acid metabolism, although the former is concentrated in arginine biosynthesis and valine, leucine and isoleucine degradation, while the latter is concentrated in valine, leucine and isoleucine biosynthesis. This could be interpreted as a shift in amino acid metabolism toward GIL01 proteins, since the formation of certain amino acids is clearly favoured.
 
 ```{r}
 #| echo: true
@@ -218,7 +219,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -226,7 +227,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -263,10 +264,9 @@ go_cc_down <- go_enrichment(down_genes, all_genes, "CC")
 datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -274,16 +274,15 @@ datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -291,7 +290,7 @@ datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -299,7 +298,7 @@ datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -307,13 +306,13 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving statistical significance in all of them for positive enrichment. In the first level, oxidoreductases (**1**) and translocases (**7**) numbers were enriched by 36 and 14 DE genes, respectively. In the second, **7.1** level was enriched by 11 genes. Lastly, in the third, **7.1.2** level was enriched by 7 out of 8 genes, corresponding to F0F1 ATP synthase subunits genes.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving statistical significance only in the third for negative enrichment. In this level, **1.7.5** number was negatively enriched due to nitrate reductase subunit alpha (GBJ002_04840), nitrate reductase subunit beta (GBJ002_04841), nitrate reductase molybdenum cofactor assembly chaperone (GBJ002_04842) and respiratory nitrate reductase subunit gamma (GBJ002_04843) downregulated genes.
 
 ```{r}
 #| echo: true

@@ -50,7 +50,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -62,6 +62,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -73,7 +74,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 488 upregulated and 394 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 490 upregulated and 392 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -85,7 +86,7 @@ As can be seen in the `summary()` results, 488 upregulated and 394 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -131,7 +132,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on the chromosome, but only a few genes on pBtic235. This contrast was specifically performed to check if GBJ002-DNT_251 is DE. As we can see in the plot, it is the pBtic235 gene with the highest LFC, so it appears to be more abundant over time regardless of MMC induction.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on the chromosome, but only a few genes on pBtic235. This contrast was specifically performed to check if GBJ002-DNT_270 is DE. As we can see in the plot, it is the pBtic235 gene with the highest LFC, so it appears to be more abundant over time regardless of MMC induction.
 
 ```{r}
 #| echo: true
@@ -149,7 +150,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichment in energy production and conversion (**C**) and chromatin structure and dynamics (**B**) by 37 and 4 DE genes, respectively.
+According to COG categories, we only found positive enrichment in energy production and conversion (**C**), function unknown (**S**) and chromatin structure and dynamics (**B**) by 40, 127 and 4 DE genes, respectively.
 
 ```{r}
 #| echo: true
@@ -215,10 +216,9 @@ kegg_down <- kegg_enrichment(down_genes, all_genes)
 datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
   extensions = "Scroller", options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -226,7 +226,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -263,10 +263,9 @@ go_cc_down <- go_enrichment(down_genes, all_genes, "CC")
 datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -274,7 +273,7 @@ datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -282,7 +281,7 @@ datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -290,7 +289,7 @@ datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -298,7 +297,7 @@ datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -306,13 +305,13 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving statistical significance in all of them. In the first level, oxidoreductases (**1**) and isomerases (**5**) numbers were positively and negatively enriched by 32 and 15 genes, respectively. In the second, **1.4** level was positively enriched by 5 genes and **1.7** negatively enriched by 7 genes. Lastly, in the third, only negative enrichment in **1.7.99** level was observed by 4 out of 4 genes, corresponding to GBJ002_00573 (hydroxylamine reductase), GBJ002_04840 (nitrate reductase subunit alpha), GBJ002_04841 (nitrate reductase subunit beta) and GBJ002_04843 (respiratory nitrate reductase subunit gamma) genes.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving statistical significance in all of them. In the first level, oxidoreductases (**1**) and isomerases (**5**) numbers were positively and negatively enriched by 49 and 20 genes, respectively. In the second, **1.7**, **2.1** and **5.4** were negatively enriched by 8, 15 and 9 genes, respectively. Lastly, in the third, only negative enrichments in **1.7.5** and **5.4.99** numbers were found.
 
 ```{r}
 #| echo: true

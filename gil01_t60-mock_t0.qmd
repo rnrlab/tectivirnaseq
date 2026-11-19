@@ -50,7 +50,7 @@ contrast_df <- contrast_df %>%
   left_join(
     annotation %>%
       filter(Gene_ID %in% rownames(contrast_df)) %>%
-      dplyr::select(Gene_ID, Gene_symbol, Description, Classification, Association, Type, Subtype, Source),
+      dplyr::select(Gene_ID, Gene_symbol, Description, COG, Classification, Association, Type, Subtype, Source),
     by = "Gene_ID"
   ) %>%
   rename(
@@ -62,6 +62,7 @@ contrast_df <- contrast_df %>%
     Gene_ID,
     Gene_symbol,
     Description,
+    COG,
     Classification,
     Association,
     Type,
@@ -73,7 +74,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 248 upregulated and 212 downregulated genes were obtained. In addition, 293 genes were discarded due to low counts, probably because they are expressed in inducted samples or in the absence of GIL01. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 249 upregulated and 210 downregulated genes were obtained. In addition, 294 genes were discarded due to low counts, probably because they are expressed in inducted samples or in the absence of GIL01. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -85,7 +86,7 @@ As can be seen in the `summary()` results, 248 upregulated and 212 downregulated
 summary(contrast, alpha = 0.05)
 
 datatable(contrast_df[!is.na(contrast_df$Adjusted_p_value) & contrast_df$Adjusted_p_value < 0.05, ],
-          colnames = c("Gene ID", "Gene symbol", "Description", "COG category / Homologue", "Association",
+          colnames = c("Gene ID", "Gene symbol", "Description", "COG category", "Family", "Association",
           "Type", "Subtype", "Source", "Mean normalized counts", "LFC", "Adjusted p value"), rownames = FALSE,
           filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
             dom = "Brftip",
@@ -131,7 +132,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on the chromosome, but on pBtic235 we only found an upregulated gene (GBJ002-DNT_251) and some downregulated genes which encode primarily for tRNA and phage and hypothetical proteins. As we could see in the analog contrast for GBJ002, GBJ002-DNT_251 is the most upregulated pBtic235 gene, so it appears to be more abundant over time regardless of MMC induction and presence of GIL01. Furthermore, as expected, no GIL01 gene is DE, even though GIL01-DNT_01 has a LFC \> 1 (adjusted p-value = 0.582). In the absence of further data, it could be interpreted that this gene is involved in the maintenance of lysogeny and/or has an anti-sense interference mechanism of action, as explained by [Pavlin *et al*. (2022)](https://doi.org/10.1038/s42003-022-04238-3).
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on the chromosome, but on pBtic235 we only found an upregulated gene (GBJ002-DNT_270) and some downregulated genes which encode primarily for tRNA and phage and hypothetical proteins. As we could see in the analog contrast for GBJ002, GBJ002-DNT_270 is the most upregulated pBtic235 gene, so it appears to be more abundant over time regardless of MMC induction and presence of GIL01. Furthermore, as expected, no GIL01 gene is DE, even though GIL01-DNT_01 has a LFC > 1 (adjusted p-value = 0.584). In the absence of further data, it could be interpreted that this gene is involved in the maintenance of lysogeny and/or has an anti-sense interference mechanism of action, as explained by [Pavlin *et al*. (2022)](https://doi.org/10.1038/s42003-022-04238-3).
 
 ```{r}
 #| echo: true
@@ -149,7 +150,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichments in energy production and conversion (**C**), carbohydrate transport and metabolism (**G**), amino acid transport and metabolism (**E**), nucleotide transport and metabolism (**F**) and lipid transport and metabolism (**I**) by 28, 29, 33, 14 and 15 genes, respectively. As we could see in the GBJ002 analogous contrast, in this case we can observe more enrichments, suggesting that, even in the absence of MMC induction, the presence of GIL01 affects GBJ002 metabolism.
+According to COG categories, we only found positive enrichments in energy production and conversion (**C**), carbohydrate transport and metabolism (**G**), amino acid transport and metabolism (**E**) and lipid transport and metabolism (**I**) by 27, 27, 33 and 15 genes, respectively. As we could see in the GBJ002 analogous contrast, in this case we can observe more enrichments, suggesting that, even in the absence of MMC induction, the presence of GIL01 affects GBJ002 metabolism.
 
 ```{r}
 #| echo: true
@@ -218,7 +219,7 @@ datatable(kegg_up, rownames = FALSE, caption = "Positive enrichment",
     scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
@@ -226,7 +227,7 @@ datatable(kegg_down, rownames = FALSE, caption = "Negative enrichment",
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 3) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 3) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
@@ -266,16 +267,15 @@ datatable(go_bp_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_bp_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
   options = list(
     scrollX = TRUE,
-    scrollY = 400,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -283,7 +283,7 @@ datatable(go_mf_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -291,7 +291,7 @@ datatable(go_mf_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extensions = "Scroller",
@@ -299,7 +299,7 @@ datatable(go_cc_up, rownames = FALSE, caption = "Positive enrichment", extension
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 
 datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensions = "Scroller",
@@ -307,13 +307,13 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
     scrollX = TRUE,
     scroller = TRUE,
     deferRender = TRUE)) %>%
-  formatRound(columns = c("RichFactor", "FoldEnrichment", "zScore"), digits = 2) %>%
+  formatRound(columns = c("RichFactor", "FoldEnrichment", "oddsRatio", "zScore"), digits = 2) %>%
   formatSignif(columns = c("pvalue", "p.adjust", "qvalue"), digits = 3)
 ```
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although statistical significance was only achieved in the first (**1**) and second (**1.4**) levels due to upregulated oxidoreductases and GBJ002_01383 (leucine dehydrogenase), GBJ002_01453 (aminomethyl-transferring glycine dehydrogenase subunit 2), GBJ002_01454 (aminomethyl-transferring glycine dehydrogenase subunit 1), GBJ002_01836 (alanine dehydrogenase) and GBJ002_04256 (NAD-specific glutamate dehydrogenase) genes, respectively.
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, although statistical significance was only achieved in the first (**1**) and third (**1.7.5**) levels due to upregulated and downregulated oxidoreductases, respectively.
 
 ```{r}
 #| echo: true
