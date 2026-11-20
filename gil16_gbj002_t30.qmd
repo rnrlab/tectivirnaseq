@@ -80,7 +80,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 84 upregulated and 148 downregulated genes were obtained. In addition, 389 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 84 upregulated and 147 downregulated genes were obtained. In addition, 389 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true

@@ -82,7 +82,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 8 upregulated and 6 downregulated genes were obtained. In addition, 1457 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 8 upregulated and 6 downregulated genes were obtained. In addition, 1456 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -624,7 +624,7 @@ p <- ggplot(gil01_long_cpm, aes(
   theme_minimal() +
   xlab(NULL) +
   ylab("Gene expression") +
-  scale_y_continuous(limits = c(0, ceiling(max(gil16_long_cpm$CPM_log2, na.rm = TRUE)))) +
+  scale_y_continuous(limits = c(0, ceiling(max(gil01_long_cpm$CPM_log2, na.rm = TRUE)))) +
   scale_color_identity() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
@@ -720,7 +720,7 @@ p <- ggplot(gil16_long_cpm, aes(
   theme_minimal() +
   xlab(NULL) +
   ylab("Gene expression") +
-  scale_y_continuous(limits = c(0, ceiling(max(gil01_long_cpm$CPM_log2, na.rm = TRUE)))) +
+  scale_y_continuous(limits = c(0, ceiling(max(gil16_long_cpm$CPM_log2, na.rm = TRUE)))) +
   scale_color_identity() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),

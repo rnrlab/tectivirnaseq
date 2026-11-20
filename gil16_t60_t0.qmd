@@ -74,7 +74,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 716 upregulated and 426 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 712 upregulated and 423 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -150,7 +150,7 @@ In this section, we present the results of enrichment analyses based on the COG 
 
 ## COG
 
-According to COG categories, we only found positive enrichment in replication, recombination and repair (**L**), mobilome: prophages, transposons (**X**), energy production and conversion (**C**) and nucleotide transport and metabolism (**F**) due to 32, 13, 33 and 22 DE genes, respectively.
+According to COG categories, we found positive enrichment in replication, recombination and repair (**L**), mobilome: prophages, transposons (**X**), energy production and conversion (**C**), nucleotide transport and metabolism (**F**) and function unknown (**S**) due to 32, 13, 32, 22 and 110 DE genes, respectively. Negative enrichment was found on posttranslational modification, protein turnover, chaperones (**O**) due to 26 DE genes.
 
 ```{r}
 #| echo: true
@@ -311,7 +311,7 @@ datatable(go_cc_down, rownames = FALSE, caption = "Negative enrichment", extensi
 
 ## EC
 
-The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving statistical significance in all of them. In the first level, translocases (**7**) were enriched by 18 DE genes. In the second, **7.1** level was enriched by 10 genes. Lastly, in the third, **1.7.5** level was enriched by 4 out of 4 genes: nitrate reductase subunit alpha (GBJ002_04840), nitrate reductase subunit beta (GBJ002_04841), nitrate reductase molybdenum cofactor assembly chaperone (GBJ002_04842) and respiratory nitrate reductase subunit gamma (GBJ002_04843).
+The EC classification establishes up to four levels to define enzymes. In this section, the first three were analyzed, achieving statistical significance in all of them. In the first level, translocases (**7**) were enriched by 18 DE genes. In the second, **7.1** number was enriched by 10 genes. Lastly, in the third, **1.7.5** number was enriched by 4 out of 4 genes: nitrate reductase subunit alpha (GBJ002_04840), nitrate reductase subunit beta (GBJ002_04841), nitrate reductase molybdenum cofactor assembly chaperone (GBJ002_04842) and respiratory nitrate reductase subunit gamma (GBJ002_04843).
 
 ```{r}
 #| echo: true

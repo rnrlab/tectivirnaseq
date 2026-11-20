@@ -74,7 +74,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 276 upregulated and 355 downregulated genes were obtained. In addition, 195 genes were discarded due to low counts, probably because they are expressed in inducted samples or in the absence of GIL16. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 276 upregulated and 354 downregulated genes were obtained. In addition, 98 genes were discarded due to low counts, probably because they are expressed in inducted samples or in the absence of GIL16. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -132,7 +132,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on the chromosome, but on pBtic235 we only found an upregulated gene (GBJ002-DNT_270) and several downregulated genes which encode primarily for tRNA and phage and hypothetical proteins. As we could see in the analogues contrasts for GBJ002 and GIL01, GBJ002-DNT_270 is the only upregulated pBtic235 gene, so it appears to be more abundant over time regardless of MMC induction and presence of tectivirus. Furthermore, as expected, no GIL16 gene is DE, even though in this contrast GIL16-DNT_01 has the lowest absolute LFC. This is a clear difference compared to the analogous contrast of GIL01, in which this DNT was the one that had the highest LFC, although it was not statistically significant.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. In this contrast, we found a large number of upregulated and downregulated genes on the chromosome, but on pBtic235 we only found an upregulated gene (GBJ002-DNT_269) and several downregulated genes which encode primarily for tRNA and phage and hypothetical proteins. As we could see in the analogues contrasts for GBJ002 and GIL01, GBJ002-DNT_269 is the only upregulated pBtic235 gene, so it appears to be more abundant over time regardless of MMC induction and presence of tectivirus. Furthermore, as expected, no GIL16 gene is DE, even though in this contrast GIL16-DNT_01 has the lowest absolute LFC. This is a clear difference compared to the analogous contrast of GIL01, in which this DNT was the one that had the highest LFC, although it was not statistically significant.
 
 ```{r}
 #| echo: true

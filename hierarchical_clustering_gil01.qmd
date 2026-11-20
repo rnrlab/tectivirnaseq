@@ -48,7 +48,7 @@ Correlation shows how two variables vary together. In the case of RNAseq data, t
 
 pseudocount <- min(counts[counts > 0])/10
 counts <- counts + pseudocount
-counts <- counts[1:4967, 13:24]
+counts <- counts[1:4984, 13:24]
 all_genes <- rownames(counts)
 
 rhos <- propr(t(counts), metric = "rho")
@@ -72,7 +72,7 @@ hc <- hclust(as.dist(1 - rhos@matrix), method = "average")
 hc_clusters <- cutree(hc, h = 0.25)
 cluster_sizes <- table(hc_clusters)
 big_ids <- as.numeric(names(cluster_sizes[cluster_sizes >= 20]))
-stable_ids <- c(21, 87, 145, 159, 161, 170, 265, 495)
+stable_ids <- c(20, 81, 138, 142, 157, 162, 266, 499)
 ids <- sort(c(big_ids, stable_ids))
 small_ids <- as.numeric(names(cluster_sizes[cluster_sizes < 20]))
 small_ids <- setdiff(small_ids, stable_ids)
@@ -253,7 +253,8 @@ cluster_gene_table$Element <- factor(cluster_gene_table$Element, levels = c("chr
 cluster_gene_table$Strand <- factor(cluster_gene_table$Strand, levels = c("+", "-"))
 
 datatable(cluster_gene_table, rownames = FALSE,
-  colnames = c("Cluster", "Gene", "Element", "Start", "End", "Strand", "Gene symbol", "Description", "COG category", "Association", "Type", "Subtype", "Source"),
+  colnames = c("Cluster", "Gene", "Element", "Start", "End", "Strand", "Gene symbol",
+  "Description", "COG category", "Family", "Association", "Type", "Subtype", "Source"),
   filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
     autoWidth = TRUE,
     dom = "Brftip",
@@ -353,8 +354,8 @@ kegg_results <- kegg_enrichment_by_cluster(cluster_gene_table, all_genes)
 
 datatable(kegg_results, rownames = FALSE,
   colnames = c("Category", "Subcategory", "Pathway ID", "Pathway description", "Gene ratio",
-  "Background ratio", "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p‑value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Background ratio", "Rich factor", "Fold enrichment", "Odds ratio", "Z score", "p value", "Adjusted p value",
+  "q value", "Genes", "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
     autoWidth = TRUE,
     dom = "Brftip",
@@ -383,8 +384,9 @@ GO enrichment analysis is much more complex, since the presence of few genes can
 go_bp_results <- go_enrichment_by_cluster(cluster_gene_table, all_genes, "BP")
 datatable(go_bp_results, rownames = FALSE,
   colnames = c("GO ID", "GO term description", "Gene ratio", "Background ratio",
-  "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p‑value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Rich factor", "Fold enrichment", "Odds ratio", "Z score",
+  "p value", "Adjusted p value", "q value", "Genes",
+  "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   caption = htmltools::tags$caption(
     style = "caption-side: top; text-align: start;",
     "BP enrichment"),
@@ -403,8 +405,9 @@ datatable(go_bp_results, rownames = FALSE,
 go_mf_results <- go_enrichment_by_cluster(cluster_gene_table, all_genes, "MF")
 datatable(go_mf_results, rownames = FALSE,
   colnames = c("GO ID", "GO term description", "Gene ratio", "Background ratio",
-  "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p‑value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Rich factor", "Fold enrichment", "Odds ratio", "Z score",
+  "p value", "Adjusted p value", "q value", "Genes",
+  "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   caption = htmltools::tags$caption(
     style = "caption-side: top; text-align: start;",
     "MF enrichment"),
@@ -423,8 +426,9 @@ datatable(go_mf_results, rownames = FALSE,
 go_cc_results <- go_enrichment_by_cluster(cluster_gene_table, all_genes, "CC")
 datatable(go_cc_results, rownames = FALSE,
   colnames = c("GO ID", "GO term description", "Gene ratio", "Background ratio",
-  "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p‑value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Rich factor", "Fold enrichment", "Odds ratio", "Z score",
+  "p value", "Adjusted p value", "q value", "Genes",
+  "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   caption = htmltools::tags$caption(
     style = "caption-side: top; text-align: start;",
     "CC enrichment"),
@@ -443,7 +447,7 @@ datatable(go_cc_results, rownames = FALSE,
 
 ## EC
 
-Although there are not many EC terms, some interesting results can be observed. For example, GIL01_C290 is enriched at each of numbers **1**, **1.6** and **1.6.5**, which correspond to NADH-quinone oxidoreductase subunits genes.
+Although there are not many EC terms, some interesting results can be observed.
 
 ```{r}
 #| echo: true

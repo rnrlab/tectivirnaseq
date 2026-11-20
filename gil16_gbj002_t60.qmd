@@ -80,7 +80,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 502 upregulated and 517 downregulated genes were obtained. In addition, 98 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 500 upregulated and 520 downregulated genes were obtained. In addition, 195 genes were discarded due to low counts, likely because they are expressed in other contrasts. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true
@@ -138,7 +138,7 @@ down_genes <- rownames(subset(contrast, padj < 0.05 & log2FoldChange < -log2(1.5
 
 # Volcano plot
 
-A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Among the upregulated genes, we find many chromosomal tRNA genes and two hypothetical proteins (GBJ002_05071 and GBJ002_05154) genes from pBtic235. Among the downregulated genes, we find genes mostly from the chromosome, but also seven from pBtic235, including GBJ002-DNT_272 with the lowest LFC and GBJ002-DNT_275.
+A volcano plot displays each gene according to its LFC on the x-axis and the statistical significance (−log₁₀ adjusted p-value) on the y-axis. Among the upregulated genes, we find many chromosomal tRNA genes and two hypothetical proteins (GBJ002_05071 and GBJ002_05154) genes from pBtic235. Among the downregulated genes, we find genes mostly from the chromosome, but also seven from pBtic235, including GBJ002-DNT_271 with the lowest LFC and GBJ002-DNT_274.
 
 ```{r}
 #| echo: true

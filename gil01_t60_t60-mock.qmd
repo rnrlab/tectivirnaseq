@@ -74,7 +74,7 @@ contrast_df <- contrast_df %>%
   )
 ```
 
-As can be seen in the `summary()` results, 764 upregulated and 611 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
+As can be seen in the `summary()` results, 763 upregulated and 611 downregulated genes were obtained. Below is an interactive table where all DE genes can be viewed individually.
 
 ```{r}
 #| echo: true

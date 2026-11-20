@@ -129,7 +129,7 @@ ggplot(lysogeny_contrasts_enrichments, aes(x = Category, y = Count, fill = DE)) 
   scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
   scale_x_discrete(labels = c("COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)")) +
   facet_wrap(~ Contrast, nrow = 3) +
-  scale_y_continuous(limits = c(0, 40), expand = expansion(mult = c(0, 0.05))) +
+  scale_y_continuous(limits = c(0, 70), expand = expansion(mult = c(0, 0.05))) +
   theme_minimal(base_size = 14) +
   theme(strip.text = element_text(face = "bold")) +
   labs(x = NULL, y = "Enrichments", fill = "DE")
@@ -215,7 +215,7 @@ ggplot() +
   ) +
   geom_text(
     data = subset(line_data, DE == "UP"),
-    aes(x = 0.35, y = as.numeric(COG) + 0.1, label = "UP"),
+    aes(x = 0.6, y = as.numeric(COG) + 0.1, label = "UP"),
     colour = "red",
     vjust = -0.25,
     fontface = "bold",
@@ -224,7 +224,7 @@ ggplot() +
   ) +
   geom_text(
     data = subset(line_data, DE == "DOWN"),
-    aes(x = 0.35, y = as.numeric(COG) - 0.1, label = "DOWN"),
+    aes(x = 0.6, y = as.numeric(COG) - 0.1, label = "DOWN"),
     colour = "blue",
     vjust = -0.25,
     fontface = "bold",
@@ -242,17 +242,17 @@ ggplot() +
     )
   ) +
   scale_x_continuous(
-    limits = c(0, 0.35),
-    expand = expansion(mult = c(0, 0.15))
+    limits = c(0, 0.6),
+    expand = expansion(mult = c(0, 0.05))
   ) +
   scale_y_continuous(
     breaks = seq_along(levels(lysogeny_cog$COG)),
     labels = levels(lysogeny_cog$COG)
   ) +
-  scale_fill_viridis_c(limits = c(0, 20)) +
+  scale_fill_viridis_c(limits = c(0, 30)) +
   scale_size_continuous(
-    limits = c(1, 100),
-    breaks = c(0, 25, 50, 75, 100)
+    limits = c(1, 200),
+    breaks = c(0, 50, 100, 150, 200)
   ) +
   scale_shape_manual(
     values = c(
@@ -885,7 +885,7 @@ ggplot(inter_strain_time_course_contrasts_enrichments, aes(x = Category, y = Cou
         "t30" = "Time point 30",
         "t60" = "Time point 60",
         "t60-mock" = "Time point 60-mock"))) +
-  scale_y_continuous(limits = c(0, 60), expand = expansion(mult = c(0, 0.05))) +
+  scale_y_continuous(limits = c(0, 85), expand = expansion(mult = c(0, 0.05))) +
   theme_minimal(base_size = 14) +
   theme(
     strip.text = element_text(face = "bold"),
@@ -966,8 +966,8 @@ ordered_categories <- inter_cog %>%
 
 inter_cog$COG <- factor(inter_cog$COG, levels = ordered_categories)
 inter_cog$Group <- factor(inter_cog$Group, levels = c(
+  "Time point 10 - Strains GIL16 vs GBJ002",
   "Time point 30 - Strains GIL16 vs GBJ002",
-  "Time point 30 - Strains GIL16 vs GIL01",
   "Time point 60 - Strains GIL01 vs GBJ002",
   "Time point 60 - Strains GIL16 vs GBJ002",
   "Time point 60-mock - Strains GIL16 vs GBJ002",
@@ -1027,14 +1027,14 @@ ggplot() +
       shape = Group
     )
   ) +
-  scale_x_continuous(limits = c(0, 0.2), expand = expansion(mult = c(0, 0.15))) +
+  scale_x_continuous(limits = c(0, 0.3), expand = expansion(mult = c(0, 0.05))) +
   scale_y_continuous(
     breaks = seq_along(levels(inter_cog$COG)),
     labels = levels(inter_cog$COG)
   ) +
-  scale_fill_viridis_c(limits = c(0, 20)) +
-  scale_colour_viridis_c(limits = c(0, 20), guide = "none") +
-  scale_size_continuous(limits = c(1, 50), breaks = c(0, 10, 20, 30, 40, 50)) +
+  scale_fill_viridis_c(limits = c(0, 50)) +
+  scale_colour_viridis_c(limits = c(0, 50), guide = "none") +
+  scale_size_continuous(limits = c(1, 250), breaks = c(0, 50, 100, 150, 200, 250)) +
   scale_shape_manual(values = c(21, 12, 22, 23, 24, 25)) +
   labs(
     x = "Gene ratio",
@@ -1088,6 +1088,7 @@ inter_kegg$Group <- factor(inter_kegg$Group, levels = c(
   "Time point 30 - Strains GIL16 vs GIL01",
   "Time point 60 - Strains GIL01 vs GBJ002",
   "Time point 60 - Strains GIL16 vs GBJ002",
+  "Time point 60 - Strains GIL16 vs GIL01",
   "Time point 60-mock - Strains GIL16 vs GBJ002",
   "Time point 60-mock - Strains GIL16 vs GIL01"))
 
@@ -1145,15 +1146,15 @@ ggplot() +
       shape = Group
     )
   ) +
-  scale_x_continuous(limits = c(0, 0.6), expand = expansion(mult = c(0, 0.15))) +
+  scale_x_continuous(limits = c(0, 0.6), expand = expansion(mult = c(0, 0.05))) +
   scale_y_continuous(
     breaks = seq_along(levels(inter_kegg$KEGG)),
     labels = levels(inter_kegg$KEGG)
   ) +
-  scale_fill_viridis_c(limits = c(0, 31)) +
-  scale_colour_viridis_c(limits = c(0, 31), guide = "none") +
+  scale_fill_viridis_c(limits = c(0, 32)) +
+  scale_colour_viridis_c(limits = c(0, 32), guide = "none") +
   scale_size_continuous(limits = c(1, 50), breaks = c(0, 5, 10, 20, 30)) +
-  scale_shape_manual(values = c(4, 21, 22, 23, 24, 8, 25, 10)) +
+  scale_shape_manual(values = c(3, 21, 22, 23, 24, 8, 10, 25, 4)) +
   labs(
     x = "Gene ratio",
     y = "KEGG subcategories",
@@ -2043,7 +2044,7 @@ ggplot(intra_strain_time_course_contrasts_enrichments, aes(x = Category, y = Cou
   scale_fill_manual(values = c("UP" = "red", "DOWN" = "blue")) +
   scale_x_discrete(labels = c("COG", "KEGG", "GO (BP)", "GO (MF)", "GO (CC)", "EC (1)", "EC (2)", "EC (3)")) +
   facet_grid(Group ~ Contrast) +
-  scale_y_continuous(limits = c(0, 70), expand = expansion(mult = c(0, 0.05))) +
+  scale_y_continuous(limits = c(0, 18), expand = expansion(mult = c(0, 0.05))) +
   theme_minimal(base_size = 14) +
   theme(
     strip.text = element_text(face = "bold"),
@@ -2217,8 +2218,8 @@ ggplot() +
   ) +
   scale_fill_viridis_c(limits = c(0, 10)) +
   scale_size_continuous(
-    limits = c(1, 70),
-    breaks = c(0, 10, 25, 50, 70)
+    limits = c(1, 200),
+    breaks = c(0, 50, 100, 150, 200)
   ) +
   scale_shape_manual(
     values = c(
@@ -2346,8 +2347,8 @@ ggplot() +
   ) +
   scale_fill_viridis_c(limits = c(0, 10)) +
   scale_size_continuous(
-    limits = c(1, 70),
-    breaks = c(0, 10, 25, 50, 70)
+    limits = c(1, 75),
+    breaks = c(0, 10, 25, 50, 75)
   ) +
   scale_shape_manual(
     values = c(

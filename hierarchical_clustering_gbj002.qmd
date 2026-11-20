@@ -48,7 +48,7 @@ Correlation shows how two variables vary together. In the case of RNAseq data, t
 
 pseudocount <- min(counts[counts > 0])/10
 counts <- counts + pseudocount
-counts <- counts[1:4934, 1:12]
+counts <- counts[1:4951, 1:12]
 all_genes <- rownames(counts)
 
 rhos <- propr(t(counts), metric = "rho")
@@ -72,7 +72,7 @@ hc <- hclust(as.dist(1 - rhos@matrix), method = "average")
 hc_clusters <- cutree(hc, h = 0.25)
 cluster_sizes <- table(hc_clusters)
 big_ids <- as.numeric(names(cluster_sizes[cluster_sizes >= 20]))
-stable_ids <- c(6, 12, 24, 608, 645, 729)
+stable_ids <- c(6, 11, 23, 604, 609, 642, 649, 700, 732)
 ids <- sort(c(big_ids, stable_ids))
 small_ids <- as.numeric(names(cluster_sizes[cluster_sizes < 20]))
 small_ids <- setdiff(small_ids, stable_ids)
@@ -239,7 +239,7 @@ heatmaply(
 
 # Clusters composition
 
-The interactive table below displays clusters with 20 or more genes and the genes that comprise them. Above each column is a filter box that allows to filter by cluster, gene name, location, etc. At first glance, we observe that 1842 out of 4934 genes (37.33%) are located in clusters. Also, it can be observed that a large proportion of pBtic235 genes belong to cluster GBJ002_C235. Regarding the prophage region (GBJ002_00964 to GBJ002_01009 genes), many of the genes are in GBJ002_C034.
+The interactive table below displays clusters with 20 or more genes and the genes that comprise them. Above each column is a filter box that allows to filter by cluster, gene name, location, etc. At first glance, we observe that 2029 out of 4951 genes (40.98%) are located in clusters. Also, it can be observed that a large proportion of pBtic235 genes belong to clusters GBJ002_C102 and GBJ002_C158. Regarding the prophage region B, many of the genes are in GBJ002_C034.
 
 ```{r}
 #| echo: true
@@ -253,7 +253,8 @@ cluster_gene_table$Element <- factor(cluster_gene_table$Element, levels = c("chr
 cluster_gene_table$Strand <- factor(cluster_gene_table$Strand, levels = c("+", "-"))
 
 datatable(cluster_gene_table, rownames = FALSE,
-  colnames = c("Cluster", "Gene", "Element", "Start", "End", "Strand", "Gene symbol", "Description", "COG category", "Association", "Type", "Subtype", "Source"),
+  colnames = c("Cluster", "Gene", "Element", "Start", "End", "Strand", "Gene symbol",
+  "Description", "COG category", "Family", "Association", "Type", "Subtype", "Source"),
   filter = "top", extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
     autoWidth = TRUE,
     dom = "Brftip",
@@ -311,7 +312,7 @@ As with determining the enrichment of upregulated or downregulated genes, an enr
 
 ## COG
 
-Regarding COG categories, 9 clusters show significant enrichment comprising 8 distinct terms. Among the most notable findings are GBJ002_C133, which is enriched in genes related to cell motility (**N**), and GBJ002_C029c, which includes 23 genes involved in translation, ribosomal structure and biogenesis (**J**).
+Regarding COG categories, 16 clusters show significant enrichment comprising 13 distinct terms. Among the most notable findings are GBJ002_C028, which contains 24 out of 28 genes related to translation, ribosomal structure and biogenesis (**J**), and GBJ002_C009, which contains 6 out of 9 genes related to carbohydrate transport and metabolism (**G**).
 
 ```{r}
 #| echo: true
@@ -339,7 +340,9 @@ datatable(cog_results, rownames = FALSE,
 
 ## KEGG
 
-Regarding KEGG terms, there is a wide variety across the clusters. GBJ002_C133 is again related to cell motility pathways, while GBJ002_C020a is related to quorum sensing. Regarding replication and repair pathways, we can observe two distinct clusters: GBJ002_C235, associated to DNA replication, homologous recombination and mismatch repair, and GBJ002_C046, associated to nucleotide excision repair. Interestingly, the second biggest cluster (GBJ002_C281) appears to be enriched in beta-lactam resistance genes and different metabolic pathways, while the biggest one (GBJ002_C384) is enriched in 10 different metabolic pathways.
+Regarding KEGG terms, there is a wide variety across the clusters. GBJ002_C009 is again related to carbohydrate metabolism, while GBJ002_C034 is related to amino acid metabolism.
+
+GBJ002_C133 is again related to cell motility pathways, while GBJ002_C020a is related to quorum sensing. Regarding replication and repair pathways, we can observe two distinct clusters: GBJ002_C158, associated to DNA replication, mismatch repair, homologous recombination and nucleotide excision repair, and GBJ002_C036, associated to nucleotide excision repair and homologous recombination. Interestingly, the second biggest cluster (GBJ002_C331) appears to be enriched in cell motility genes and different metabolic pathways, while the biggest one (GBJ002_C346) is enriched in 9 different metabolic pathways.
 
 ```{r}
 #| echo: true
@@ -353,8 +356,8 @@ kegg_results <- kegg_enrichment_by_cluster(cluster_gene_table, all_genes)
 
 datatable(kegg_results, rownames = FALSE,
   colnames = c("Category", "Subcategory", "Pathway ID", "Pathway description", "Gene ratio",
-  "Background ratio", "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Background ratio", "Rich factor", "Fold enrichment", "Odds ratio", "Z score", "p value", "Adjusted p value",
+  "q value", "Genes", "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   extensions = c("Buttons", "FixedColumns", "Scroller"), options = list(
     autoWidth = TRUE,
     dom = "Brftip",
@@ -383,8 +386,9 @@ GO enrichment analysis is much more complex, since the presence of few genes can
 go_bp_results <- go_enrichment_by_cluster(cluster_gene_table, all_genes, "BP")
 datatable(go_bp_results, rownames = FALSE,
   colnames = c("GO ID", "GO term description", "Gene ratio", "Background ratio",
-  "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Rich factor", "Fold enrichment", "Odds ratio", "Z score",
+  "p value", "Adjusted p value", "q value", "Genes",
+  "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   caption = htmltools::tags$caption(
     style = "caption-side: top; text-align: start;",
     "BP enrichment"),
@@ -403,8 +407,9 @@ datatable(go_bp_results, rownames = FALSE,
 go_mf_results <- go_enrichment_by_cluster(cluster_gene_table, all_genes, "MF")
 datatable(go_mf_results, rownames = FALSE,
   colnames = c("GO ID", "GO term description", "Gene ratio", "Background ratio",
-  "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Rich factor", "Fold enrichment", "Odds ratio", "Z score",
+  "p value", "Adjusted p value", "q value", "Genes",
+  "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   caption = htmltools::tags$caption(
     style = "caption-side: top; text-align: start;",
     "MF enrichment"),
@@ -423,8 +428,9 @@ datatable(go_mf_results, rownames = FALSE,
 go_cc_results <- go_enrichment_by_cluster(cluster_gene_table, all_genes, "CC")
 datatable(go_cc_results, rownames = FALSE,
   colnames = c("GO ID", "GO term description", "Gene ratio", "Background ratio",
-  "Rich factor", "Fold enrichment", "Z score", "p value", "Adjusted p value",
-  "q value", "Genes", "Gene count", "Cluster"),
+  "Rich factor", "Fold enrichment", "Odds ratio", "Z score",
+  "p value", "Adjusted p value", "q value", "Genes",
+  "Gene count", "Set size", "DE size", "Universe size", "Cluster"),
   caption = htmltools::tags$caption(
     style = "caption-side: top; text-align: start;",
     "CC enrichment"),
@@ -443,7 +449,7 @@ datatable(go_cc_results, rownames = FALSE,
 
 ## EC
 
-Although there are not many EC terms, some interesting results can be observed. For example, cluster GBJ002_C384 is enriched at each of numbers **7**, **7.1** and **7.1.2** and by 7 genes, which correspond to subunits of F0F1 ATP synthase.
+Although there are not many EC terms, some interesting results can be observed.
 
 ```{r}
 #| echo: true

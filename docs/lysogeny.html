@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Eduardo Lozano">
-<meta name="dcterms.date" content="2026-11-19">
+<meta name="dcterms.date" content="2026-11-20">
 
 <title>Lysogeny analysis – TectiviRNAseq</title>
 <style>
@@ -487,7 +487,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 19, 2026</p>
+      <p class="date">November 20, 2026</p>
     </div>
   </div>
   
@@ -748,7 +748,7 @@ Counts = \sum \text{paired reads counts} + \frac{\sum \text{unpaired reads count
 <section id="explained-variance-per-gene-and-factor" class="level2">
 <h2 class="anchored" data-anchor-id="explained-variance-per-gene-and-factor">Explained variance per gene and factor</h2>
 <p>First, we compared the proportion of gene expression variance explained by Strain and by Replicate as a proxy for batch effects. To ensure comparability across all lysogeny samples, this analysis was restricted to the gene set shared across conditions, corresponding to genes from GBJ002 (including both chromosomal genes and those located on pBtic235).</p>
-<p>At the gene level, Strain accounted for a substantially larger fraction of expression variability than Replicate. Specifically, the median proportion of variance explained by the Strain was 74.61%, whereas Replicate accounted for a median of 5.05% across genes. Thus, biological effects explained approximately fifteen times more variance than batch effects at the gene level.</p>
+<p>At the gene level, Strain accounted for a substantially larger fraction of expression variability than Replicate. Specifically, the median proportion of variance explained by the Strain was 74.62%, whereas Replicate accounted for a median of 5.04% across genes. Thus, biological effects explained approximately fifteen times more variance than batch effects at the gene level.</p>
 <p>These results indicate that thre is no batch effect associated with Replicate and that the primary source of variability in the data is driven by Strain, supporting the suitability of the dataset for downstream differential expression analyses, not being necessary to include Replicate as a covariate.</p>
 <div class="cell">
 <details class="code-fold">
@@ -818,7 +818,7 @@ Counts = \sum \text{paired reads counts} + \frac{\sum \text{unpaired reads count
 <p>To assess batch effects at the transcriptome-wide level, we used permutational multivariate analysis of variance (PERMANOVA) as implemented in the <code>adonis2</code> function. This method evaluates whether predefined factors explain significant differences in multivariate expression profiles by partitioning the total variance of a distance matrix (here, based on variance-stabilized expression values) among explanatory variables. Statistical significance is assessed via permutations, making the test robust to deviations from normality and suitable for high-dimensional RNA‑seq data. Unlike gene‑wise models, PERMANOVA evaluates effects on the global expression structure, providing an estimate of the proportion of total variance (R²) attributable to each factor.</p>
 <section id="global-batch-test" class="level3">
 <h3 class="anchored" data-anchor-id="global-batch-test">Global batch test</h3>
-<p>We first performed a global PERMANOVA including Strain as the main biological factor and Replicate as a potential batch effect. In this model, biological structure clearly dominated the organization of the transcriptomic space. Strain explained the vast majority of the variance (R² = 84.31%, p = 0.002), indicating strong transcriptional differences between the strains. In contrast, Replicate accounted for only a small fraction of the total variation (R² = 4.86%) and did not show statistical significance (p = 0.582). This indicates that, while replicate-to-replicate variability exists, it does not systematically structure the expression profiles nor introduce detectable batch effects at the global level.</p>
+<p>We first performed a global PERMANOVA including Strain as the main biological factor and Replicate as a potential batch effect. In this model, biological structure clearly dominated the organization of the transcriptomic space. Strain explained the vast majority of the variance (R² = 84.38%, p = 0.002), indicating strong transcriptional differences between the strains. In contrast, Replicate accounted for only a small fraction of the total variation (R² = 4.87%) and did not show statistical significance (p = 0.583). This indicates that, while replicate-to-replicate variability exists, it does not systematically structure the expression profiles nor introduce detectable batch effects at the global level.</p>
 <p>Overall, the PERMANOVA demonstrates that transcriptomic variation is overwhelmingly driven by Strain, and that the variability associated with Replicate is minor, non‑significant and does not dominate the expression landscape.</p>
 <div class="cell">
 <details class="code-fold">
@@ -843,7 +843,7 @@ Counts = \sum \text{paired reads counts} + \frac{\sum \text{unpaired reads count
 <section id="batch-effect-within-biological-strata" class="level3">
 <h3 class="anchored" data-anchor-id="batch-effect-within-biological-strata">Batch effect within biological strata</h3>
 <p>To further evaluate whether the effect of Replicate persists once biological structure is fully controlled, we performed a PERMANOVA in which permutations were restricted within Strain. Under this design, samples were only compared to others from the same strain, ensuring that any residual structure attributable to Replicate could be detected independently of differences between strains. This analysis specifically tests whether Replicate induces systematic within‑strain shifts in expression profiles.</p>
-<p>Under this restricted model, Replicate explained only a very small fraction of the total transcriptomic variance (R² = 4.90%) and did not reach statistical significance (p = 0.583). The modest effect size, combined with a clearly non‑significant p‑value, indicates that Replicate does not introduce consistent transcriptomic differences among biologically matched samples.</p>
+<p>Under this restricted model, Replicate explained only a very small fraction of the total transcriptomic variance (R² = 4.87%) and did not reach statistical significance (p = 0.583). The modest effect size, combined with a clearly non‑significant p‑value, indicates that Replicate does not introduce consistent transcriptomic differences among biologically matched samples.</p>
 <p>Importantly, the proportion of variance attributed to Replicate in the within‑strain model was nearly identical to that observed in the global PERMANOVA. However, in both analyses Replicate remained non‑significant. This indicates that the small amount of variance associated with Replicate does not reflect a consistent or systematic batch effect, but rather random variation that does not meaningfully structure the transcriptomic space.</p>
 <p>Together, these results indicate that Replicate does not introduce a reproducible batch effect in the dataset. Its contribution to overall variation is minimal, unstable and statistically indistinguishable from random noise once biological differences between strains are controlled.</p>
 <div class="cell">
